@@ -949,7 +949,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 <!-- ═══ MODALES ═══ -->
 
 <!-- ONBOARDING -->
-<div id="m-onb" class="ov open">
+<div id="m-onb" class="ov">
   <div class="onb-modal">
     <div class="onb-header">
       <div class="onb-logo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
@@ -1231,6 +1231,27 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
   </div>
 </div>
 
+<!-- PANTALLA DE ACTIVACIÓN -->
+<div id="m-activation" style="position:fixed;inset:0;z-index:9998;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+  <div style="text-align:center">
+    <div style="font-size:36px;margin-bottom:8px">🔑</div>
+    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px">Activa tu acceso</div>
+    <div style="font-size:14px;color:var(--text2);max-width:320px;line-height:1.6">Ingresa el código de activación que recibiste al comprar Creative Dashboard</div>
+  </div>
+  <div style="width:min(340px,90vw)">
+    <input id="activation-input" placeholder="Ej: CD-XXXX-XXXX" style="width:100%;text-align:center;font-size:18px;font-weight:600;letter-spacing:.1em;padding:14px;border:2px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;transition:border-color .15s" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')verifyActivationCode()"/>
+    <div id="activation-error" style="display:none;margin-top:8px;font-size:12px;color:var(--red);text-align:center;padding:8px;background:var(--red-bg);border-radius:var(--r-sm)"></div>
+    <button onclick="verifyActivationCode()" id="activation-btn" style="width:100%;margin-top:12px;padding:13px;border-radius:var(--r);border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s">
+      Activar Creative Dashboard →
+    </button>
+  </div>
+  <div style="font-size:11px;color:var(--text3);text-align:center;line-height:1.6">
+    ¿No tienes un código? Consíguelo en <a href="https://gumroad.com" target="_blank" style="color:var(--accent)">Gumroad</a><br>
+    <button onclick="fbSignOut()" style="background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;text-decoration:underline">Cerrar sesión</button>
+  </div>
+</div>
+
+
 <!-- USER BADGE EN SIDEBAR -->
 <div id="user-badge" style="display:none;padding:8px 10px;margin-bottom:6px;background:var(--surface2);border-radius:var(--r-sm);display:flex;align-items:center;gap:8px">
   <img id="user-avatar" style="width:24px;height:24px;border-radius:50%;flex-shrink:0" src="" alt=""/>
@@ -1293,9 +1314,7 @@ function load(){
   if(saved){try{const td=JSON.parse(saved);applyColors(td.colors,false);activePreset=td.preset||'light';}catch(e){applyPreset('light',true);}}
   else applyPreset('light',true);
   fillSels();renderAll();renderHist();renderSbClients();renderDash();updateBuzonBadge();
-  // only show onboarding if first time
-  const seen=localStorage.getItem('cd_onb_seen');
-  if(seen)closeOnb();
+  // onboarding manejado por Firebase auth — no mostrar aquí
 }
 // ══════════════════════════════════
 // FIREBASE SYNC
@@ -2703,7 +2722,7 @@ load(); // Solo aplica tema, NO renderiza datos de otro usuario
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-  import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  import { getFirestore, doc, setDoc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
   const firebaseConfig = {
     apiKey: "AIzaSyB2GzlrkbP13JZnBVtHbtgukevqpsyZf0c",
@@ -2718,24 +2737,72 @@ load(); // Solo aplica tema, NO renderiza datos de otro usuario
   const auth = getAuth(app);
   const db_fs = getFirestore(app);
 
-  // Exponer al scope global para que las funciones del app las usen
   window.fbAuth = auth;
   window.fbDb = db_fs;
   window.fbAuthModule = { GoogleAuthProvider, signInWithPopup, signOut };
-  window.fbFirestore = { doc, setDoc, getDoc };
+  window.fbFirestore = { doc, setDoc, getDoc, updateDoc };
 
-  // Escuchar cambios de estado de autenticación
-  // Guardar el último UID para detectar cambios de usuario
+  async function checkActivation(uid) {
+    const docRef = doc(db_fs, 'users', uid, 'data', 'activation');
+    const snap = await getDoc(docRef);
+    return snap.exists() && snap.data().activated === true;
+  }
+
+  window.verifyActivationCode = async function() {
+    const input = document.getElementById('activation-input');
+    const errorEl = document.getElementById('activation-error');
+    const btn = document.getElementById('activation-btn');
+    const code = input.value.trim().toUpperCase();
+    if (!code) { errorEl.textContent = 'Ingresa un código'; errorEl.style.display = 'block'; return; }
+    if (!fbUser) { errorEl.textContent = 'Error de sesión — recarga la página'; errorEl.style.display = 'block'; return; }
+    btn.textContent = 'Verificando...'; btn.style.opacity = '0.7'; btn.disabled = true;
+    errorEl.style.display = 'none';
+    try {
+      const codeRef = doc(db_fs, 'activation_codes', code);
+      const codeSnap = await getDoc(codeRef);
+      if (!codeSnap.exists()) {
+        errorEl.textContent = 'Código no válido. Verifica que lo escribiste correctamente.';
+        errorEl.style.display = 'block';
+        btn.textContent = 'Activar Creative Dashboard →'; btn.style.opacity = '1'; btn.disabled = false;
+        return;
+      }
+      const codeData = codeSnap.data();
+      if (codeData.used && codeData.uid !== fbUser.uid) {
+        errorEl.textContent = 'Este código ya fue usado por otra cuenta.';
+        errorEl.style.display = 'block';
+        btn.textContent = 'Activar Creative Dashboard →'; btn.style.opacity = '1'; btn.disabled = false;
+        return;
+      }
+      await updateDoc(codeRef, { used: true, uid: fbUser.uid, activatedAt: new Date().toISOString(), email: fbUser.email });
+      const actRef = doc(db_fs, 'users', fbUser.uid, 'data', 'activation');
+      await setDoc(actRef, { activated: true, code: code, activatedAt: new Date().toISOString() });
+      document.getElementById('m-activation').style.display = 'none';
+      const userWrap = document.getElementById('sb-user-wrap');
+      const userAvatar = document.getElementById('user-avatar');
+      const userName = document.getElementById('user-name');
+      if (userWrap) userWrap.style.display = 'block';
+      if (userAvatar && fbUser.photoURL) userAvatar.src = fbUser.photoURL;
+      if (userName) userName.textContent = fbUser.displayName || fbUser.email;
+      await loadFromFirebase(fbUser.uid);
+      fillSels(); renderAll(); renderHist(); renderSbClients(); renderDash();
+    } catch(e) {
+      console.error(e);
+      errorEl.textContent = 'Error al verificar. Intenta de nuevo.';
+      errorEl.style.display = 'block';
+      btn.textContent = 'Activar Creative Dashboard →'; btn.style.opacity = '1'; btn.disabled = false;
+    }
+  };
+
   let lastUid = localStorage.getItem('cd_last_uid');
 
   onAuthStateChanged(auth, async (user) => {
     const loginOverlay = document.getElementById('m-login');
+    const activationOverlay = document.getElementById('m-activation');
     const userWrap = document.getElementById('sb-user-wrap');
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
 
     if (user) {
-      // Si cambió el usuario — limpiar datos del anterior
       if (lastUid && lastUid !== user.uid) {
         localStorage.removeItem('cd_v8');
         localStorage.removeItem('cd_acl');
@@ -2744,26 +2811,32 @@ load(); // Solo aplica tema, NO renderiza datos de otro usuario
       }
       lastUid = user.uid;
       localStorage.setItem('cd_last_uid', user.uid);
-
       fbUser = user;
       if (loginOverlay) loginOverlay.style.display = 'none';
+
+      const activated = await checkActivation(user.uid);
+      if (!activated) {
+        if (activationOverlay) activationOverlay.style.display = 'flex';
+        return;
+      }
+
+      if (activationOverlay) activationOverlay.style.display = 'none';
       if (userWrap) userWrap.style.display = 'block';
       if (userAvatar && user.photoURL) userAvatar.src = user.photoURL;
       if (userName) userName.textContent = user.displayName || user.email;
-
-      // Cargar datos de Firebase (sobreescribe localStorage si hay datos en la nube)
       await loadFromFirebase(user.uid);
-      fillSels();renderAll();renderHist();renderSbClients();renderDash();
+      fillSels(); renderAll(); renderHist(); renderSbClients(); renderDash();
 
     } else {
-      // Cerró sesión — limpiar todo
       fbUser = null;
       lastUid = null;
-      localStorage.removeItem('cd_v8');
-      localStorage.removeItem('cd_acl');
-      localStorage.removeItem('cd_last_uid');
+      const themeBackup = localStorage.getItem('cd_theme_v3');
+      localStorage.clear();
+      if(themeBackup) localStorage.setItem('cd_theme_v3', themeBackup);
       db = {clients:[],ideas:[],links:[],history:[],buzon:[],radarHistory:[],planner:{}};
+      fillSels();renderAll();renderHist();renderSbClients();renderDash();
       if (loginOverlay) loginOverlay.style.display = 'flex';
+      if (activationOverlay) activationOverlay.style.display = 'none';
       if (userWrap) userWrap.style.display = 'none';
     }
   });
