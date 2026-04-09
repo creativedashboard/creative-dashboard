@@ -1,0 +1,2743 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Creative Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bricolage+Grotesque:wght@500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════════
+   TOKENS — LIGHT (default)
+══════════════════════════════════ */
+:root{
+  --bg:#f8f7f5;
+  --surface:#ffffff;
+  --surface2:#f1f0ee;
+  --surface3:#e8e6e2;
+  --border:#e2e0dc;
+  --border2:#ccc9c3;
+  --text:#1a1916;
+  --text2:#6b6860;
+  --text3:#a8a49e;
+  --accent:#5b4fcf;
+  --accent-light:rgba(91,79,207,0.08);
+  --accent-mid:rgba(91,79,207,0.15);
+  --accent-bord:rgba(91,79,207,0.25);
+  --green:#16a34a;--green-bg:rgba(22,163,74,0.08);--green-bord:rgba(22,163,74,0.2);
+  --orange:#d97706;--orange-bg:rgba(217,119,6,0.08);--orange-bord:rgba(217,119,6,0.2);
+  --red:#dc2626;--red-bg:rgba(220,38,38,0.08);--red-bord:rgba(220,38,38,0.2);
+  --blue:#2563eb;--blue-bg:rgba(37,99,235,0.08);--blue-bord:rgba(37,99,235,0.2);
+  --purple:#7c3aed;--purple-bg:rgba(124,58,237,0.08);--purple-bord:rgba(124,58,237,0.2);
+  --teal:#0891b2;--teal-bg:rgba(8,145,178,0.08);--teal-bord:rgba(8,145,178,0.2);
+  --shadow-xs:0 1px 2px rgba(0,0,0,.04);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow:0 4px 6px -1px rgba(0,0,0,.07),0 2px 4px -1px rgba(0,0,0,.05);
+  --shadow-md:0 10px 15px -3px rgba(0,0,0,.08),0 4px 6px -2px rgba(0,0,0,.04);
+  --r:8px;--r-sm:5px;--r-lg:12px;--r-xl:16px;
+  --sb-w:248px;
+}
+
+/* ── DARK OVERRIDE ── */
+[data-theme="dark"]{
+  --bg:#111110;--surface:#1c1c1a;--surface2:#252522;--surface3:#2e2e2b;
+  --border:#2e2e2b;--border2:#3d3d39;
+  --text:#f2f0ec;--text2:#8a8780;--text3:#5a5855;
+  --accent:#7c6df0;--accent-light:rgba(124,109,240,0.1);--accent-mid:rgba(124,109,240,0.18);--accent-bord:rgba(124,109,240,0.3);
+  --green:#22c55e;--green-bg:rgba(34,197,94,0.1);--green-bord:rgba(34,197,94,0.25);
+  --orange:#f59e0b;--orange-bg:rgba(245,158,11,0.1);--orange-bord:rgba(245,158,11,0.25);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.1);--red-bord:rgba(239,68,68,0.25);
+  --blue:#3b82f6;--blue-bg:rgba(59,130,246,0.1);--blue-bord:rgba(59,130,246,0.25);
+  --purple:#a78bfa;--purple-bg:rgba(167,139,250,0.1);--purple-bord:rgba(167,139,250,0.25);
+  --teal:#22d3ee;--teal-bg:rgba(34,211,238,0.1);--teal-bord:rgba(34,211,238,0.25);
+  --shadow-xs:0 1px 2px rgba(0,0,0,.2);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.3);
+  --shadow:0 4px 6px rgba(0,0,0,.3);
+  --shadow-md:0 10px 15px rgba(0,0,0,.4);
+}
+
+/* ════════════════════════════
+   RESET & BASE
+════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
+::selection{background:var(--accent-mid)}
+
+/* ════════════════════════════
+   APP SHELL
+════════════════════════════ */
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ─── SIDEBAR ─── */
+.sb{width:var(--sb-w);min-width:var(--sb-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:background .2s}
+.sb-logo{display:flex;align-items:center;gap:9px;padding:16px 14px 14px;border-bottom:1px solid var(--border)}
+.sb-logo-mark{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(91,79,207,.35)}
+.sb-logo-mark svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.sb-logo-name{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:600;color:var(--text);letter-spacing:-.2px}
+.sb-logo-ver{font-size:10px;color:var(--text3);margin-top:0px}
+.sb-scroll{flex:1;overflow-y:auto;padding:6px 8px 8px}
+.sb-bot{padding:10px 8px;border-top:1px solid var(--border);flex-shrink:0}
+
+/* ─── NAV ITEMS ─── */
+.sb-group{margin-top:4px}
+.sb-group-label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;padding:8px 8px 3px;display:flex;justify-content:space-between;align-items:center}
+.sb-group-label button{width:18px;height:18px;border-radius:4px;border:none;background:none;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.sb-group-label button:hover{background:var(--surface2);color:var(--text)}
+.ni{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--r-sm);cursor:pointer;color:var(--text2);font-size:13px;font-weight:400;transition:all .12s;border:none;background:none;width:100%;text-align:left;position:relative}
+.ni:hover{color:var(--text);background:var(--surface2)}
+.ni.on{color:var(--accent);background:var(--accent-light);font-weight:500}
+.ni.on svg{opacity:1;color:var(--accent)}
+.ni svg{width:15px;height:15px;flex-shrink:0;opacity:.55;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:opacity .12s}
+.ni-client{padding-left:14px;font-size:12px}
+.ni-client.ac{color:var(--accent);font-weight:600;background:var(--accent-light)}
+.ni-client.ac .ni-dot{background:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+.ni-client.ac::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:70%;background:var(--accent);border-radius:0 3px 3px 0}
+.ni-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:all .15s}
+.ndiv{height:1px;background:var(--border);margin:6px 0}
+
+/* ─── HISTORY ─── */
+.hi{display:flex;align-items:center;gap:6px;padding:4px 8px 4px 18px;border-radius:var(--r-sm);cursor:pointer;transition:all .12s;border:none;background:none;width:100%;text-align:left}
+.hi:hover{background:var(--surface2)}
+.hi.on{background:var(--accent-light)}
+.hi-ic{font-size:11px;flex-shrink:0;width:14px;text-align:center}
+.hi-b{flex:1;overflow:hidden}
+.hi-t{font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.hi-t.on{color:var(--accent);font-weight:500}
+.hi-m{font-size:10px;color:var(--text3)}
+.hi-del{background:none;border:none;cursor:pointer;color:transparent;font-size:10px;padding:2px;border-radius:3px;flex-shrink:0;line-height:1}
+.hi:hover .hi-del{color:var(--text3)}
+.hi:hover .hi-del:hover{color:var(--red)}
+.hist-more{padding:3px 8px 3px 18px;font-size:11px;color:var(--text3);cursor:pointer;background:none;border:none;width:100%;text-align:left;transition:color .12s}
+.hist-more:hover{color:var(--accent)}
+
+/* ─── BOTTOM ACTIONS ─── */
+.sb-actions{display:flex;gap:5px;margin-bottom:8px}
+.sb-act{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:5px 4px;font-size:11px;font-family:'Inter',sans-serif;border-radius:var(--r-sm);border:1px solid var(--border);background:none;color:var(--text2);cursor:pointer;transition:all .12s;font-weight:400}
+.sb-act svg{width:11px;height:11px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sb-act:hover{color:var(--text);border-color:var(--border2);background:var(--surface2)}
+.theme-strip{display:flex;gap:4px;align-items:center}
+.td{width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0}
+.td:hover{transform:scale(1.15)}
+.td.on{border-color:var(--text)!important}
+
+/* ════════════════════════════
+   MAIN
+════════════════════════════ */
+.main{flex:1;overflow-y:auto;background:var(--bg)}
+.page{display:none}.page.on{display:block}
+.pw{padding:28px 36px 48px;max-width:940px}
+.pw-full{padding:28px 36px 48px}
+
+/* ─── PAGE HEADER ─── */
+.page-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:16px}
+.page-hd-l{display:flex;align-items:center;gap:12px}
+.pi{width:38px;height:38px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pi svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pi.purple{background:var(--purple-bg);color:var(--purple)}
+.pi.blue{background:var(--blue-bg);color:var(--blue)}
+.pi.green{background:var(--green-bg);color:var(--green)}
+.pi.orange{background:var(--orange-bg);color:var(--orange)}
+.pi.teal{background:var(--teal-bg);color:var(--teal)}
+.pi.accent{background:var(--accent-light);color:var(--accent)}
+.page-title{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:600;letter-spacing:-.3px;color:var(--text)}
+.page-sub{font-size:12px;color:var(--text2);margin-top:2px}
+
+/* ════════════════════════════
+   INPUTS
+════════════════════════════ */
+input,textarea,select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:8px 11px;outline:none;transition:border .15s,box-shadow .15s;-webkit-appearance:none;appearance:none}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+textarea{resize:vertical;min-height:72px;line-height:1.55}
+input[type=date]{color-scheme:light}
+[data-theme="dark"] input[type=date]{color-scheme:dark}
+select{cursor:pointer;padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a8a49e' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+select option{background:var(--surface)}
+label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-spacing:.02em;font-weight:500;text-transform:uppercase}
+
+/* ════════════════════════════
+   BUTTONS
+════════════════════════════ */
+.btn{padding:7px 14px;font-size:13px;font-family:'Inter',sans-serif;font-weight:500;border-radius:var(--r-sm);cursor:pointer;transition:all .15s;border:1px solid var(--border);background:var(--surface);color:var(--text2);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{border-color:var(--border2);color:var(--text);background:var(--surface2)}
+.btn:active{transform:scale(.98)}
+.btn svg{width:14px;height:14px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.btn.primary{background:var(--accent);color:#fff;border-color:transparent;box-shadow:0 1px 3px rgba(91,79,207,.3)}
+.btn.primary:hover{background:#4a3fb8;box-shadow:0 2px 8px rgba(91,79,207,.4)}
+.btn.danger{color:var(--red);border-color:var(--red-bord);background:var(--red-bg)}
+.btn.danger:hover{background:var(--red);color:#fff}
+.btn.sm{padding:4px 10px;font-size:12px}
+.btn.ghost{border-color:transparent;background:var(--surface2)}
+.btn.ghost:hover{background:var(--surface3)}
+.btn.accent-ghost{background:var(--accent-light);color:var(--accent);border-color:var(--accent-bord)}
+.btn.accent-ghost:hover{background:var(--accent-mid)}
+.btn:disabled{opacity:.4;cursor:default;pointer-events:none}
+.ib{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;border-radius:4px;transition:all .12s;display:flex;align-items:center;justify-content:center}
+.ib svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ib:hover{color:var(--text2);background:var(--surface2)}
+.ib.del:hover{color:var(--red);background:var(--red-bg)}
+.ib.ed:hover{color:var(--accent);background:var(--accent-light)}
+
+/* ════════════════════════════
+   LAYOUT
+════════════════════════════ */
+.row{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start}
+.grow{flex:1}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.sep{height:1px;background:var(--border);margin:20px 0}
+
+/* ════════════════════════════
+   CARDS
+════════════════════════════ */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;transition:border-color .15s,box-shadow .15s;box-shadow:var(--shadow-xs)}
+.card:hover{border-color:var(--border2);box-shadow:var(--shadow-sm)}
+
+/* ─── METRIC CARD ─── */
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;box-shadow:var(--shadow-xs);transition:all .15s;cursor:pointer}
+.metric-card:hover{border-color:var(--border2);box-shadow:var(--shadow-sm);transform:translateY(-1px)}
+.metric-icon{width:32px;height:32px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.metric-icon svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.metric-val{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:700;color:var(--text);line-height:1;margin-bottom:4px}
+.metric-lbl{font-size:12px;color:var(--text2);font-weight:400}
+.metric-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* ─── CLIENT CARD ─── */
+.client-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:all .15s;box-shadow:var(--shadow-xs);margin-bottom:10px}
+.client-card:hover{border-color:var(--border2);box-shadow:var(--shadow-sm)}
+.client-card.new-highlight{animation:highlight-in .6s ease-out}
+@keyframes highlight-in{0%{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}100%{border-color:var(--border);box-shadow:var(--shadow-xs)}}
+.client-av{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;text-transform:uppercase}
+.client-name{font-size:14px;font-weight:600;color:var(--text)}
+.client-niche{font-size:12px;color:var(--text2);margin-top:1px}
+.client-restrict{display:flex;align-items:flex-start;gap:6px;margin-top:10px;padding:8px 10px;background:var(--orange-bg);border:1px solid var(--orange-bord);border-radius:var(--r-sm);font-size:12px;color:var(--text2);line-height:1.4}
+.client-restrict svg{width:12px;height:12px;flex-shrink:0;margin-top:1px;fill:none;stroke:var(--orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.client-avoid{display:flex;align-items:flex-start;gap:6px;margin-top:6px;padding:8px 10px;background:var(--red-bg);border:1px solid var(--red-bord);border-radius:var(--r-sm);font-size:12px;color:var(--text2);line-height:1.4}
+.client-avoid svg{width:12px;height:12px;flex-shrink:0;margin-top:1px;fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ─── IDEA CARD ─── */
+.idea-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:6px;transition:all .15s;cursor:pointer;position:relative;box-shadow:var(--shadow-xs)}
+.idea-card:hover{border-color:var(--border2);box-shadow:var(--shadow-sm)}
+.idea-card:hover .idea-card-actions{opacity:1}
+.idea-card-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4;padding-right:64px}
+.idea-card-meta{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-top:7px}
+.idea-card-note{font-size:12px;color:var(--text2);margin-top:6px;line-height:1.5}
+.idea-card-actions{position:absolute;top:10px;right:10px;display:flex;gap:2px;opacity:0;transition:opacity .12s}
+
+/* ─── LINK CARD ─── */
+.link-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:6px;transition:all .15s;box-shadow:var(--shadow-xs)}
+.link-card:hover{border-color:var(--border2);box-shadow:var(--shadow-sm)}
+.link-fav{width:30px;height:30px;border-radius:var(--r-sm);background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.link-fav img{width:18px;height:18px;object-fit:contain}
+.link-title{font-size:13px;font-weight:500;color:var(--accent);text-decoration:none;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.link-title:hover{text-decoration:underline}
+.link-dom{font-size:11px;color:var(--text3);margin-top:1px}
+
+/* ─── WEEK CARD ─── */
+.week-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:8px;box-shadow:var(--shadow-xs)}
+.week-row{display:flex;gap:8px;margin-bottom:5px;font-size:12px}
+.week-row-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;width:72px;flex-shrink:0;padding-top:1px}
+.week-row-val{color:var(--text2);line-height:1.5;flex:1}
+
+/* ════════════════════════════
+   BADGES
+════════════════════════════ */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap;border:1px solid transparent}
+.bd{background:var(--surface2);color:var(--text2);border-color:var(--border)}
+.bd-accent{background:var(--accent-light);color:var(--accent);border-color:var(--accent-bord)}
+.bd-green{background:var(--green-bg);color:var(--green);border-color:var(--green-bord)}
+.bd-orange{background:var(--orange-bg);color:var(--orange);border-color:var(--orange-bord)}
+.bd-blue{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-bord)}
+.bd-red{background:var(--red-bg);color:var(--red);border-color:var(--red-bord)}
+.bd-purple{background:var(--purple-bg);color:var(--purple);border-color:var(--purple-bord)}
+.bd-teal{background:var(--teal-bg);color:var(--teal);border-color:var(--teal-bord)}
+.badge svg{width:9px;height:9px;fill:none;stroke:currentColor;stroke-width:2}
+
+/* ════════════════════════════
+   FILTER BAR
+════════════════════════════ */
+.fbar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+.fc{padding:3px 10px;font-size:12px;font-weight:400;border-radius:20px;border:1px solid var(--border);background:none;cursor:pointer;color:var(--text2);font-family:'Inter',sans-serif;transition:all .12s}
+.fc:hover{border-color:var(--border2);color:var(--text);background:var(--surface2)}
+.fc.on{background:var(--text);color:var(--bg);border-color:transparent;font-weight:500}
+.ctr{font-size:11px;color:var(--text3);margin-bottom:10px}
+
+/* ════════════════════════════
+   SECTION HEADER
+════════════════════════════ */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.sh-l{display:flex;align-items:center;gap:8px}
+.sh-icon{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center}
+.sh-icon svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sh-title{font-size:13px;font-weight:600;color:var(--text)}
+.sh-count{font-size:11px;color:var(--text3);background:var(--surface2);padding:1px 7px;border-radius:10px;border:1px solid var(--border)}
+
+/* ════════════════════════════
+   EMPTY STATES
+════════════════════════════ */
+.empty{text-align:center;padding:52px 20px}
+.empty-icon{width:52px;height:52px;border-radius:var(--r);background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:var(--shadow-xs)}
+.empty-icon svg{width:22px;height:22px;fill:none;stroke:var(--text3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.empty-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.empty-sub{font-size:13px;color:var(--text2);line-height:1.5}
+
+/* ════════════════════════════
+   TOAST
+════════════════════════════ */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:var(--bg);padding:9px 16px;border-radius:10px;font-size:13px;font-weight:500;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:9999;pointer-events:none;display:flex;align-items:center;gap:10px;white-space:nowrap;box-shadow:var(--shadow-md)}
+.toast.show{transform:translateX(-50%) translateY(0);pointer-events:all}
+.tundo{background:none;border:1px solid rgba(255,255,255,.25);color:inherit;font-family:'Inter',sans-serif;font-size:12px;padding:3px 10px;border-radius:5px;cursor:pointer;opacity:.8}
+.tundo:hover{opacity:1}
+
+/* ════════════════════════════
+   MODALS
+════════════════════════════ */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(4px)}
+.ov.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:24px;width:min(600px,92vw);max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-md)}
+.modal-hd{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.modal-hd svg{width:18px;height:18px;fill:none;stroke:var(--accent);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.modal-title{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:600;color:var(--text)}
+.mf{margin-bottom:14px}
+.ma{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+
+/* ════════════════════════════
+   CHIPS
+════════════════════════════ */
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.chip,.nc{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:400;border:1px solid var(--border);cursor:pointer;background:none;color:var(--text2);transition:all .12s;font-family:'Inter',sans-serif;user-select:none}
+.chip:hover,.nc:hover{border-color:var(--border2);color:var(--text);background:var(--surface2)}
+.chip.on,.nc.on{color:var(--accent);border-color:var(--accent-bord);background:var(--accent-light);font-weight:500}
+
+/* ─── TYPE CHIPS ─── */
+.type-chip{padding:7px 13px;border-radius:var(--r-sm);font-size:13px;font-weight:400;border:1px solid var(--border);cursor:pointer;background:var(--surface);color:var(--text2);transition:all .15s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;box-shadow:var(--shadow-xs)}
+.type-chip svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.type-chip:hover{border-color:var(--border2);color:var(--text);box-shadow:var(--shadow-sm)}
+.type-chip.on{color:var(--accent);border-color:var(--accent);background:var(--accent-light);font-weight:500;box-shadow:0 0 0 3px var(--accent-light)}
+
+/* ════════════════════════════
+   BRIEF PICKER
+════════════════════════════ */
+.brief-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.brief-load{font-size:12px;font-weight:500;color:var(--accent);background:none;border:1px solid var(--accent-bord);border-radius:var(--r-sm);padding:4px 10px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:4px;transition:all .12s}
+.brief-load:hover{background:var(--accent-light)}
+.brief-load svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brief-pick{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);z-index:100;overflow:hidden;box-shadow:var(--shadow-md);margin-top:4px;max-height:240px;overflow-y:auto}
+.bp-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;display:flex;align-items:flex-start;gap:8px}
+.bp-item:last-child{border-bottom:none}
+.bp-item:hover{background:var(--surface2)}
+.bp-t{font-size:13px;font-weight:500;color:var(--text)}
+.bp-m{font-size:11px;color:var(--text2);margin-top:1px}
+
+/* ════════════════════════════
+   PROMPT BOX
+════════════════════════════ */
+.pb{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-top:20px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.pbh{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--border)}
+.pbh-l{display:flex;align-items:center;gap:8px}
+.pbh-dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.pbt{font-size:12px;color:var(--text2);font-weight:500}
+.pba{display:flex;gap:6px}
+.pta{width:100%;background:transparent;border:none;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:16px;outline:none;resize:vertical;min-height:220px;line-height:1.75}
+
+/* ════════════════════════════
+   GEN CTA
+════════════════════════════ */
+.gen-cta{display:flex;align-items:center;gap:10px;margin-top:20px;padding:14px 16px;background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow-xs)}
+
+/* ════════════════════════════
+   LINK PREVIEW
+════════════════════════════ */
+.lp{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface2);border-radius:var(--r-sm);margin-bottom:8px;border:1px solid var(--border)}
+.lp img{width:20px;height:20px;border-radius:4px;flex-shrink:0}
+.lp-t{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-s{font-size:11px;color:var(--text2)}
+.mli{display:flex;align-items:center;gap:8px;margin-bottom:6px;background:var(--surface2);border-radius:var(--r-sm);padding:8px 10px;border:1px solid var(--border)}
+.mli img{width:14px;height:14px;border-radius:2px;flex-shrink:0}
+.mli a{color:var(--accent);text-decoration:none;font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mli a:hover{text-decoration:underline}
+
+/* ════════════════════════════
+   IDEA POPUP
+════════════════════════════ */
+.ip{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:0;width:min(560px,92vw);max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-md)}
+.ip-hd{padding:20px 22px 16px;border-bottom:1px solid var(--border)}
+.ip-title{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:600;line-height:1.3;margin-bottom:10px;color:var(--text)}
+.ip-body{padding:16px 22px}
+.ip-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.ip-text{font-size:13px;color:var(--text2);line-height:1.7;white-space:pre-wrap}
+.ip-link{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface2);border-radius:var(--r-sm);margin-bottom:5px;text-decoration:none;border:1px solid var(--border);transition:border-color .12s}
+.ip-link:hover{border-color:var(--border2)}
+.ip-link img{width:14px;height:14px;border-radius:2px;flex-shrink:0}
+.ip-link span{font-size:12px;color:var(--accent);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ip-footer{padding:14px 22px 18px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap}
+
+/* ════════════════════════════
+   THEME PANEL
+════════════════════════════ */
+.tp-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:22px;width:min(440px,92vw);max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-md)}
+.tp-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.tp-lbl{font-size:12px;color:var(--text2);width:120px;flex-shrink:0;font-weight:400}
+.tp-swatch{width:28px;height:28px;border-radius:6px;border:1px solid var(--border2);cursor:pointer;flex-shrink:0;padding:0;-webkit-appearance:none}
+.tp-hex{flex:1;font-size:12px;font-family:monospace}
+
+/* ════════════════════════════
+   DASHBOARD
+════════════════════════════ */
+.dash-welcome{background:linear-gradient(135deg,var(--accent) 0%,#7c6df0 100%);border-radius:var(--r-lg);padding:24px 28px;margin-bottom:24px;color:#fff;position:relative;overflow:hidden}
+.dash-welcome::after{content:'';position:absolute;right:-20px;top:-20px;width:160px;height:160px;background:rgba(255,255,255,.06);border-radius:50%}
+.dash-welcome::before{content:'';position:absolute;right:60px;bottom:-30px;width:100px;height:100px;background:rgba(255,255,255,.04);border-radius:50%}
+.dash-welcome-title{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;letter-spacing:-.3px;margin-bottom:6px;position:relative;z-index:1}
+.dash-welcome-sub{font-size:13px;opacity:.85;position:relative;z-index:1}
+.dash-welcome-actions{display:flex;gap:8px;margin-top:16px;position:relative;z-index:1}
+.dash-welcome .btn{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.25);color:#fff;backdrop-filter:blur(4px)}
+.dash-welcome .btn:hover{background:rgba(255,255,255,.25)}
+.dash-recent-idea{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:var(--r-sm);transition:background .12s;cursor:pointer}
+.dash-recent-idea:hover{background:var(--surface2)}
+.dash-recent-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:4px}
+.dash-quick-btn{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:all .15s;box-shadow:var(--shadow-xs);text-align:left}
+.dash-quick-btn:hover{border-color:var(--border2);box-shadow:var(--shadow-sm);transform:translateY(-1px)}
+.dash-quick-btn-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dash-quick-btn-icon svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dash-quick-btn-text{font-size:12px;font-weight:500;color:var(--text)}
+.dash-quick-btn-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.dash-section-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.dash-section-title svg{width:14px;height:14px;fill:none;stroke:var(--text2);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ════════════════════════════
+   TRENDS AGENT
+════════════════════════════ */
+.agent-card{background:linear-gradient(135deg,var(--teal-bg) 0%,var(--blue-bg) 100%);border:1px solid var(--teal-bord);border-radius:var(--r);padding:18px 20px;margin-bottom:16px}
+.agent-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.agent-icon{width:32px;height:32px;border-radius:var(--r-sm);background:var(--teal-bg);border:1px solid var(--teal-bord);display:flex;align-items:center;justify-content:center}
+.agent-icon svg{width:15px;height:15px;fill:none;stroke:var(--teal);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.agent-title{font-size:14px;font-weight:600;color:var(--text)}
+.agent-sub{font-size:12px;color:var(--text2)}
+.agent-pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--teal);margin-right:4px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* ════════════════════════════
+   ONBOARDING
+════════════════════════════ */
+.onb-modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:0;width:min(520px,92vw);overflow:hidden;box-shadow:var(--shadow-md)}
+.onb-header{background:linear-gradient(135deg,var(--accent) 0%,#7c6df0 100%);padding:28px 32px 24px;color:#fff;text-align:center;position:relative;overflow:hidden}
+.onb-header::after{content:'';position:absolute;right:-30px;top:-30px;width:180px;height:180px;background:rgba(255,255,255,.05);border-radius:50%}
+.onb-logo{width:48px;height:48px;background:rgba(255,255,255,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;position:relative;z-index:1;backdrop-filter:blur(4px)}
+.onb-logo svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.onb-h-title{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;letter-spacing:-.3px;margin-bottom:6px;position:relative;z-index:1}
+.onb-h-sub{font-size:13px;opacity:.85;position:relative;z-index:1}
+.onb-body{padding:24px 28px}
+.onb-steps{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.onb-step{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:var(--r-sm);background:var(--surface2);border:1px solid var(--border)}
+.onb-step-num{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.onb-step-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.onb-step-sub{font-size:12px;color:var(--text2);line-height:1.4}
+.onb-footer{padding:0 28px 24px}
+
+/* ════════════════════════════
+   RESPONSIVE
+════════════════════════════ */
+@media(max-width:720px){.sb{display:none}.pw,.pw-full{padding:20px 16px}.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* ════════════════════════════
+   PLANNER KANBAN
+════════════════════════════ */
+.planner-day{min-width:130px;flex:1}
+.planner-day-hd{padding:8px 10px;border-radius:var(--r-sm) var(--r-sm) 0 0;margin-bottom:2px;text-align:center}
+.planner-day-name{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em}
+.planner-day-date{font-size:18px;font-weight:700;color:var(--text);line-height:1.2;margin-top:1px}
+.planner-day-today .planner-day-date{color:var(--accent)}
+.planner-day-today .planner-day-hd{background:var(--accent-light);border:1px solid var(--accent-bord)}
+.planner-col-body{background:var(--surface2);border-radius:var(--r-sm);padding:6px;min-height:180px;border:1.5px dashed var(--border);transition:border-color .15s,background .15s}
+.planner-col-body.drag-over{border-color:var(--accent);background:var(--accent-light)}
+.plan-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;margin-bottom:6px;cursor:grab;transition:all .15s;box-shadow:var(--shadow-xs);user-select:none}
+.plan-card:hover{border-color:var(--border2);box-shadow:var(--shadow-sm)}
+.plan-card.dragging{opacity:.4;transform:scale(.97)}
+.plan-card-title{font-size:12px;font-weight:500;color:var(--text);line-height:1.3;margin-bottom:5px}
+.plan-card-meta{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.plan-card-client{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.plan-status{display:flex;align-items:center;gap:4px;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:500;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .12s}
+
+/* ════════════════════════════
+   RADAR HISTORY
+════════════════════════════ */
+.radar-hist-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:8px;box-shadow:var(--shadow-xs)}
+.radar-hist-item.has-result{border-left:3px solid var(--teal)}
+.radar-hist-title{font-size:13px;font-weight:500;color:var(--text)}
+.radar-hist-meta{font-size:11px;color:var(--text3);margin-top:3px}
+.radar-hist-result{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--text2);line-height:1.6;white-space:pre-wrap;max-height:120px;overflow:hidden;position:relative}
+.radar-hist-result.expanded{max-height:none}
+.radar-sel-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:all .12s}
+.radar-sel-item:hover{border-color:var(--border2)}
+.radar-sel-item.on{border-color:var(--teal);background:var(--teal-bg)}
+.radar-sel-dot{width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:background .12s}
+.radar-sel-item.on .radar-sel-dot{background:var(--teal)}
+
+.ctx-chip{padding:5px 11px;border-radius:20px;font-size:12px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Inter',sans-serif;transition:all .12s}
+.ctx-chip:hover,.ctx-chip.on{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- ══════════════════ SIDEBAR ══════════════════ -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    </div>
+    <div>
+      <div class="sb-logo-name">Creative Dashboard</div>
+      <div class="sb-logo-ver">Sistema de contenido con IA</div>
+    </div>
+  </div>
+
+  <div class="sb-scroll">
+    <!-- CLIENTES -->
+    <div class="sb-group">
+      <div class="sb-group-label">
+        <span onclick="go('clientes')" style="cursor:pointer;transition:color .12s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color=''">Clientes</span>
+        <div style="display:flex;gap:4px">
+          <button onclick="go('clientes')" title="Ver todos los clientes" style="opacity:.6">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </button>
+          <button onclick="openCM()" title="Nuevo cliente">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="sb-clients"></div>
+    </div>
+    <div class="ndiv"></div>
+
+    <!-- WORKSPACE -->
+    <div class="sb-group">
+      <div class="sb-group-label"><span>Workspace</span></div>
+      <button class="ni on" id="ni-home" onclick="go('home')">
+        <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Dashboard
+      </button>
+      <button class="ni" id="ni-ideas" onclick="go('ideas')">
+        <svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
+        Ideas
+      </button>
+      <button class="ni" id="ni-links" onclick="go('links')">
+        <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Links & refs
+      </button>
+      <button class="ni" id="ni-planner" onclick="go('planner')">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><line x1="8" y1="14" x2="8" y2="17"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="16" y1="15" x2="16" y2="17"/></svg>
+        Planner
+      </button>
+
+      <button class="ni" id="ni-trends" onclick="go('trends')">
+        <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Radar de tendencias
+      </button>
+    </div>
+    <div class="ndiv"></div>
+
+    <!-- CREAR -->
+    <div class="sb-group">
+      <div class="sb-group-label"><span>Crear</span></div>
+      <button class="ni" id="ni-generar" onclick="go('generar')">
+        <svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Generar contenido
+      </button>
+      <div id="hist-list"></div>
+    </div>
+  </div>
+
+  <div class="sb-bot">
+    <div id="sb-user-wrap" style="margin-bottom:6px;display:none">
+      <div style="padding:8px 10px;background:var(--surface2);border-radius:var(--r-sm);display:flex;align-items:center;gap:8px">
+        <img id="user-avatar" style="width:22px;height:22px;border-radius:50%;flex-shrink:0" src="" alt=""/>
+        <div style="flex:1;overflow:hidden"><div id="user-name" style="font-size:11px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div><div style="font-size:10px;color:var(--teal)">Sincronizado ✓</div></div>
+        <button onclick="fbSignOut()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:10px;font-family:'Inter',sans-serif" title="Cerrar sesión">↩</button>
+      </div>
+    </div>
+    <!-- CAPTURA RÁPIDA -->
+    <button onclick="openQuickCapture()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:8px;border-radius:var(--r-sm);border:1px solid var(--accent-bord);background:var(--accent-light);color:var(--accent);font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;margin-bottom:8px;transition:all .12s" onmouseover="this.style.background='var(--accent-mid)'" onmouseout="this.style.background='var(--accent-light)'">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      Captura de idea rápida
+    </button>
+    <div class="sb-actions">
+      <button class="sb-act" onclick="openM('m-onb')" title="Ver guía de uso">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Guía
+      </button>
+      <button class="sb-act" onclick="openTheme()">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+        Tema
+      </button>
+      <button class="sb-act" onclick="exportDB()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Backup
+      </button>
+      <button class="sb-act" onclick="document.getElementById('import-file').click()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Restaurar
+      </button>
+    </div>
+    <div class="theme-strip" style="gap:6px">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <div id="theme-toggle" onclick="toggleTheme()" style="width:44px;height:24px;border-radius:12px;background:var(--border2);position:relative;cursor:pointer;transition:background .2s;border:1px solid var(--border2);flex-shrink:0">
+        <div id="theme-knob" style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.25)"></div>
+      </div>
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </div>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importDB(event)"/>
+  </div>
+</aside>
+
+<!-- ══════════════════ MAIN ══════════════════ -->
+<main class="main">
+
+  <!-- ── HOME DASHBOARD ── -->
+  <div id="pg-home" class="page on">
+    <div class="pw-full" style="max-width:1000px">
+      <div id="dash-welcome-wrap"></div>
+      <div class="g4" id="dash-metrics" style="margin-bottom:24px"></div>
+      <div class="g2" style="align-items:start">
+        <div>
+          <div class="dash-section-title">
+            <svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
+            Ideas recientes
+          </div>
+          <div id="dash-recent-ideas"></div>
+        </div>
+        <div>
+          <div class="dash-section-title" style="margin-bottom:12px">
+            <svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            Acciones rápidas
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px" id="dash-quick"></div>
+          <div class="sep"></div>
+          <div class="dash-section-title">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><line x1="8" y1="14" x2="8" y2="17"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="16" y1="15" x2="16" y2="17"/></svg>
+            Esta semana
+          </div>
+          <div id="dash-week"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CLIENTES ── -->
+  <div id="pg-clientes" class="page">
+    <div class="pw">
+      <div class="page-hd">
+        <div class="page-hd-l">
+          <div class="pi blue"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div><div class="page-title">Clientes</div><div class="page-sub">Gestiona tus marcas y perfiles de contenido</div></div>
+        </div>
+        <button class="btn primary" onclick="openCM()">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nuevo cliente
+        </button>
+      </div>
+      <div id="cl"></div>
+    </div>
+  </div>
+
+  <!-- ── IDEAS ── -->
+  <div id="pg-ideas" class="page">
+    <div class="pw">
+      <div class="page-hd">
+        <div class="page-hd-l">
+          <div class="pi orange"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg></div>
+          <div><div class="page-title" id="ideas-title">Ideas</div><div class="page-sub" id="ideas-ps">Captura ideas antes de que se escapen</div></div>
+        </div>
+        <button class="btn primary" onclick="openIM()">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nueva idea
+        </button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:20px;position:relative">
+        <div style="flex:1;position:relative">
+          <input id="qi" placeholder="Idea rápida — Enter para guardar..." style="padding-left:36px"/>
+          <svg viewBox="0 0 24 24" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;fill:none;stroke:var(--text3);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
+        </div>
+        <button class="btn ghost" onclick="saveQI()">Guardar</button>
+      </div>
+      <div class="fbar" id="ifbar"></div>
+      <div id="il"></div>
+    </div>
+  </div>
+
+  <!-- ── LINKS ── -->
+  <div id="pg-links" class="page">
+    <div class="pw">
+      <div class="page-hd">
+        <div class="page-hd-l">
+          <div class="pi blue"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+          <div><div class="page-title">Links & referencias</div><div class="page-sub">Tendencias, referencias visuales, música — incluye los links de tus ideas</div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="g2" style="margin-bottom:12px">
+          <div><label>URL</label><input id="lurl" placeholder="https://..." oninput="pvLink(this.value)"/></div>
+          <div><label>Descripción</label><input id="ldesc" placeholder="¿Para qué sirve?"/></div>
+        </div>
+        <div id="lpw" style="display:none;margin-bottom:10px"></div>
+        <div class="g2">
+          <div><label>Cliente</label><select id="lc"></select></div>
+          <div><label>Tipo</label>
+            <select id="lt">
+              <option value="🔥 Tendencia">🔥 Tendencia</option>
+              <option value="🎨 Referencia visual">🎨 Referencia visual</option>
+              <option value="🎵 Música/Audio">🎵 Música/Audio</option>
+              <option value="🛠 Herramienta">🛠 Herramienta</option>
+              <option value="👀 Competencia">👀 Competencia</option>
+              <option value="📌 Otro">📌 Otro</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:14px;text-align:right"><button class="btn primary" onclick="saveLink()">Guardar link</button></div>
+      </div>
+      <div class="fbar" id="lfbar"></div>
+      <div id="ll"></div>
+    </div>
+  </div>
+
+  <!-- ── PLANNER ── -->
+  <div id="pg-planner" class="page">
+    <div class="pw-full" style="max-width:1200px">
+      <div class="page-hd">
+        <div class="page-hd-l">
+          <div class="pi green"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><line x1="8" y1="14" x2="8" y2="17"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="16" y1="15" x2="16" y2="17"/></svg></div>
+          <div><div class="page-title">Planner de publicación</div><div class="page-sub">Arrastra ideas a los días que quieres publicar — navega a cualquier semana del año</div></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:20px;align-items:flex-start">
+        <!-- MINI CALENDARIO -->
+        <div style="flex-shrink:0;width:220px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;box-shadow:var(--shadow-xs)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <button onclick="calPrevMonth()" style="background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;border-radius:4px;font-size:14px;transition:all .12s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">‹</button>
+              <div id="cal-month-label" style="font-size:13px;font-weight:600;color:var(--text)"></div>
+              <button onclick="calNextMonth()" style="background:none;border:none;cursor:pointer;color:var(--text2);padding:4px;border-radius:4px;font-size:14px;transition:all .12s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">›</button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
+              <div style="text-align:center;font-size:10px;font-weight:600;color:var(--text3);padding:2px">L</div>
+              <div style="text-align:center;font-size:10px;font-weight:600;color:var(--text3);padding:2px">M</div>
+              <div style="text-align:center;font-size:10px;font-weight:600;color:var(--text3);padding:2px">M</div>
+              <div style="text-align:center;font-size:10px;font-weight:600;color:var(--text3);padding:2px">J</div>
+              <div style="text-align:center;font-size:10px;font-weight:600;color:var(--text3);padding:2px">V</div>
+              <div style="text-align:center;font-size:10px;font-weight:600;color:var(--text3);padding:2px">S</div>
+              <div style="text-align:center;font-size:10px;font-weight:600;color:var(--text3);padding:2px">D</div>
+            </div>
+            <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
+            <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+              <button onclick="plannerThisWeek()" style="width:100%;padding:5px;font-size:11px;font-family:'Inter',sans-serif;border-radius:var(--r-sm);border:1px solid var(--border);background:none;color:var(--text2);cursor:pointer;transition:all .12s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">Ir a hoy</button>
+            </div>
+          </div>
+          <!-- UNASSIGNED -->
+          <div style="margin-top:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;box-shadow:var(--shadow-xs)">
+            <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Sin asignar</div>
+            <div id="planner-unassigned-list" class="planner-col-body" data-day="unassigned" style="min-height:120px"></div>
+          </div>
+        </div>
+        <!-- KANBAN SEMANA -->
+        <div style="flex:1;overflow:hidden">
+          <div id="planner-week-label" style="font-size:13px;color:var(--text2);margin-bottom:12px;font-weight:500"></div>
+          <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:12px">
+            <div id="planner-days" style="display:flex;gap:8px;flex:1;min-width:0"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- ── AGENTE TENDENCIAS ── -->
+  <div id="pg-trends" class="page">
+    <div class="pw">
+      <div class="page-hd">
+        <div class="page-hd-l">
+          <div class="pi teal"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <div>
+            <div class="page-title">Radar de tendencias</div>
+            <div class="page-sub">Genera prompts especializados para buscar tendencias reales en tiempo real con Claude</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-card">
+        <div class="agent-header">
+          <div class="agent-icon">
+            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div>
+            <div class="agent-title">Configura tu búsqueda</div>
+            <div class="agent-sub">Genera el prompt, pégalo en Claude y guarda el resultado para usarlo al crear contenido.</div>
+          </div>
+        </div>
+        <div class="g2" style="margin-bottom:14px">
+          <div><label>Nicho principal</label><input id="tr-niche" placeholder="ej: fitness, gastronomía, moda, tecnología..."/></div>
+          <div><label>Plataformas</label><select id="tr-plat">
+            <option value="Instagram y TikTok">Instagram y TikTok</option>
+            <option value="TikTok">TikTok</option>
+            <option value="Instagram">Instagram</option>
+            <option value="YouTube Shorts">YouTube Shorts</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="todas las redes sociales">Todas las redes</option>
+          </select></div>
+        </div>
+        <div class="g2" style="margin-bottom:14px">
+          <div><label>Región / mercado</label><select id="tr-region">
+            <option value="México">México</option>
+            <option value="España">España</option>
+            <option value="Latinoamérica">Latinoamérica</option>
+            <option value="Estados Unidos (español)">EEUU (español)</option>
+            <option value="mercado global en español">Global en español</option>
+          </select></div>
+          <div><label>Profundidad</label><select id="tr-depth">
+            <option value="resumen">Resumen rápido (5 min)</option>
+            <option value="completo" selected>Análisis completo</option>
+            <option value="competencia">Foco en competencia</option>
+          </select></div>
+        </div>
+        <div class="mf"><label>Contexto adicional (opcional)</label>
+          <input id="tr-context" placeholder="ej: estoy lanzando una marca de ropa deportiva femenina, quiero saber qué está funcionando..."/>
+        </div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:8px;font-weight:500">O elige un punto de partida:</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <button onclick="setQuickCtx('musica',this)" class="ctx-chip">🎵 Músicas trending</button>
+            <button onclick="setQuickCtx('formatos',this)" class="ctx-chip">🎬 Formatos virales</button>
+            <button onclick="setQuickCtx('hashtags',this)" class="ctx-chip"># Hashtags</button>
+            <button onclick="setQuickCtx('nicho',this)" class="ctx-chip">🔥 Temas del nicho</button>
+            <button onclick="setQuickCtx('competencia',this)" class="ctx-chip">🏆 Competencia</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn primary" onclick="genTrends()">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            Generar prompt de tendencias
+          </button>
+
+        </div>
+      </div>
+
+      
+
+      <div class="sep"></div>
+      <div class="dash-section-title" style="margin-bottom:16px">Biblioteca de tendencias</div>
+      <div id="radar-hist-list" style="margin-bottom:24px"></div>
+    </div>
+  </div>
+
+  <!-- ── GENERAR ── -->
+  <div id="pg-generar" class="page">
+    <div class="pw">
+      <div class="page-hd">
+        <div class="page-hd-l">
+          <div class="pi accent"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <div><div class="page-title">Generar contenido</div><div class="page-sub">Configura el contexto, selecciona el tipo y genera tu prompt</div></div>
+        </div>
+      </div>
+
+      <div style="position:relative;margin-bottom:16px">
+        <div class="brief-hd">
+          <label style="margin:0">Briefing de esta pieza</label>
+          <button class="brief-load" onclick="toggleBP()">
+            <svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
+            Cargar desde banco
+          </button>
+        </div>
+        <textarea id="briefing" style="min-height:110px" placeholder="Describe la idea con todo el detalle: el ángulo, el gancho que ya tienes, la referencia que viste, lo que quieres lograr...&#10;&#10;Si lo dejas vacío, el prompt se genera solo del perfil del cliente y las tendencias."></textarea>
+        <div id="bp-drop" class="brief-pick" style="display:none"><div id="bp-list"></div></div>
+      </div>
+
+      <div class="g2" style="margin-bottom:14px">
+        <div><label>Cliente</label><select id="gc" onchange="loadCtx()"></select></div>
+        <div id="ctxp" style="display:none;font-size:12px;color:var(--text2);line-height:1.5;padding-top:20px"></div>
+      </div>
+
+      <label style="margin-bottom:8px">Plataforma</label>
+      <div class="chip-row" id="gplat">
+        <div class="chip on" onclick="togP(this,'Instagram')">Instagram</div>
+        <div class="chip" onclick="togP(this,'TikTok')">TikTok</div>
+        <div class="chip" onclick="togP(this,'YouTube Shorts')">YouTube Shorts</div>
+        <div class="chip" onclick="togP(this,'LinkedIn')">LinkedIn</div>
+        <div class="chip" onclick="togP(this,'Facebook')">Facebook</div>
+        <div class="chip" onclick="togP(this,'Twitter/X')">Twitter/X</div>
+      </div>
+      <label style="margin-bottom:8px">Formato</label>
+      <div class="chip-row" id="gfmt">
+        <div class="chip on" onclick="selFmt(this,'Reels/Video corto')">Reels</div>
+        <div class="chip" onclick="selFmt(this,'Carrusel')">Carrusel</div>
+        <div class="chip" onclick="selFmt(this,'Historia')">Historia</div>
+        <div class="chip" onclick="selFmt(this,'Post estático')">Post estático</div>
+        <div class="chip" onclick="selFmt(this,'Live')">Live</div>
+      </div>
+      <label style="margin-bottom:8px">Tono <span style="font-size:10px;color:var(--text3);text-transform:none;font-weight:400">(puedes elegir varios)</span></label>
+      <div class="chip-row" id="gton">
+        <div class="chip on" onclick="togT(this,'educativo')">Educativo</div>
+        <div class="chip" onclick="togT(this,'entretenido')">Entretenido</div>
+        <div class="chip" onclick="togT(this,'inspiracional')">Inspiracional</div>
+        <div class="chip" onclick="togT(this,'humor')">Humor</div>
+        <div class="chip" onclick="togT(this,'controversia')">Controversia</div>
+        <div class="chip" onclick="togT(this,'cercano')">Cercano</div>
+        <div class="chip" onclick="togT(this,'profesional')">Profesional</div>
+        <div class="chip" id="chip-otro-tono" onclick="togTOtro(this)">+ Otro</div>
+      </div>
+      <div id="tono-otro-wrap" style="display:none;margin-bottom:14px">
+        <input id="tono-otro" placeholder="Describe el tono — ej: sarcástico, poético, técnico, motivacional..." oninput="updateTOtro(this.value)"/>
+      </div>
+
+      <div class="sep"></div>
+
+      <!-- SELECTOR DE RADAR -->
+      <div style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <label style="margin:0">Contexto de tendencias (opcional)</label>
+          <button class="brief-load" onclick="go('trends')" style="font-size:11px">+ Nueva búsqueda en Radar ↗</button>
+        </div>
+        <div id="radar-sel-list" style="display:flex;flex-direction:column;gap:6px"></div>
+        <div id="radar-sel-empty" style="font-size:12px;color:var(--text3);padding:8px 12px;background:var(--surface2);border-radius:var(--r-sm);border:1px dashed var(--border)">Sin búsquedas guardadas en el Radar. Ve al Radar de tendencias, genera un prompt, pégalo en Claude y guarda el resultado aquí.</div>
+      </div>
+
+            <label style="margin-bottom:12px">Tipo de contenido — selecciona y presiona Generar</label>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px">
+        <button class="type-chip on" id="tc-ideas" onclick="selType('ideas',this)">
+          <svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>5 ideas
+        </button>
+        <button class="type-chip" id="tc-hooks" onclick="selType('hooks',this)">
+          <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>7 hooks
+        </button>
+        <button class="type-chip" id="tc-caption" onclick="selType('caption',this)">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Captions
+        </button>
+        <button class="type-chip" id="tc-guion" onclick="selType('guion',this)">
+          <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>Guión
+        </button>
+        <button class="type-chip" id="tc-calendar" onclick="selType('calendar',this)">
+          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Calendario
+        </button>
+      </div>
+
+      <div class="gen-cta">
+        <button class="btn primary" onclick="gen()" style="padding:9px 24px;font-size:14px">
+          <svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Generar prompt
+        </button>
+        <button class="btn sm ghost" onclick="sav2idea()">+ Guardar briefing como idea</button>
+      </div>
+
+      <div id="pb" class="pb" style="display:none">
+        <div class="pbh">
+          <div class="pbh-l"><div class="pbh-dot"></div><span class="pbt">Prompt generado — edita si quieres antes de copiar</span></div>
+          <div class="pba">
+            <button class="btn primary sm" onclick="cpPrompt()">
+              <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copiar
+            </button>
+            <button class="btn sm danger" onclick="document.getElementById('pb').style.display='none'">✕</button>
+          </div>
+        </div>
+        <textarea class="pta" id="pta" spellcheck="false"></textarea>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- ═══ MODALES ═══ -->
+
+<!-- ONBOARDING -->
+<div id="m-onb" class="ov open">
+  <div class="onb-modal">
+    <div class="onb-header">
+      <div class="onb-logo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div class="onb-h-title">Bienvenido a Creative Dashboard</div>
+      <div class="onb-h-sub">Tu sistema de gestión creativa con IA. Funciona junto a Claude para potenciar tu proceso de contenido.</div>
+    </div>
+    <div class="onb-body">
+      <div class="onb-steps">
+        <div class="onb-step">
+          <div class="onb-step-num">1</div>
+          <div>
+            <div class="onb-step-title">Crea tus clientes</div>
+            <div class="onb-step-sub">Lo primero. Agrega cada marca con su perfil completo: tono, plataformas, restricciones y qué evitar. Ese perfil se inyecta solo en cada prompt que generes — es lo que hace que el contenido salga personalizado sin que tengas que explicarlo cada vez.</div>
+          </div>
+        </div>
+        <div class="onb-step">
+          <div class="onb-step-num">2</div>
+          <div>
+            <div class="onb-step-title">Captura tus ideas</div>
+            <div class="onb-step-sub">Guarda ideas en el banco antes de que se pierdan. Cada idea tiene su cliente, plataforma, estado y notas. Si tienes algo rápido que anotar usa el Buzón — sin pensar, solo escribir. Después las pasas al banco con un clic.</div>
+          </div>
+        </div>
+        <div class="onb-step">
+          <div class="onb-step-num">3</div>
+          <div>
+            <div class="onb-step-title">Investiga tendencias con el Radar</div>
+            <div class="onb-step-sub">En el Radar de tendencias configuras tu nicho y plataforma, generas un prompt especializado y lo pegas en Claude. Claude te trae las tendencias reales. Pegas el resultado de vuelta aquí y queda guardado listo para usarlo al generar contenido.</div>
+          </div>
+        </div>
+        <div class="onb-step">
+          <div class="onb-step-num">4</div>
+          <div>
+            <div class="onb-step-title">Genera prompts y pégalos en Claude</div>
+            <div class="onb-step-sub">Ve a Generar contenido, elige el cliente, escribe el briefing de la pieza, selecciona si quieres incluir tendencias del Radar, elige el tipo (ideas, hooks, guión...) y presiona Generar. Copia el prompt y pégalo en Claude. Él crea, tú decides.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="onb-footer">
+      <button class="btn primary" style="width:100%;justify-content:center;padding:11px" onclick="closeOnb()">Empezar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENTE -->
+<div id="mc" class="ov" onclick="if(event.target===this)closeM('mc')">
+  <div class="modal">
+    <div class="modal-hd">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span class="modal-title" id="mct">Nuevo cliente</span>
+    </div>
+    <!-- EMOJI PICKER -->
+    <div class="mf" style="margin-bottom:14px">
+      <label>Emoji del cliente <span style="font-size:10px;color:var(--text3);font-weight:400;text-transform:none">(aparece en el sidebar y tarjetas)</span></label>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="c-emoji-preview" onclick="toggleEmojiPicker()" style="width:44px;height:44px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;transition:all .12s;flex-shrink:0" title="Clic para cambiar emoji">🏢</div>
+        <div id="c-emoji-picker" style="display:none;flex-wrap:wrap;gap:4px;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);max-width:300px;max-height:160px;overflow-y:auto;box-shadow:var(--shadow-sm)"></div>
+      </div>
+    </div>
+    <div class="g2">
+      <div class="mf"><label>Nombre / Marca</label><input id="cn" placeholder="ej: FitLife, Cafetería Luna..."/></div>
+      <div class="mf"><label>Nicho / Industria</label><input id="cni" placeholder="ej: fitness, gastronomía..."/></div>
+    </div>
+    <div class="mf">
+      <label>Plataformas</label>
+      <div style="display:flex;flex-wrap:wrap;gap:6px" id="cnets">
+        <div class="nc" onclick="this.classList.toggle('on')">Instagram</div>
+        <div class="nc" onclick="this.classList.toggle('on')">TikTok</div>
+        <div class="nc" onclick="this.classList.toggle('on')">Facebook</div>
+        <div class="nc" onclick="this.classList.toggle('on')">YouTube</div>
+        <div class="nc" onclick="this.classList.toggle('on')">LinkedIn</div>
+        <div class="nc" onclick="this.classList.toggle('on')">Twitter/X</div>
+        <div class="nc" onclick="this.classList.toggle('on')">WhatsApp</div>
+        <div class="nc" onclick="this.classList.toggle('on')">Pinterest</div>
+      </div>
+    </div>
+    <div class="mf"><label>Tono y personalidad</label><textarea id="cton" placeholder="ej: cercano, educativo pero entretenido..."></textarea></div>
+    <div class="mf"><label>Restricciones de producción</label><textarea id="cres" placeholder="ej: nunca muestra cara, solo voz en off, siempre en exteriores..." style="min-height:60px"></textarea></div>
+    <div class="mf"><label>Qué NO quieren</label><textarea id="cavo" placeholder="ej: nada político, no mencionar competidores..." style="min-height:56px"></textarea></div>
+    <div class="mf"><label>Referencias / lo que les ha funcionado</label><textarea id="cref" placeholder="Describe posts o videos con buenos resultados..." style="min-height:56px"></textarea></div>
+    <div class="ma">
+      <button class="btn" onclick="closeM('mc')">Cancelar</button>
+      <button class="btn primary" onclick="saveCl()">Guardar cliente</button>
+    </div>
+  </div>
+</div>
+
+<!-- IDEA -->
+<div id="mi" class="ov" onclick="if(event.target===this)closeM('mi')">
+  <div class="modal" style="padding:0;display:flex;flex-direction:column;max-height:88vh;overflow:hidden">
+    <div style="padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
+      <span class="modal-title" id="mit">Nueva idea</span>
+    </div>
+    <div style="overflow-y:auto;padding:18px 22px;flex:1">
+      <div class="mf"><label>Idea</label><textarea id="eit" style="min-height:80px" placeholder="Describe la idea..."></textarea></div>
+      <div class="g2">
+        <div class="mf">
+          <label>Clientes <span style="font-size:10px;color:var(--text3);text-transform:none;font-weight:400">(puedes seleccionar varios)</span></label>
+          <div id="eic-chips" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);min-height:38px"></div>
+        </div>
+        <div class="mf"><label>Plataformas <span style="font-size:10px;color:var(--text3);text-transform:none;font-weight:400">(una o varias)</span></label>
+          <div id="eip-chips" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm)"></div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="mf"><label>Formato</label>
+          <select id="eif"><option value="">Sin especificar</option><option value="Reels/Video corto">Reels/Video corto</option><option value="Carrusel">Carrusel</option><option value="Historia">Historia</option><option value="Post estático">Post estático</option><option value="Live">Live</option></select>
+        </div>
+        <div class="mf"><label>Estado</label>
+          <select id="eis"><option value="cruda">💡 Cruda</option><option value="desarrollo">🔧 En desarrollo</option><option value="usada">✅ Usada</option><option value="descartada">🗑 Descartada</option></select>
+        </div>
+      </div>
+      <div class="mf"><label>Notas</label><textarea id="ein" placeholder="Detalles, ángulo, contexto..." style="min-height:56px"></textarea></div>
+      <div class="mf">
+        <label>Links relacionados <span style="font-size:10px;color:var(--text3);text-transform:none;font-weight:400">(aparecen en Links &amp; refs)</span></label>
+        <div id="eil"></div>
+        <div style="margin-top:8px">
+          <div class="row" style="margin-bottom:6px">
+            <div class="grow"><input id="eilurl" placeholder="https://..." oninput="pvIL(this.value)"/></div>
+            <div class="grow"><input id="eildesc" placeholder="Descripción"/></div>
+          </div>
+          <div id="eilpv" style="display:none;margin-bottom:8px"></div>
+          <div class="row" style="margin-bottom:0">
+            <select id="eiltype" style="flex:1">
+              <option value="🔥 Tendencia">🔥 Tendencia</option>
+              <option value="🎨 Referencia visual">🎨 Referencia visual</option>
+              <option value="🎵 Música/Audio">🎵 Música/Audio</option>
+              <option value="🛠 Herramienta">🛠 Herramienta</option>
+              <option value="👀 Competencia">👀 Competencia</option>
+              <option value="📌 Otro">📌 Otro</option>
+            </select>
+            <button class="btn primary sm" onclick="addIL()" style="white-space:nowrap;gap:5px">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              Agregar link
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;background:var(--surface)">
+      <button class="btn" onclick="closeM('mi')">Cancelar</button>
+      <button class="btn primary" onclick="saveIdea()">Guardar idea</button>
+    </div>
+  </div>
+</div>
+
+<!-- IDEA POPUP -->
+<div id="ip-ov" class="ov" onclick="if(event.target===this)closeM('ip-ov')">
+  <div class="ip">
+    <div class="ip-hd">
+      <div class="ip-title" id="ip-title"></div>
+      <div id="ip-meta" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+    </div>
+    <div class="ip-body">
+      <div id="ip-notes-wrap" style="display:none;margin-bottom:16px">
+        <div class="ip-lbl">Notas</div>
+        <div class="ip-text" id="ip-body-text"></div>
+      </div>
+      <div id="ip-links"></div>
+    </div>
+    <div class="ip-footer">
+      <button class="btn primary sm" onclick="editFromPopup()">Editar</button>
+      <button class="btn sm accent-ghost" onclick="loadIdeaInBrief()">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Generar desde esta idea
+      </button>
+      <button class="btn sm" onclick="closeM('ip-ov')" style="margin-left:auto">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- THEME PANEL -->
+<div id="tp-ov" class="ov" onclick="if(event.target===this)closeM('tp-ov')">
+  <div class="tp-panel">
+    <div class="modal-hd" style="margin-bottom:16px">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+      <span class="modal-title">Personalizar tema</span>
+    </div>
+    <div style="font-size:12px;color:var(--text2);font-weight:500;margin-bottom:8px">Presets</div>
+    <div style="display:flex;gap:8px;margin-bottom:16px" id="tp-presets"></div>
+    <div class="sep"></div>
+    <div style="font-size:12px;color:var(--text2);font-weight:500;margin-bottom:12px">Personalizar colores</div>
+    <div id="tp-colors"></div>
+    <div class="ma">
+      <button class="btn" onclick="closeM('tp-ov')">Cerrar</button>
+      <button class="btn primary" onclick="applyCustomTheme()">Aplicar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CAPTURA RÁPIDA POPUP -->
+<div id="m-quick" class="ov" onclick="if(event.target===this)closeM('m-quick')">
+  <div class="modal" style="width:min(480px,92vw)">
+    <div class="modal-hd">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
+      <span class="modal-title">Captura rápida de idea</span>
+    </div>
+    <div class="mf"><textarea id="qc-text" style="min-height:90px" placeholder="¿Qué idea tienes? Escríbela como sea — la organizas después..."></textarea></div>
+    <div class="g2">
+      <div class="mf"><label>Cliente</label><select id="qc-client"></select></div>
+      <div class="mf"><label>Estado</label>
+        <select id="qc-status"><option value="cruda">💡 Cruda</option><option value="desarrollo">🔧 En desarrollo</option></select>
+      </div>
+    </div>
+    <div class="ma">
+      <button class="btn" onclick="closeM('m-quick')">Cancelar</button>
+      <button class="btn primary" onclick="saveQuickCapture()">Guardar idea →</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORIAL RADAR POPUP -->
+<div id="m-radar-item" class="ov" onclick="if(event.target===this)closeM('m-radar-item')">
+  <div class="modal" style="width:min(640px,94vw)">
+    <div class="modal-hd">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      <span class="modal-title" id="m-radar-title">Búsqueda de tendencias</span>
+    </div>
+    <div id="m-radar-body" style="max-height:70vh;overflow-y:auto"></div>
+    <div class="ma">
+      <button class="btn" onclick="closeM('m-radar-item')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PASTE RESULT MODAL -->
+<div id="m-paste" class="ov" onclick="if(event.target===this)closeM('m-paste')">
+  <div class="modal" style="width:min(580px,92vw)">
+    <div class="modal-hd">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--teal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      <span class="modal-title">Pegar resultado de Claude</span>
+    </div>
+    <div style="background:var(--teal-bg);border:1px solid var(--teal-bord);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--text2);line-height:1.6">
+      Copia el prompt → pégalo en Claude → vuelve aquí y pega la respuesta completa.
+    </div>
+    <div class="mf"><textarea id="paste-result" style="min-height:200px;font-size:12px" placeholder="Pega aquí toda la respuesta de Claude..."></textarea></div>
+    <div class="ma">
+      <button class="btn" onclick="closeM('m-paste')">Cancelar</button>
+      <button class="btn primary" onclick="savePasteResult()">Guardar →</button>
+    </div>
+  </div>
+</div>
+<!-- MOVER IDEA PLANNER -->
+<div id="m-move-idea" class="ov" onclick="if(event.target===this)closeM('m-move-idea')">
+  <div class="modal" style="width:min(400px,92vw)">
+    <div class="modal-hd">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <span class="modal-title">Mover idea</span>
+    </div>
+    <div id="m-move-idea-title" style="font-size:13px;font-weight:500;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:16px;line-height:1.4"></div>
+    <div class="mf">
+      <label>Fecha destino</label>
+      <input type="date" id="move-idea-date"/>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:16px">Elige cualquier fecha del año — pasada o futura.</div>
+    <div class="ma">
+      <button class="btn" onclick="moveIdeaToUnassigned()">Quitar del planner</button>
+      <button class="btn" onclick="closeM('m-move-idea')">Cancelar</button>
+      <button class="btn primary" onclick="confirmMoveIdea()">Mover →</button>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE LOGIN -->
+<div id="m-login" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px">
+  <div style="text-align:center">
+    <div style="font-size:36px;margin-bottom:8px">⚡</div>
+    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:600;color:var(--text);margin-bottom:6px">Creative Dashboard</div>
+    <div style="font-size:14px;color:var(--text2)">Inicia sesión para sincronizar tus datos entre dispositivos</div>
+  </div>
+  <button onclick="signInWithGoogle()" style="display:flex;align-items:center;gap:12px;padding:12px 24px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;box-shadow:var(--shadow-sm)" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+    <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.31z"/></svg>
+    Continuar con Google
+  </button>
+  <div style="font-size:11px;color:var(--text3);text-align:center;max-width:300px;line-height:1.6">
+    Tus datos se sincronizan automáticamente entre todos tus dispositivos.<br>
+    Nunca compartimos tu información con terceros.
+  </div>
+</div>
+
+<!-- USER BADGE EN SIDEBAR -->
+<div id="user-badge" style="display:none;padding:8px 10px;margin-bottom:6px;background:var(--surface2);border-radius:var(--r-sm);display:flex;align-items:center;gap:8px">
+  <img id="user-avatar" style="width:24px;height:24px;border-radius:50%;flex-shrink:0" src="" alt=""/>
+  <div style="flex:1;overflow:hidden">
+    <div id="user-name" style="font-size:11px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+    <div style="font-size:10px;color:var(--text3)">Sincronizado ✓</div>
+  </div>
+  <button onclick="signOut()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:10px;font-family:'Inter',sans-serif;padding:2px 4px;border-radius:3px;transition:color .12s" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">Salir</button>
+</div>
+
+<div class="toast" id="toast">
+  <span id="tmsg"></span>
+  <button class="tundo" id="tundo" style="display:none" onclick="doUndo()">Deshacer</button>
+</div>
+
+<script>
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+let db={clients:[],ideas:[],links:[],weeks:[],history:[]};
+let eCId=null,eIId=null,popIId=null;
+let gP=['Instagram'],gF=['Reels/Video corto'],gT='educativo',gType='ideas';
+let iF='todos',lF='todos',tL=[];
+let lastU=null,tTimer=null,aHId=null;
+let pvCache={},pvTm=null,bpOpen=false;
+let activeClId=null,newClId=null;
+
+const CLIENT_COLORS=['#5b4fcf','#2563eb','#16a34a','#d97706','#dc2626','#7c3aed','#0891b2','#db2777'];
+const STATUS={cruda:{l:'💡 Cruda',c:'bd'},desarrollo:{l:'🔧 En desarrollo',c:'bd-orange'},usada:{l:'✅ Usada',c:'bd-green'},descartada:{l:'🗑 Descartada',c:'bd'}};
+const STATUS_ORDER=['cruda','desarrollo','usada','descartada'];
+// Normalize legacy status values saved as full text
+function normalizeStatus(s){
+  if(!s)return'cruda';
+  const map={'💡 Cruda':'cruda','🔧 En desarrollo':'desarrollo','✅ Usada':'usada','🗑 Descartada':'descartada','desenvolvimento':'desarrollo','development':'desarrollo','en desarrollo':'desarrollo','cruda':'cruda','desarrollo':'desarrollo','usada':'usada','descartada':'descartada'};
+  return map[s]||map[s.toLowerCase()]||'cruda';
+}
+const NET_COLORS={
+  'Instagram':'#c13584','TikTok':'#25f4ee','Facebook':'#1877f2',
+  'YouTube':'#ff0000','LinkedIn':'#0a66c2','Twitter/X':'#1da1f2','WhatsApp':'#25d366','General':'#888780'
+};
+
+const PRESETS={
+  light:{label:'☀️ Claro',bg:'#f8f7f5',surface:'#ffffff',surface2:'#f1f0ee',surface3:'#e8e6e2',border:'#e2e0dc',border2:'#ccc9c3',text:'#1a1916',text2:'#6b6860',text3:'#a8a49e',accent:'#5b4fcf'},
+  dark:{label:'🌙 Oscuro',bg:'#111110',surface:'#1c1c1a',surface2:'#252522',surface3:'#2e2e2b',border:'#2e2e2b',border2:'#3d3d39',text:'#f2f0ec',text2:'#8a8780',text3:'#5a5855',accent:'#7c6df0'},
+  tiktok:{label:'🎵 TikTok',bg:'#010101',surface:'#161616',surface2:'#1f1f1f',surface3:'#2a2a2a',border:'#2a2a2a',border2:'#3d3d3d',text:'#ffffff',text2:'#a0a0a0',text3:'#666666',accent:'#fe2c55'},
+  facebook:{label:'📘 Facebook',bg:'#0e1723',surface:'#1a2640',surface2:'#1e2d4a',surface3:'#243554',border:'#1e3060',border2:'#2a4070',text:'#e7f0fd',text2:'#7a9cc0',text3:'#4a6880',accent:'#1877f2'}
+};
+const CLR_LBL={bg:'Fondo principal',surface:'Superficie tarjetas',surface2:'Superficie secundaria',text:'Texto principal',text2:'Texto secundario',accent:'Color acento'};
+let activePreset='light';
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+function load(){
+  try{const r=localStorage.getItem('cd_v8');if(r)db=JSON.parse(r);}catch(e){}
+  db.clients=db.clients||[];db.ideas=db.ideas||[];db.links=db.links||[];db.history=db.history||[];db.buzon=db.buzon||[];db.radarHistory=db.radarHistory||[];db.planner=db.planner||{};
+  db.ideas.forEach(i=>{if(!i.links)i.links=[];if(!i.status)i.status='cruda';if(!i.clientName)i.clientName='General';if(!i.clientIds)i.clientIds=[String(i.clientId||'general')];if(!i.clientNames)i.clientNames=[i.clientName];i.status=normalizeStatus(i.status);});
+  activeClId=localStorage.getItem('cd_acl')||null;
+  const saved=localStorage.getItem('cd_theme_v3');
+  if(saved){try{const td=JSON.parse(saved);applyColors(td.colors,false);activePreset=td.preset||'light';}catch(e){applyPreset('light',true);}}
+  else applyPreset('light',true);
+  fillSels();renderAll();renderHist();renderSbClients();renderDash();updateBuzonBadge();
+  // only show onboarding if first time
+  const seen=localStorage.getItem('cd_onb_seen');
+  if(seen)closeOnb();
+}
+// ══════════════════════════════════
+// FIREBASE SYNC
+// ══════════════════════════════════
+let fbUser=null;
+let saveTimeout=null;
+
+function save(){
+  // Siempre guardar en localStorage (funciona offline)
+  try{localStorage.setItem('cd_v8',JSON.stringify(db));}catch(e){}
+  // Guardar en Firestore con debounce de 1.5s
+  if(fbUser){
+    clearTimeout(saveTimeout);
+    saveTimeout=setTimeout(()=>{
+      const docRef=window.fbFirestore.doc(window.fbDb,'users',fbUser.uid,'data','main');
+      window.fbFirestore.setDoc(docRef,{db:JSON.stringify(db),updatedAt:new Date().toISOString()})
+        .catch(e=>console.warn('Firebase save error:',e));
+    },1500);
+  }
+}
+
+
+
+async function loadFromFirebase(uid){
+  try{
+    const docRef=window.fbFirestore.doc(window.fbDb,'users',uid,'data','main');
+    const snap=await window.fbFirestore.getDoc(docRef);
+    if(snap.exists()){
+      const remote=JSON.parse(snap.data().db||'{}');
+      // Merge strategy: usar el más reciente comparando cantidad de ideas
+      const localIdeas=(db.ideas||[]).length;
+      const remoteIdeas=(remote.ideas||[]).length;
+      if(remoteIdeas>=localIdeas){
+        db=remote;
+        db.clients=db.clients||[];db.ideas=db.ideas||[];db.links=db.links||[];
+        db.history=db.history||[];db.buzon=db.buzon||[];db.radarHistory=db.radarHistory||[];db.planner=db.planner||{};
+        db.ideas.forEach(i=>{if(!i.links)i.links=[];if(!i.status)i.status='cruda';if(!i.clientName)i.clientName='General';if(!i.clientIds)i.clientIds=[String(i.clientId||'general')];if(!i.clientNames)i.clientNames=[i.clientName];i.status=normalizeStatus(i.status);});
+        localStorage.setItem('cd_v8',JSON.stringify(db));
+        fillSels();renderAll();renderHist();renderSbClients();renderDash();
+        toast('✓ Datos sincronizados desde la nube',false,2500);
+      } else {
+        // Local tiene más datos — subir a Firebase
+        save();
+        toast('✓ Datos locales sincronizados a la nube',false,2500);
+      }
+    } else {
+      // Primera vez en la nube — subir datos locales
+      save();
+    }
+  }catch(e){console.warn('Firebase load error:',e);}
+}
+
+function signInWithGoogle(){
+  if(!window.fbAuth)return;
+  const provider=new window.fbAuthModule.GoogleAuthProvider();
+  window.fbAuthModule.signInWithPopup(window.fbAuth,provider)
+    .catch(e=>{console.error('Login error:',e);toast('Error al iniciar sesión',false);});
+}
+function fbSignOut(){
+  if(!window.fbAuth)return;
+  window.fbAuthModule.signOut(window.fbAuth);
+}
+function renderAll(){rCl();rId();rLk();}
+function closeOnb(){closeM('m-onb');localStorage.setItem('cd_onb_seen','1');}
+
+// ══════════════════════════════════
+// THEME
+// ══════════════════════════════════
+function h2r(hex){const r=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);return r?{r:parseInt(r[1],16),g:parseInt(r[2],16),b:parseInt(r[3],16)}:null;}
+function applyColors(c,persist){
+  const s=document.documentElement.style;
+  Object.entries(c).forEach(([k,v])=>{
+    s.setProperty('--'+k,v);
+    if(k==='accent'){const rgb=h2r(v);if(rgb){s.setProperty('--accent-light',`rgba(${rgb.r},${rgb.g},${rgb.b},0.08)`);s.setProperty('--accent-mid',`rgba(${rgb.r},${rgb.g},${rgb.b},0.15)`);s.setProperty('--accent-bord',`rgba(${rgb.r},${rgb.g},${rgb.b},0.25)`);}}
+  });
+  if(persist!==false)localStorage.setItem('cd_theme_v3',JSON.stringify({preset:activePreset,colors:c}));
+}
+function toggleTheme(){
+  applyPreset(activePreset==='light'?'dark':'light');
+}
+function updateThemeToggle(){
+  const knob=document.getElementById('theme-knob');
+  const track=document.getElementById('theme-toggle');
+  if(!knob)return;
+  const isDark=activePreset!=='light';
+  knob.style.left=isDark?'24px':'2px';
+  if(track)track.style.background=isDark?'var(--accent)':'var(--border2)';
+}
+function applyPreset(n,s){const p=PRESETS[n];if(!p)return;activePreset=n;
+  document.documentElement.setAttribute('data-theme',n==='dark'||n==='warm'||n==='blue'?'dark':'light');
+  applyColors(p,!s);
+  document.querySelectorAll('.td').forEach(d=>d.classList.toggle('on',d.dataset.t===n));
+  updateThemeToggle();
+}
+function applyCustomTheme(){
+  const c={};document.querySelectorAll('.tp-hex[data-key]').forEach(inp=>c[inp.dataset.key]=inp.value.trim());
+  applyColors(c);closeM('tp-ov');toast('✓ Tema personalizado aplicado',false,2000);
+}
+function openTheme(){
+  const pr=document.getElementById('tp-presets');
+  pr.style.flexWrap='wrap';pr.style.gap='8px';pr.innerHTML=Object.entries(PRESETS).map(([n,p])=>`<div style="text-align:center;cursor:pointer;transition:transform .12s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="applyPreset('${n}');closeM('tp-ov');toast('Tema: ${p.label||n}',false,1500)"><div style="width:42px;height:42px;border-radius:10px;background:${p.surface};border:2.5px solid ${activePreset===n?p.accent:p.border};margin:0 auto 4px;box-shadow:0 2px 8px rgba(0,0,0,.15);position:relative;overflow:hidden"><div style="position:absolute;bottom:0;left:0;right:0;height:14px;background:${p.accent};opacity:.7"></div></div><div style="font-size:10px;color:var(--text2);white-space:nowrap">${p.label||n}</div></div>`).join('');
+  const cur={};Object.keys(CLR_LBL).forEach(k=>{cur[k]=getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim();});
+  document.getElementById('tp-colors').innerHTML=Object.entries(CLR_LBL).map(([k,l])=>`<div class="tp-row"><div class="tp-lbl">${l}</div><input type="color" class="tp-swatch" value="${cur[k]||'#ffffff'}" data-key="${k}" oninput="document.querySelector('.tp-hex[data-key=${k}]').value=this.value"/><input class="tp-hex" data-key="${k}" value="${cur[k]||'#ffffff'}" oninput="document.querySelector('.tp-swatch[data-key=${k}]').value=this.value" style="font-family:monospace;font-size:12px"/></div>`).join('');
+  openM('tp-ov');
+}
+
+// ══════════════════════════════════
+// BACKUP
+// ══════════════════════════════════
+function exportDB(){const b=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='creative-dashboard-'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('✓ Backup descargado',false);}
+function importDB(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);db={clients:d.clients||[],ideas:d.ideas||[],links:d.links||[],weeks:d.weeks||[],history:d.history||[]};db.ideas.forEach(i=>{if(!i.links)i.links=[];if(!i.status)i.status='cruda';if(!i.clientName)i.clientName='General';});save();fillSels();renderAll();renderHist();renderSbClients();renderDash();toast('✓ Backup restaurado',false);}catch(err){toast('Error al leer el archivo',false);}};r.readAsText(f);e.target.value='';}
+
+// ══════════════════════════════════
+// AUTO WEEK
+// ══════════════════════════════════
+
+// ══════════════════════════════════
+// NAV
+// ══════════════════════════════════
+function go(p){
+  ['home','ideas','links','semana','trends','generar','clientes','planner'].forEach(x=>{const el=document.getElementById('ni-'+x);if(el)el.classList.remove('on');});
+  const ni=document.getElementById('ni-'+p);if(ni)ni.classList.add('on');
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('on'));
+  document.getElementById('pg-'+p).classList.add('on');
+  closeBP();
+  if(p==='home')renderDash();
+  if(p==='ideas')rId();
+  if(p==='links'){fillSels();rLk();}
+  if(p==='planner'){renderPlanner();renderCal();}
+  if(p==='trends'){renderRadarHistory();renderRadarSel();}
+  if(p==='generar'){fillSels();syncGenCl();renderBP();}
+  if(p==='clientes')rCl();
+}
+
+// ══════════════════════════════════
+// TOAST
+// ══════════════════════════════════
+function toast(msg,undo,d=3500){clearTimeout(tTimer);document.getElementById('tmsg').textContent=msg;document.getElementById('tundo').style.display=undo?'inline-block':'none';document.getElementById('toast').classList.add('show');tTimer=setTimeout(()=>document.getElementById('toast').classList.remove('show'),d);}
+function doUndo(){if(!lastU)return;const{type,item,idx}=lastU;if(type==='cl')db.clients.splice(idx,0,item);else if(type==='id'){db.ideas.splice(idx,0,item);if(item.links)item.links.forEach(l=>{if(l.id&&!db.links.find(x=>x.id===l.id))db.links.unshift({...l});});}else if(type==='lk')db.links.splice(idx,0,item);else if(type==='wk'){/* semana removed */}else if(type==='hi')db.history.splice(idx,0,item);else if(type==='bz'){db.buzon=db.buzon||[];db.buzon.splice(idx,0,item);}lastU=null;save();renderAll();renderHist();renderSbClients();renderDash();updateBuzonBadge();document.getElementById('toast').classList.remove('show');toast('✓ Deshecho',false,2000);}
+
+// ══════════════════════════════════
+// LINK PREVIEW
+// ══════════════════════════════════
+function getDom(url){try{return new URL(url).hostname.replace('www.','');}catch(e){return url;}}
+function favUrl(url){try{const h=new URL(url).hostname;return`https://www.google.com/s2/favicons?domain=${h}&sz=32`;}catch(e){return null;}}
+function platInfo(url){try{const h=new URL(url).hostname.replace('www.','');const p=new URL(url).pathname;if(h.includes('instagram.com')){const m=p.match(/\/([^\/]+)\/(p|reel|tv)\//);const m2=p.match(/^\/([^\/p][^\/]+)\/?$/);const u=m?m[1]:(m2?m2[1]:null);return{pl:'Instagram',user:u?'@'+u:null};}if(h.includes('tiktok.com')){const m=p.match(/@([^\/]+)/);return{pl:'TikTok',user:m?'@'+m[1]:null};}if(h.includes('youtube.com')||h.includes('youtu.be'))return{pl:'YouTube',isYT:true};if(h.includes('twitter.com')||h.includes('x.com'))return{pl:'X/Twitter'};if(h.includes('facebook.com'))return{pl:'Facebook'};if(h.includes('linkedin.com'))return{pl:'LinkedIn'};if(h.includes('spotify.com'))return{pl:'Spotify'};}catch(e){}return null;}
+async function ytTitle(url){if(pvCache[url])return pvCache[url];try{const r=await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`);if(r.ok){const d=await r.json();pvCache[url]={t:d.title,a:d.author_name};return pvCache[url];}}catch(e){}return null;}
+async function buildPv(url){if(!url||!url.startsWith('http'))return null;const fav=favUrl(url);const info=platInfo(url);const dom=getDom(url);let title=info?info.pl:dom;let sub=info?.user||dom;if(info?.isYT){const yt=await ytTitle(url);if(yt){title=yt.t;sub=yt.a+' · YouTube';}}return`<div class="lp">${fav?`<img src="${fav}" onerror="this.style.display='none'">`:'<div style="width:20px;height:20px;background:var(--surface3);border-radius:4px"></div>'}<div style="flex:1;overflow:hidden"><div class="lp-t">${title}</div><div class="lp-s">${sub}</div></div></div>`;}
+function pvLink(url){clearTimeout(pvTm);const w=document.getElementById('lpw');if(!url||!url.startsWith('http')){w.style.display='none';return;}pvTm=setTimeout(async()=>{const h=await buildPv(url);if(h){w.innerHTML=h;w.style.display='block';}else w.style.display='none';},600);}
+function pvIL(url){clearTimeout(pvTm);const w=document.getElementById('eilpv');if(!url||!url.startsWith('http')){w.style.display='none';return;}pvTm=setTimeout(async()=>{const h=await buildPv(url);if(h){w.innerHTML=h;w.style.display='block';}else w.style.display='none';},600);}
+
+// ══════════════════════════════════
+// HELPERS
+// ══════════════════════════════════
+function fillSels(){const base='<option value="general">General</option>'+db.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');['lc','gc','eic'].forEach(id=>{const el=document.getElementById(id);if(!el)return;const p=el.value;el.innerHTML=base;if(p)el.value=p;});if(activeClId){['lc','gc','eic'].forEach(id=>{const el=document.getElementById(id);if(el&&(el.value==='general'||!el.value))el.value=activeClId;});}}
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+function initials(name){return(name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+function clColor(id){const idx=db.clients.findIndex(c=>c.id===id);return CLIENT_COLORS[idx%CLIENT_COLORS.length]||CLIENT_COLORS[0];}
+function stBadge(s){const st=STATUS[s]||STATUS.cruda;return`<span class="badge ${st.c}">${st.l}</span>`;}
+
+// ══════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════
+function renderDash(){
+  // Welcome
+  const h=new Date().getHours();const greet=h<12?'Buenos días':h<18?'Buenas tardes':'Buenas noches';
+  document.getElementById('dash-welcome-wrap').innerHTML=`
+    <div class="dash-welcome">
+      <div class="dash-welcome-title">${greet} 👋</div>
+      <div class="dash-welcome-sub">Tienes ${db.clients.length} cliente${db.clients.length!==1?'s':''}, ${db.ideas.filter(i=>i.status==='cruda').length} ideas crudas y ${db.radarHistory.filter(r=>r.result).length} búsquedas en el Radar.</div>
+      <div class="dash-welcome-actions">
+        <button class="btn" onclick="openCM()">+ Nuevo cliente</button>
+        <button class="btn" onclick="openIM()">+ Nueva idea</button>
+        <button class="btn" onclick="go('generar')">Generar prompt →</button>
+      </div>
+    </div>`;
+
+  // Metrics
+  const ideasCrudas=db.ideas.filter(i=>i.status==='cruda').length;
+  const ideasUsadas=db.ideas.filter(i=>i.status==='usada').length;
+  document.getElementById('dash-metrics').innerHTML=`
+    <div class="metric-card" onclick="go('clientes')">
+      <div class="metric-icon" style="background:var(--blue-bg);color:var(--blue)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <div class="metric-val">${db.clients.length}</div>
+      <div class="metric-lbl">Clientes</div>
+    </div>
+    <div class="metric-card" onclick="go('ideas')">
+      <div class="metric-icon" style="background:var(--orange-bg);color:var(--orange)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg></div>
+      <div class="metric-val">${db.ideas.length}</div>
+      <div class="metric-lbl">Ideas totales</div>
+      <div class="metric-sub">${ideasCrudas} crudas · ${ideasUsadas} usadas</div>
+    </div>
+    <div class="metric-card" onclick="go('links')">
+      <div class="metric-icon" style="background:var(--purple-bg);color:var(--purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+      <div class="metric-val">${db.links.length}</div>
+      <div class="metric-lbl">Links guardados</div>
+    </div>
+    <div class="metric-card" onclick="go('planner')">
+      <div class="metric-icon" style="background:var(--green-bg);color:var(--green)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><line x1="8" y1="14" x2="8" y2="17"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="16" y1="15" x2="16" y2="17"/></svg></div>
+      <div class="metric-val">${Object.values(db.planner||{}).flat().length}</div>
+      <div class="metric-lbl">Publicaciones planeadas</div>
+      <div class="metric-sub">${db.radarHistory.filter(r=>r.result).length} búsquedas en el Radar</div>
+    </div>`;
+
+  // Recent ideas
+  const recent=db.ideas.filter(i=>i.status==='cruda').slice(0,5);
+  document.getElementById('dash-recent-ideas').innerHTML=recent.length?
+    `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:4px;box-shadow:var(--shadow-xs)">`+
+    recent.map(i=>`<div class="dash-recent-idea" onclick="openIdeaPopup(${i.id})">
+      <div class="dash-recent-dot"></div>
+      <div><div style="font-size:13px;font-weight:500;color:var(--text)">${i.text}</div><div style="font-size:11px;color:var(--text3);margin-top:1px">${i.clientName} · ${i.date}</div></div>
+    </div>`).join('')+'</div>':
+    `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;box-shadow:var(--shadow-xs)"><div style="font-size:13px;color:var(--text2)">Sin ideas crudas.<br>¡Crea tu primera idea!</div><button class="btn primary sm" style="margin-top:10px" onclick="openIM()">+ Nueva idea</button></div>`;
+
+  // Quick actions
+  document.getElementById('dash-quick').innerHTML=[
+    {icon:'<svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>',col:'accent',t:'Generar contenido',s:'Crea prompts con IA',fn:"go('generar')"},
+    {icon:'<svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',col:'teal',t:'Radar de tendencias',s:'Buscar qué está trending ahora',fn:"go('trends')"},
+    {icon:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><line x1="8" y1="14" x2="8" y2="17"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="16" y1="15" x2="16" y2="17"/></svg>',col:'green',t:'Planner',s:'Planea qué publicar esta semana',fn:"go('planner')"},
+  ].map(a=>`<div class="dash-quick-btn" onclick="${a.fn}">
+    <div class="dash-quick-btn-icon" style="background:var(--${a.col}-bg);color:var(--${a.col})">${a.icon}</div>
+    <div><div class="dash-quick-btn-text">${a.t}</div><div class="dash-quick-btn-sub">${a.s}</div></div>
+  </div>`).join('');
+
+  // Week
+  // Planner preview
+  const todayStr=new Date().toISOString().slice(0,10);
+  const todayPlan=(db.planner[todayStr]||[]).map(id=>db.ideas.find(i=>i.id===id)).filter(Boolean);
+  const upcomingDays=[];const now=new Date();
+  for(let d=0;d<7;d++){const dt=new Date(now);dt.setDate(now.getDate()+d);const ds=dt.toISOString().slice(0,10);const items=(db.planner[ds]||[]).filter(id=>db.ideas.find(i=>i.id===id));if(items.length)upcomingDays.push({ds,items});}
+  const recentRadar=db.radarHistory.filter(r=>r.result).slice(0,2);
+  document.getElementById('dash-week').innerHTML=
+    `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;box-shadow:var(--shadow-xs)">
+      ${upcomingDays.length?upcomingDays.map(d=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)"><div style="font-size:11px;color:var(--text3);width:64px;flex-shrink:0">${new Date(d.ds+'T12:00:00').toLocaleDateString('es',{weekday:'short',day:'numeric'})}</div><div style="font-size:12px;color:var(--text)">${d.items.length} publicación${d.items.length!==1?'es':''} planeada${d.items.length!==1?'s':''}</div></div>`).join('')
+      :`<div style="font-size:13px;color:var(--text2);text-align:center;padding:8px 0">Sin publicaciones planeadas esta semana</div>`}
+      <button class="btn sm" style="margin-top:10px;width:100%;justify-content:center" onclick="go('planner')">Ver planner →</button>
+    </div>`;
+}
+
+// ══════════════════════════════════
+// SIDEBAR CLIENTS
+// ══════════════════════════════════
+function renderSbClients(){
+  const el=document.getElementById('sb-clients');
+  if(!db.clients.length){el.innerHTML=`<div style="font-size:11px;color:var(--text3);padding:4px 8px">Sin clientes — usa + para agregar</div>`;return;}
+  el.innerHTML=
+  `<button class="ni ni-client ${!activeClId?'ac':''}" onclick="setActiveCl(null)"><span class="ni-dot"></span><span>Todos</span></button>`+
+  db.clients.map(c=>`
+    <button class="ni ni-client ${activeClId==c.id?'ac':''}" onclick="setActiveCl(${c.id})">
+      <span style="font-size:13px;line-height:1;flex-shrink:0">${c.emoji||'🏢'}</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.name}</span>
+      ${activeClId==c.id?'<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}
+    </button>`).join('');
+}
+function setActiveCl(id){activeClId=id;localStorage.setItem('cd_acl',id||'');iF='todos';lF='todos';renderSbClients();fillSels();rId();rLk();renderDash();if(id){const el=document.getElementById('gc');if(el)el.value=id;loadCtx();}}
+
+// ══════════════════════════════════
+// CLIENTES
+// ══════════════════════════════════
+const EMOJIS=['🏢','🏪','🏬','🏭','🏨','💼','📱','📸','🎬','🎨','🎯','🎤','🎧','🍔','🍕','🍣','☕','🍺','🌮','🥗','💪','🏃','🧘','⚽','🏀','🎾','🚀','💡','🔥','⚡','🌟','✨','💎','👑','🦁','🐯','🦊','🌱','🌿','🍀','🌺','🌸','🎁','🛒','💰','📊','📈','🎓','🔬','💻','🤖','🎵','🎶','🎸','🏋','🧠','🌍','🏆','🦋','🐶','🐱'];
+function toggleEmojiPicker(){
+  const p=document.getElementById('c-emoji-picker');
+  const showing=p.style.display!=='none'&&p.style.display!=='';
+  if(showing){p.style.display='none';return;}
+  // Render emojis if empty
+  if(!p.innerHTML.trim()){
+    p.innerHTML=EMOJIS.map(e=>`<span onclick="selectEmoji('${e}')" style="cursor:pointer;font-size:20px;padding:5px;border-radius:4px;transition:background .1s;display:inline-flex;align-items:center;justify-content:center" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">${e}</span>`).join('');
+  }
+  p.style.display='flex';
+}
+function selectEmoji(e){
+  document.getElementById('c-emoji-preview').textContent=e;
+  document.getElementById('c-emoji-picker').style.display='none';
+}
+function setQuickCtx(type,btn){
+  const texts={
+    musica:'Enfocado en sonidos y músicas virales — audios trending ahora',
+    formatos:'Enfocado en formatos y tipos de video que están explotando',
+    hashtags:'Enfocado en hashtags en crecimiento, no los saturados',
+    nicho:'Enfocado en temas y conversaciones calientes del nicho',
+    competencia:'Análisis de competencia y benchmarks del sector'
+  };
+  const depthMap={musica:'resumen',formatos:'resumen',hashtags:'resumen',nicho:'resumen',competencia:'competencia'};
+  document.getElementById('tr-context').value=texts[type]||'';
+  // Marcar el chip activo
+  document.querySelectorAll('.ctx-chip').forEach(c=>c.classList.remove('on'));
+  btn.classList.add('on');
+  // Ajustar profundidad si aplica
+  const dep=document.getElementById('tr-depth');
+  if(dep&&depthMap[type])dep.value=depthMap[type];
+}
+function openCM(id){
+  eCId=id||null;document.getElementById('mct').textContent=id?'Editar cliente':'Nuevo cliente';
+  if(id){
+    const c=db.clients.find(x=>x.id===id);
+    if(!c)return;
+    document.getElementById('cn').value=c.name||'';document.getElementById('cni').value=c.niche||'';
+    document.getElementById('cton').value=c.tone||'';document.getElementById('cres').value=c.restrict||'';
+    document.getElementById('cavo').value=c.avoid||'';document.getElementById('cref').value=c.refs||'';
+    document.getElementById('c-emoji-preview').textContent=c.emoji||'🏢';
+    document.querySelectorAll('#cnets .nc').forEach(el=>el.classList.toggle('on',(c.platforms||[]).includes(el.textContent)));
+  } else {
+    ['cn','cni','cton','cres','cavo','cref'].forEach(f=>document.getElementById(f).value='');
+    document.querySelectorAll('#cnets .nc').forEach(el=>el.classList.remove('on'));
+    document.getElementById('c-emoji-preview').textContent='🏢';
+  }
+  document.getElementById('c-emoji-picker').style.display='none';
+  openM('mc');
+}
+function saveCl(){
+  const name=document.getElementById('cn').value.trim();if(!name){toast('Escribe el nombre del cliente',false);return;}
+  const platforms=[...document.querySelectorAll('#cnets .nc.on')].map(el=>el.textContent);
+  const emoji=document.getElementById('c-emoji-preview').textContent||'🏢';
+  const isNew=!eCId;
+  const data={id:eCId||Date.now(),name,emoji,niche:document.getElementById('cni').value.trim(),platforms,tone:document.getElementById('cton').value.trim(),restrict:document.getElementById('cres').value.trim(),avoid:document.getElementById('cavo').value.trim(),refs:document.getElementById('cref').value.trim()};
+  if(eCId){const i=db.clients.findIndex(c=>c.id===eCId);if(i>=0)db.clients[i]=data;}
+  else{db.clients.unshift(data);newClId=data.id;}
+  save();closeM('mc');fillSels();rCl();renderSbClients();renderDash();
+  toast(isNew?'✓ Cliente creado':'✓ Cliente actualizado',false);
+  if(isNew){setTimeout(()=>{const card=document.getElementById('cl-'+data.id);if(card){card.classList.add('new-highlight');setTimeout(()=>card.classList.remove('new-highlight'),700);}},100);}
+}
+function delCl(id){const idx=db.clients.findIndex(c=>c.id===id);if(idx<0)return;lastU={type:'cl',item:db.clients[idx],idx};if(activeClId==id){activeClId=null;localStorage.removeItem('cd_acl');}db.clients.splice(idx,1);save();fillSels();rCl();renderSbClients();renderDash();toast('Cliente eliminado',true);}
+function rCl(){
+  const el=document.getElementById('cl');
+  if(!db.clients.length){el.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="empty-title">Sin clientes aún</div><div class="empty-sub">Crea tu primer cliente para empezar a<br>organizar tu contenido.</div><button class="btn primary" style="margin-top:14px" onclick="openCM()">+ Nuevo cliente</button></div>`;return;}
+  el.innerHTML=db.clients.map(c=>`
+    <div class="client-card" id="cl-${c.id}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="client-av" style="background:${clColor(c.id)}">${c.emoji||initials(c.name)}</div>
+          <div>
+            <div class="client-name">${c.name}</div>
+            <div class="client-niche">${c.niche||'Sin nicho'}${c.platforms&&c.platforms.length?' · '+c.platforms.join(', '):''}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:4px">
+          <button class="ib ed" onclick="openCM(${c.id})" title="Editar"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="ib" onclick="setActiveCl(${c.id});go('ideas')" title="Ver ideas"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg></button>
+          <button class="ib del" onclick="delCl(${c.id})" title="Eliminar"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>
+        </div>
+      </div>
+      ${c.platforms&&c.platforms.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:10px">${c.platforms.map(p=>`<span class="badge bd">${p}</span>`).join('')}</div>`:''}
+      ${c.tone?`<div style="font-size:12px;color:var(--text2);margin-top:8px;line-height:1.5">${c.tone}</div>`:''}
+      ${c.restrict?`<div class="client-restrict"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>${c.restrict}</span></div>`:''}
+      ${c.avoid?`<div class="client-avoid"><svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>${c.avoid}</span></div>`:''}
+    </div>`).join('');
+}
+
+// ══════════════════════════════════
+// BUZÓN DE IDEAS
+// ══════════════════════════════════
+// ── CAPTURA RÁPIDA POPUP ──
+function openQuickCapture(){
+  fillQCClient();
+  document.getElementById('qc-text').value='';
+  document.getElementById('qc-status').value='cruda';
+  openM('m-quick');
+  setTimeout(()=>document.getElementById('qc-text').focus(),100);
+}
+function fillQCClient(){
+  const sel=document.getElementById('qc-client');if(!sel)return;
+  sel.innerHTML='<option value="general">General</option>'+db.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  if(activeClId)sel.value=activeClId;
+}
+function saveQuickCapture(){
+  const txt=document.getElementById('qc-text').value.trim();
+  if(!txt){toast('Escribe la idea primero',false);return;}
+  const cid=document.getElementById('qc-client').value;
+  const c=db.clients.find(x=>x.id==cid);
+  const status=document.getElementById('qc-status').value;
+  db.ideas.unshift({id:Date.now(),text:txt,clientId:cid,clientName:c?c.name:'General',clientIds:[String(cid)],clientNames:[c?c.name:'General'],platform:'General',platforms:[],format:'',status,notes:'',links:[],date:new Date().toLocaleDateString('es')});
+  save();closeM('m-quick');rId();renderBP();renderDash();
+  toast('✓ Idea guardada',false,2000);
+}
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){
+    const qc=document.getElementById('qc-text');
+    if(document.activeElement===qc)saveQuickCapture();
+  }
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'&&lastU){e.preventDefault();doUndo();}
+});
+function saveBuzon(){
+  const txt=document.getElementById('buzon-input').value.trim();if(!txt)return;
+  const tag=document.getElementById('buzon-tag').value;
+  db.buzon=db.buzon||[];
+  db.buzon.unshift({id:Date.now(),text:txt,tag,date:new Date().toLocaleDateString('es'),time:new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'})});
+  save();document.getElementById('buzon-input').value='';rBuzon();updateBuzonBadge();toast('✓ Guardado en el buzón',false,2000);
+}
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){const el=document.getElementById('buzon-input');if(document.activeElement===el)saveBuzon();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'&&lastU){e.preventDefault();doUndo();}
+});
+function delBuzonItem(id){db.buzon=db.buzon.filter(b=>b.id!==id);save();rBuzon();updateBuzonBadge();}
+function promoBuzon(id){
+  const item=db.buzon.find(b=>b.id===id);if(!item)return;
+  // Pre-fill idea modal with this buzón item
+  eIId=null;document.getElementById('mit').textContent='Nueva idea — desde buzón';fillSels();
+  document.getElementById('eit').value=item.text;
+  renderNetChips([]);document.getElementById('eif').value='';document.getElementById('eis').value='cruda';
+  document.getElementById('ein').value='';tL=[];renderTL();document.getElementById('eilpv').style.display='none';
+  renderEicChips(null);
+  openM('mi');
+  // Mark for deletion from buzón after save
+  window._buzonPromoId=id;
+}
+function clearBuzon(){if(!confirm('¿Vaciar el buzón completo?'))return;db.buzon=[];save();rBuzon();updateBuzonBadge();}
+function updateBuzonBadge(){
+  db.buzon=db.buzon||[];
+  const cnt=db.buzon.length;
+  const badge=document.getElementById('buzon-badge');
+  if(badge){badge.style.display=cnt>0?'inline':'none';badge.textContent=cnt;}
+}
+function rBuzon(){
+  db.buzon=db.buzon||[];
+  const list=document.getElementById('buzon-list');
+  const ctr=document.getElementById('buzon-ctr');
+  const clrBtn=document.getElementById('buzon-clear-btn');
+  if(ctr)ctr.textContent=db.buzon.length+' elemento'+(db.buzon.length!==1?'s':'')+' en el buzón';
+  if(clrBtn)clrBtn.style.display=db.buzon.length?'inline-flex':'none';
+  if(!db.buzon.length){list.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div><div class="empty-title">Buzón vacío</div><div class="empty-sub">Escribe ideas rápidas aquí cuando estés<br>fuera de contexto o no quieras interrumpirte.</div></div>`;return;}
+  list.innerHTML=db.buzon.map(b=>`
+    <div class="card" style="padding:12px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+        <div style="flex:1">
+          <div style="font-size:13px;color:var(--text);line-height:1.5">${b.text}</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+            ${b.tag?`<span class="badge bd-accent" style="font-size:10px">${b.tag}</span>`:''}
+            <span style="font-size:11px;color:var(--text3)">${b.date} ${b.time}</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:4px;flex-shrink:0">
+          <button class="btn sm accent-ghost" onclick="promoBuzon(${b.id})" title="Convertir en idea">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
+            → Idea
+          </button>
+          <button class="ib del" onclick="delBuzonItem(${b.id})"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════
+// IDEAS — MULTI-CLIENTE
+// ══════════════════════════════════
+function renderEicChips(selectedIds){
+  const wrap=document.getElementById('eic-chips');if(!wrap)return;
+  const sel=selectedIds||[];
+  if(!db.clients.length){wrap.innerHTML=`<span style="font-size:12px;color:var(--text3)">Sin clientes — crea uno primero</span>`;return;}
+  wrap.innerHTML=[{id:'general',name:'General'},...db.clients].map(c=>`
+    <div onclick="togEic('${c.id}',this)" style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:400;border:1px solid ${sel.includes(String(c.id))||(!sel.length&&c.id==='general')?'var(--accent-bord)':'var(--border)'};cursor:pointer;background:${sel.includes(String(c.id))||(!sel.length&&c.id==='general')?'var(--accent-light)':'none'};color:${sel.includes(String(c.id))||(!sel.length&&c.id==='general')?'var(--accent)':'var(--text2)'};transition:all .12s;user-select:none" data-cid="${c.id}" class="eic-chip ${sel.includes(String(c.id))||(!sel.length&&c.id==='general')?'on':''}">
+      ${sel.includes(String(c.id))||(!sel.length&&c.id==='general')?'<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}
+      ${c.name}
+    </div>`).join('');
+}
+function togEic(cid,el){
+  el.classList.toggle('on');
+  const isOn=el.classList.contains('on');
+  el.style.borderColor=isOn?'var(--accent-bord)':'var(--border)';
+  el.style.background=isOn?'var(--accent-light)':'none';
+  el.style.color=isOn?'var(--accent)':'var(--text2)';
+  const name=cid==='general'?'General':(db.clients.find(c=>String(c.id)===String(cid))?.name||cid);
+  el.innerHTML=(isOn?'<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':'')+name;
+}
+function getSelEic(){
+  const chips=document.querySelectorAll('.eic-chip.on');
+  if(!chips.length)return['general'];
+  return [...chips].map(c=>c.dataset.cid);
+}
+// ══════════════════════════════════
+// IDEAS
+// ══════════════════════════════════
+// ── RED SOCIAL CHIPS ──
+const ALL_NETS=['Instagram','TikTok','Facebook','YouTube','LinkedIn','Twitter/X','WhatsApp'];
+function renderNetChips(selected){
+  const wrap=document.getElementById('eip-chips');if(!wrap)return;
+  wrap.innerHTML=ALL_NETS.map(net=>{
+    const on=selected.includes(net);
+    const col=NET_COLORS[net]||'#888';
+    return`<div onclick="togNet(this,'${net}')" style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;border:1px solid ${on?col+'88':' var(--border)'};cursor:pointer;background:${on?col+'18':'none'};color:${on?col:'var(--text2)'};transition:all .12s;user-select:none;font-family:'Inter',sans-serif" data-net="${net}" class="net-chip${on?' on':''}">
+      <div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></div>
+      ${net}
+    </div>`;
+  }).join('');
+}
+function togNet(el,net){
+  el.classList.toggle('on');
+  const on=el.classList.contains('on');
+  const col=NET_COLORS[net]||'#888';
+  el.style.borderColor=on?col+'88':'var(--border)';
+  el.style.background=on?col+'18':'none';
+  el.style.color=on?col:'var(--text2)';
+}
+function getSelNets(){
+  const chips=document.querySelectorAll('.net-chip.on');
+  if(!chips.length)return['General'];
+  return[...chips].map(c=>c.dataset.net);
+}
+// ── CICLO DE ESTADO DESDE TARJETA ──
+function cycleIdeaStatus(id,btn,e){
+  e.stopPropagation();
+  const idea=db.ideas.find(i=>i.id===id);if(!idea)return;
+  const cur=normalizeStatus(idea.status);
+  const next=STATUS_ORDER[(STATUS_ORDER.indexOf(cur)+1)%STATUS_ORDER.length];
+  idea.status=next;save();
+  const st=STATUS[next];
+  btn.textContent=st.l;
+  btn.className=`badge ${st.c}`;
+  btn.style.cursor='pointer';
+  renderDash();
+}
+function openIM(){eIId=null;document.getElementById('mit').textContent='Nueva idea';fillSels();['eit','ein'].forEach(f=>document.getElementById(f).value='');renderNetChips([]);document.getElementById('eif').value='';document.getElementById('eis').value='cruda';tL=[];renderTL();document.getElementById('eilpv').style.display='none';renderEicChips(activeClId?[String(activeClId)]:['general']);openM('mi');}
+function openEI(id){eIId=id;const idea=db.ideas.find(i=>i.id===id);if(!idea)return;document.getElementById('mit').textContent='Editar idea';fillSels();document.getElementById('eit').value=idea.text||'';const savedNets=idea.platforms&&idea.platforms.length?idea.platforms:(idea.platform&&idea.platform!=='General'?[idea.platform]:[]);renderNetChips(savedNets);document.getElementById('eif').value=idea.format||'';document.getElementById('eis').value=normalizeStatus(idea.status||'cruda');document.getElementById('ein').value=idea.notes||'';tL=(idea.links||[]).map(l=>({...l}));renderTL();document.getElementById('eilpv').style.display='none';renderEicChips(idea.clientIds||[String(idea.clientId||'general')]);openM('mi');}
+function openIdeaPopup(id){
+  popIId=id;const i=db.ideas.find(x=>x.id===id);if(!i)return;
+  document.getElementById('ip-title').textContent=i.text;
+  const st=STATUS[i.status]||STATUS.cruda;
+  const cnames=i.clientNames&&i.clientNames.length?i.clientNames:[i.clientName];
+  document.getElementById('ip-meta').innerHTML=
+    `${stBadge(i.status)}`+cnames.map(n=>`<span class="badge bd">${n}</span>`).join('')+
+    (i.platform&&i.platform!=='General'?`<span class="badge bd-blue">${i.platform}</span>`:'')+
+    (i.format?`<span class="badge bd">${i.format}</span>`:'')+
+    `<span style="font-size:11px;color:var(--text3)">${i.date}</span>`;
+  const nw=document.getElementById('ip-notes-wrap');
+  if(i.notes){nw.style.display='block';document.getElementById('ip-body-text').textContent=i.notes;}else nw.style.display='none';
+  if(i.links&&i.links.length){document.getElementById('ip-links').innerHTML=`<div class="ip-lbl" style="margin-top:8px">Links (${i.links.length})</div>`+i.links.map(l=>`<a href="${l.url}" target="_blank" class="ip-link"><img src="${favUrl(l.url)||''}" onerror="this.style.display='none'"><span>${l.desc||l.url}</span><span class="badge bd-accent" style="font-size:10px;flex-shrink:0">${l.type||''}</span></a>`).join('');}
+  else document.getElementById('ip-links').innerHTML='';
+  openM('ip-ov');
+}
+function editFromPopup(){closeM('ip-ov');openEI(popIId);}
+function loadIdeaInBrief(){const idea=db.ideas.find(i=>i.id===popIId);if(!idea)return;let txt=idea.text;if(idea.notes)txt+='\n\n'+idea.notes;document.getElementById('briefing').value=txt;closeM('ip-ov');go('generar');toast('✓ Idea cargada en el briefing',false,2000);}
+function renderTL(){const el=document.getElementById('eil');if(!tL.length){el.innerHTML='';return;}el.innerHTML=tL.map((l,i)=>`<div class="mli"><img src="${favUrl(l.url)||''}" onerror="this.style.display='none'"><a href="${l.url}" target="_blank">${l.desc||l.url}</a><span class="badge bd-accent" style="font-size:10px;flex-shrink:0">${l.type||'📌'}</span><button class="ib del" onclick="remTL(${i})" style="flex-shrink:0"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`).join('');}
+function addIL(){const url=document.getElementById('eilurl').value.trim();if(!url){toast('Escribe una URL',false);return;}const desc=document.getElementById('eildesc').value.trim();const type=document.getElementById('eiltype').value;const info=platInfo(url);let d=desc||(info?.user?info.user+(info.pl?' ('+info.pl+')':''):getDom(url));tL.push({id:Date.now()+Math.random(),url,desc:d,type});document.getElementById('eilurl').value='';document.getElementById('eildesc').value='';document.getElementById('eilpv').style.display='none';renderTL();}
+function remTL(i){tL.splice(i,1);renderTL();}
+function saveIdea(){
+  const text=document.getElementById('eit').value.trim();if(!text){toast('Escribe la idea',false);return;}
+  const selCids=getSelEic();
+  const firstCid=selCids[0]||'general';
+  const firstC=db.clients.find(x=>x.id==firstCid);
+  const cn=firstC?firstC.name:'General';
+  // Get all client names for display
+  const allCnames=selCids.map(cid=>{const c=db.clients.find(x=>x.id==cid);return c?c.name:'General';});
+
+  if(eIId){
+    const idea=db.ideas.find(i=>i.id===eIId);if(!idea)return;
+    const oldIds=(idea.links||[]).map(l=>l.id).filter(Boolean);const newIds=tL.map(l=>l.id).filter(Boolean);
+    oldIds.forEach(id=>{if(!newIds.includes(id))db.links=db.links.filter(l=>l.id!==id);});
+    tL.forEach(l=>{const ex=db.links.find(x=>x.id===l.id);if(!ex)db.links.unshift({id:l.id,url:l.url,desc:l.desc||text,type:l.type,clientId:firstCid,clientName:cn,fromIdea:eIId,date:new Date().toLocaleDateString('es')});else{ex.desc=l.desc;ex.type=l.type;}});
+    idea.text=text;idea.clientId=firstCid;idea.clientName=cn;idea.clientIds=selCids;idea.clientNames=allCnames;
+    const nets=getSelNets();idea.platforms=nets;idea.platform=nets[0]||'General';idea.format=document.getElementById('eif').value;
+    idea.status=document.getElementById('eis').value;idea.notes=document.getElementById('ein').value.trim();idea.links=[...tL];
+    toast('✓ Idea actualizada',false);
+    // If came from buzón, remove it
+    if(window._buzonPromoId){delBuzonItem(window._buzonPromoId);delete window._buzonPromoId;}
+  } else {
+    const iid=Date.now();
+    tL.forEach(l=>db.links.unshift({id:l.id,url:l.url,desc:l.desc||text,type:l.type,clientId:firstCid,clientName:cn,fromIdea:iid,date:new Date().toLocaleDateString('es')}));
+    const nets2=getSelNets();db.ideas.unshift({id:iid,text,clientId:firstCid,clientName:cn,clientIds:selCids,clientNames:allCnames,platforms:nets2,platform:nets2[0]||'General',format:document.getElementById('eif').value,status:document.getElementById('eis').value,notes:document.getElementById('ein').value.trim(),links:[...tL],date:new Date().toLocaleDateString('es')});
+    toast('✓ Idea guardada',false);
+    if(window._buzonPromoId){delBuzonItem(window._buzonPromoId);delete window._buzonPromoId;}
+  }
+  save();closeM('mi');rId();rLk();renderBP();renderDash();
+}
+function saveQI(){const el=document.getElementById('qi');const v=el.value.trim();if(!v)return;const cid=activeClId||'general';const c=db.clients.find(x=>x.id==cid);db.ideas.unshift({id:Date.now(),text:v,clientId:cid,clientName:c?c.name:'General',platform:'General',format:'',status:'cruda',notes:'',links:[],date:new Date().toLocaleDateString('es')});save();el.value='';rId();renderBP();renderDash();toast('✓ Idea guardada',false);}
+document.getElementById('qi').addEventListener('keydown',e=>{if(e.key==='Enter')saveQI();});
+function delId(id){const idx=db.ideas.findIndex(i=>i.id===id);if(idx<0)return;const idea=db.ideas[idx];if(idea.links)idea.links.forEach(l=>{if(l.id)db.links=db.links.filter(x=>x.id!==l.id);});lastU={type:'id',item:idea,idx};db.ideas.splice(idx,1);save();rId();rLk();renderDash();toast('Idea eliminada',true);}
+function setIF(t){iF=t;rId();}
+function rId(){
+  const list=document.getElementById('il');const bar=document.getElementById('ifbar');
+  const ac=activeClId?db.clients.find(c=>c.id==activeClId):null;
+  document.getElementById('ideas-title').textContent=ac?ac.name:'Ideas';
+  document.getElementById('ideas-ps').textContent=ac?`Ideas de ${ac.name}`:'Captura ideas antes de que se escapen';
+  let base=activeClId
+    ?db.ideas.filter(i=>(i.clientIds&&i.clientIds.includes(String(activeClId)))||String(i.clientId)==String(activeClId))
+    :db.ideas;
+  if(!activeClId){
+    // Collect all unique client names across all clientNames arrays
+    const allNames=new Set();db.ideas.forEach(i=>{if(i.clientNames&&i.clientNames.length)i.clientNames.forEach(n=>allNames.add(n));else allNames.add(i.clientName);});
+    const tags=['todos',...allNames];
+    bar.innerHTML=tags.map(t=>`<button class="fc ${t===iF?'on':''}" onclick="setIF('${t}')">${t}</button>`).join('');
+    if(iF!=='todos')base=base.filter(i=>(i.clientNames&&i.clientNames.includes(iF))||i.clientName===iF);
+  }else bar.innerHTML='';
+  if(!base.length){list.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg></div><div class="empty-title">${ac?'Sin ideas para este cliente':'Sin ideas aún'}</div><div class="empty-sub">Usa el campo de arriba para ideas rápidas<br>o "+ Nueva idea" para agregarla con todos los detalles.</div></div>`;return;}
+  list.innerHTML=`<p class="ctr">${base.length} idea${base.length!==1?'s':''} · clic para ver detalles</p>`+
+    base.map(i=>`<div class="idea-card" onclick="openIdeaPopup(${i.id})">
+      <div class="idea-card-actions" onclick="event.stopPropagation()">
+        <button class="ib ed" onclick="openEI(${i.id})" title="Editar"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="ib del" onclick="delId(${i.id})" title="Eliminar"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>
+      </div>
+      <div class="idea-card-title">${i.text}</div>
+      <div class="idea-card-meta">
+        <button class="badge ${STATUS[normalizeStatus(i.status)]?.c||'bd'}" onclick="cycleIdeaStatus(${i.id},this,event)" style="cursor:pointer;border:none;font-family:'Inter',sans-serif" title="Clic para cambiar estado">${STATUS[normalizeStatus(i.status)]?.l||'💡 Cruda'}</button>
+        ${!activeClId?(i.clientNames&&i.clientNames.length>1?i.clientNames.map(n=>`<span class="badge bd">${n}</span>`).join(''):`<span class="badge bd">${i.clientName}</span>`):''}
+        ${(i.platforms&&i.platforms.length?i.platforms:i.platform&&i.platform!=='General'?[i.platform]:[]).map(net=>`<span class="badge" style="background:${NET_COLORS[net]||'#888'}18;color:${NET_COLORS[net]||'#888'};border-color:${NET_COLORS[net]||'#888'}44;font-weight:500">${net}</span>`).join('')}
+        ${i.format?`<span class="badge bd">${i.format}</span>`:''}
+        ${i.links&&i.links.length?`<span class="badge bd">🔗 ${i.links.length}</span>`:''}
+        <span style="font-size:11px;color:var(--text3);margin-left:auto">${i.date}</span>
+      </div>
+      ${i.notes?`<div class="idea-card-note">${i.notes.slice(0,90)}${i.notes.length>90?'…':''}</div>`:''}
+    </div>`).join('');
+}
+
+// ══════════════════════════════════
+// LINKS
+// ══════════════════════════════════
+function saveLink(){const url=document.getElementById('lurl').value.trim();if(!url){toast('Escribe una URL',false);return;}const rawDesc=document.getElementById('ldesc').value.trim();const type=document.getElementById('lt').value;const cid=document.getElementById('lc').value;const c=db.clients.find(x=>x.id==cid);const info=platInfo(url);let desc=rawDesc||(info?.user?info.user+(info.pl?' ('+info.pl+')':''):getDom(url));db.links.unshift({id:Date.now(),url,desc,type,clientId:cid,clientName:c?c.name:'General',date:new Date().toLocaleDateString('es')});save();document.getElementById('lurl').value='';document.getElementById('ldesc').value='';document.getElementById('lpw').style.display='none';rLk();renderDash();toast('✓ Link guardado',false);}
+function delLk(id){const idx=db.links.findIndex(l=>l.id===id);if(idx<0)return;const lnk=db.links[idx];if(lnk.fromIdea){const idea=db.ideas.find(i=>i.id===lnk.fromIdea);if(idea)idea.links=idea.links.filter(l=>l.id!==id);}lastU={type:'lk',item:lnk,idx};db.links.splice(idx,1);save();rLk();rId();toast('Link eliminado',true);}
+function setLF(t){lF=t;rLk();}
+function rLk(){
+  const list=document.getElementById('ll');const bar=document.getElementById('lfbar');
+  let base=activeClId?db.links.filter(l=>l.clientId==activeClId):db.links;
+  if(!activeClId){const tags=['todos','General',...db.clients.map(c=>c.name)];bar.innerHTML=tags.map(t=>`<button class="fc ${t===lF?'on':''}" onclick="setLF('${t}')">${t}</button>`).join('');if(lF!=='todos')base=base.filter(l=>l.clientName===lF);}else bar.innerHTML='';
+  if(!base.length){list.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div><div class="empty-title">Sin links aún</div><div class="empty-sub">Guarda referencias, tendencias y herramientas aquí.<br>Los links vinculados a ideas también aparecen aquí.</div></div>`;return;}
+  list.innerHTML=`<p class="ctr">${base.length} link${base.length!==1?'s':''}</p>`+
+    base.map(l=>{const info=platInfo(l.url);const fav=favUrl(l.url);return`<div class="link-card">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div class="link-fav">${fav?`<img src="${fav}" onerror="this.innerHTML='🔗';this.style.cssText='font-size:14px;width:100%;height:100%;display:flex;align-items:center;justify-content:center'">`:'<span style="font-size:14px">🔗</span>'}</div>
+        <div style="flex:1;overflow:hidden">
+          <a href="${l.url}" target="_blank" class="link-title">${l.desc||l.url}</a>
+          ${info?.user?`<div style="font-size:11px;color:var(--text2)">${info.user}</div>`:''}
+          <div class="link-dom">${getDom(l.url)}${l.fromIdea?' · Desde idea':''}</div>
+        </div>
+        <button class="ib del" onclick="delLk(${l.id})"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div style="display:flex;align-items:center;gap:5px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+        <span class="badge bd-accent" style="font-size:10px">${l.type||'📌'}</span>
+        ${!activeClId?`<span class="badge bd" style="font-size:10px">${l.clientName}</span>`:''}
+        <span style="font-size:10px;color:var(--text3);margin-left:auto">${l.date}</span>
+      </div>
+    </div>`;}).join('');
+}
+
+// ══════════════════════════════════
+// SEMANA
+// ══════════════════════════════════
+// ══════════════════════════════════
+// PLANNER
+// ══════════════════════════════════
+const DAYS_ES=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+let plannerBase=new Date();
+
+function plannerWeekStart(base){
+  const d=new Date(base);const day=d.getDay();
+  d.setDate(d.getDate()-(day===0?6:day-1));d.setHours(0,0,0,0);return d;
+}
+// ── CALENDARIO MINI ──
+let calBase=new Date();
+const MONTHS_ES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function calPrevMonth(){calBase.setDate(1);calBase.setMonth(calBase.getMonth()-1);renderCal();}
+function calNextMonth(){calBase.setDate(1);calBase.setMonth(calBase.getMonth()+1);renderCal();}
+
+function renderCal(){
+  const lbl=document.getElementById('cal-month-label');
+  const grid=document.getElementById('cal-grid');
+  if(!lbl||!grid)return;
+  lbl.textContent=MONTHS_ES[calBase.getMonth()]+' '+calBase.getFullYear();
+  const today=dateStr(new Date());
+  const selectedMon=dateStr(plannerWeekStart(plannerBase));
+
+  // First day of month
+  const first=new Date(calBase.getFullYear(),calBase.getMonth(),1);
+  const lastDay=new Date(calBase.getFullYear(),calBase.getMonth()+1,0).getDate();
+  // Start from Monday
+  let startDow=first.getDay();if(startDow===0)startDow=7;startDow--;
+
+  let cells='';
+  // Empty cells before month start
+  for(let i=0;i<startDow;i++){cells+=`<div></div>`;}
+  // Day cells
+  for(let d=1;d<=lastDay;d++){
+    const dt=new Date(calBase.getFullYear(),calBase.getMonth(),d);
+    const ds=dateStr(dt);
+    const monDs=dateStr(plannerWeekStart(dt));
+    const isToday=ds===today;
+    const isInSelectedWeek=monDs===selectedMon;
+    const hasPlan=db.planner&&db.planner[ds]&&db.planner[ds].length>0;
+    cells+=`<div onclick="jumpToDate('${ds}')" style="text-align:center;padding:3px 2px;border-radius:4px;font-size:11px;cursor:pointer;font-weight:${isToday?'600':'400'};color:${isToday?'#fff':isInSelectedWeek?'var(--accent)':'var(--text2)'};background:${isToday?'var(--accent)':isInSelectedWeek?'var(--accent-light)':'none'};position:relative;transition:all .12s" onmouseover="this.style.background=this.style.background||'var(--surface2)'" onmouseout="this.style.background='${isToday?'var(--accent)':isInSelectedWeek?'var(--accent-light)':'none'}'">
+      ${d}${hasPlan?`<div style="width:4px;height:4px;border-radius:50%;background:${isToday?'#fff':'var(--accent)'};margin:0 auto;margin-top:-1px"></div>`:''}
+    </div>`;
+  }
+  grid.innerHTML=cells;
+}
+
+function jumpToDate(ds){
+  plannerBase=new Date(ds+'T12:00:00');
+  renderPlanner();
+  renderCal();
+}
+
+function plannerThisWeek(){plannerBase=new Date();renderPlanner();renderCal();}
+function plannerPrevWeek(){plannerBase.setDate(plannerBase.getDate()-7);renderPlanner();renderCal();}
+function plannerNextWeek(){plannerBase.setDate(plannerBase.getDate()+7);renderPlanner();renderCal();}
+function dateStr(d){return d.toISOString().slice(0,10);}
+
+function renderPlanner(){
+  const mon=plannerWeekStart(plannerBase);
+  const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+  document.getElementById('planner-week-label').textContent=
+    `${mon.toLocaleDateString('es',{day:'numeric',month:'long'})} — ${sun.toLocaleDateString('es',{day:'numeric',month:'long',year:'numeric'})}`;
+  // Days columns
+  const daysEl=document.getElementById('planner-days');daysEl.innerHTML='';
+  const today=dateStr(new Date());
+  for(let i=0;i<7;i++){
+    const d=new Date(mon);d.setDate(mon.getDate()+i);const ds=dateStr(d);
+    const isToday=ds===today;
+    const div=document.createElement('div');div.className='planner-day';
+    div.innerHTML=`<div class="planner-day-hd ${isToday?'planner-day-today':''}">
+      <div class="planner-day-name">${DAYS_ES[d.getDay()]}</div>
+      <div class="planner-day-date">${d.getDate()}</div>
+    </div>
+    <div class="planner-col-body" data-day="${ds}" id="pcol-${ds}"></div>`;
+    daysEl.appendChild(div);
+  }
+  // Unassigned — ideas sin día asignado que no están usadas ni descartadas
+  const assigned=new Set(Object.values(db.planner||{}).flat().map(String));
+  const unassigned=db.ideas.filter(i=>i.status!=='usada'&&i.status!=='descartada'&&!assigned.has(String(i.id)));
+  const uEl=document.getElementById('planner-unassigned-list');uEl.innerHTML='';
+  if(activeClId){
+    const filtered=unassigned.filter(i=>(i.clientIds&&i.clientIds.includes(String(activeClId)))||String(i.clientId)===String(activeClId));
+    filtered.forEach(i=>uEl.appendChild(makePlanCard(i,'unassigned')));
+  } else {
+    unassigned.forEach(i=>uEl.appendChild(makePlanCard(i,'unassigned')));
+  }
+  // Fill day columns
+  Object.entries(db.planner||{}).forEach(([ds,ids])=>{
+    const col=document.getElementById('pcol-'+ds);if(!col)return;
+    ids.forEach(id=>{const idea=db.ideas.find(x=>x.id===id);if(idea)col.appendChild(makePlanCard(idea,ds));});
+  });
+  // Setup drag & drop on all cols
+  document.querySelectorAll('.planner-col-body').forEach(col=>setupColDnD(col));
+}
+
+const PLAN_STATUS_COLORS={planeado:{bg:'var(--blue-bg)',color:'var(--blue)',label:'Planeado'},produccion:{bg:'var(--orange-bg)',color:'var(--orange)',label:'Producción'},listo:{bg:'var(--green-bg)',color:'var(--green)',label:'Listo'},publicado:{bg:'var(--teal-bg)',color:'var(--teal)',label:'Publicado'}};
+
+function makePlanCard(idea,day){
+  const div=document.createElement('div');
+  div.className='plan-card';div.draggable=true;div.dataset.id=idea.id;div.dataset.day=day;
+  const ps=db.plannerStatus&&db.plannerStatus[idea.id]||'planeado';
+  const psc=PLAN_STATUS_COLORS[ps]||PLAN_STATUS_COLORS.planeado;
+  const cc=clColor(idea.clientId);
+  div.innerHTML=`<div class="plan-card-title">${idea.text}</div>
+    <div class="plan-card-meta">
+      <div class="plan-card-client" style="background:${cc}"></div>
+      <span style="font-size:10px;color:var(--text3)">${idea.clientName}</span>
+      <button class="plan-status" style="background:${psc.bg};color:${psc.color};margin-left:auto" onclick="cyclePlanStatus(${idea.id},this,event)">${psc.label}</button>
+      <button style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:11px;padding:2px 4px;border-radius:3px;transition:all .12s;font-family:'Inter',sans-serif" onclick="openMoveIdea(${idea.id},'${day}',event)" title="Mover a otro día">↗</button>
+    </div>`;
+  div.addEventListener('dragstart',e=>{e.dataTransfer.setData('ideaId',idea.id);e.dataTransfer.setData('fromDay',day);div.classList.add('dragging');});
+  div.addEventListener('dragend',()=>div.classList.remove('dragging'));
+  return div;
+}
+
+let moveIdeaId=null,moveIdeaFromDay=null;
+function openMoveIdea(id,day,e){
+  e.stopPropagation();
+  const idea=db.ideas.find(i=>i.id===id);if(!idea)return;
+  moveIdeaId=id;moveIdeaFromDay=day;
+  document.getElementById('m-move-idea-title').textContent=idea.text;
+  // Pre-fill with tomorrow if unassigned, else next week same day
+  const base=day!=='unassigned'?new Date(day+'T12:00:00'):new Date();
+  const next=new Date(base);next.setDate(base.getDate()+7);
+  document.getElementById('move-idea-date').value=dateStr(next);
+  openM('m-move-idea');
+}
+function confirmMoveIdea(){
+  const ds=document.getElementById('move-idea-date').value;
+  if(!ds){toast('Elige una fecha',false);return;}
+  db.planner=db.planner||{};
+  // Remove from source
+  if(moveIdeaFromDay&&moveIdeaFromDay!=='unassigned'){
+    db.planner[moveIdeaFromDay]=(db.planner[moveIdeaFromDay]||[]).filter(x=>x!==moveIdeaId);
+    if(!db.planner[moveIdeaFromDay].length)delete db.planner[moveIdeaFromDay];
+  }
+  // Add to destination
+  if(!db.planner[ds])db.planner[ds]=[];
+  if(!db.planner[ds].includes(moveIdeaId))db.planner[ds].push(moveIdeaId);
+  save();closeM('m-move-idea');
+  // Jump to destination week
+  plannerBase=new Date(ds+'T12:00:00');
+  calBase=new Date(ds+'T12:00:00');
+  renderPlanner();renderCal();
+  toast('✓ Idea movida al '+new Date(ds+'T12:00:00').toLocaleDateString('es',{day:'numeric',month:'long'}),false,2500);
+}
+function moveIdeaToUnassigned(){
+  db.planner=db.planner||{};
+  if(moveIdeaFromDay&&moveIdeaFromDay!=='unassigned'){
+    db.planner[moveIdeaFromDay]=(db.planner[moveIdeaFromDay]||[]).filter(x=>x!==moveIdeaId);
+    if(!db.planner[moveIdeaFromDay].length)delete db.planner[moveIdeaFromDay];
+  }
+  save();closeM('m-move-idea');renderPlanner();renderCal();
+  toast('✓ Idea quitada del planner',false,2000);
+}
+function cyclePlanStatus(id,btn,e){
+  e.stopPropagation();
+  db.plannerStatus=db.plannerStatus||{};
+  const order=['planeado','produccion','listo','publicado'];
+  const cur=db.plannerStatus[id]||'planeado';
+  const next=order[(order.indexOf(cur)+1)%order.length];
+  db.plannerStatus[id]=next;save();
+  const psc=PLAN_STATUS_COLORS[next];
+  btn.style.background=psc.bg;btn.style.color=psc.color;btn.textContent=psc.label;
+}
+function setupColDnD(col){
+  col.addEventListener('dragover',e=>{e.preventDefault();col.classList.add('drag-over');});
+  col.addEventListener('dragleave',()=>col.classList.remove('drag-over'));
+  col.addEventListener('drop',e=>{
+    e.preventDefault();col.classList.remove('drag-over');
+    const id=parseInt(e.dataTransfer.getData('ideaId'));
+    const fromDay=e.dataTransfer.getData('fromDay');
+    const toDay=col.dataset.day;
+    if(fromDay===toDay)return;
+    db.planner=db.planner||{};
+    // Remove from source
+    if(fromDay!=='unassigned'){
+      db.planner[fromDay]=(db.planner[fromDay]||[]).filter(x=>x!==id);
+      if(!db.planner[fromDay].length)delete db.planner[fromDay];
+    }
+    // Add to destination
+    if(toDay!=='unassigned'){
+      if(!db.planner[toDay])db.planner[toDay]=[];
+      if(!db.planner[toDay].includes(id))db.planner[toDay].push(id);
+    }
+    save();renderPlanner();
+    toast('✓ Movido',false,1500);
+  });
+}
+
+// ══════════════════════════════════
+// RADAR HISTORY
+// ══════════════════════════════════
+let selectedRadarId=null;
+
+function saveToRadarHistory(prompt,niche,plat,depth){
+  db.radarHistory=db.radarHistory||[];
+  const item={id:Date.now(),prompt,niche,plat,depth,date:new Date().toLocaleDateString('es'),result:null};
+  db.radarHistory.unshift(item);if(db.radarHistory.length>30)db.radarHistory=db.radarHistory.slice(0,30);
+  save();renderRadarHistory();renderRadarSel();
+  return item.id;
+}
+function delRadarItem(id){
+  db.radarHistory=db.radarHistory.filter(r=>r.id!==id);
+  if(selectedRadarId===id)selectedRadarId=null;
+  save();renderRadarHistory();renderRadarSel();
+}
+function openPasteRadarResult(id){
+  const item=db.radarHistory.find(r=>String(r.id)===String(id));if(!item)return;
+  document.getElementById('paste-result').value=item.result||'';
+  document.getElementById('m-paste').dataset.radarId=String(id);
+  closeM('m-radar-item');
+  openM('m-paste');
+  setTimeout(()=>document.getElementById('paste-result').focus(),100);
+}
+function savePasteResult(){
+  const raw=document.getElementById('paste-result').value.trim();
+  if(!raw){toast('Pega el resultado de Claude primero',false);return;}
+  const rid=document.getElementById('m-paste').dataset.radarId;
+  if(!rid){toast('Abre primero una búsqueda del historial',false);return;}
+  const item=db.radarHistory.find(r=>String(r.id)===String(rid));
+  if(!item){toast('Búsqueda no encontrada',false);return;}
+  item.result=raw;save();closeM('m-paste');
+  renderRadarHistory();renderRadarSel();
+  toast('✓ Resultado guardado en el Radar',false,2500);
+}
+function openRadarItemModal(id){
+  const item=db.radarHistory.find(r=>r.id===id);if(!item)return;
+  document.getElementById('m-radar-title').textContent=item.niche+' · '+item.plat;
+  const body=document.getElementById('m-radar-body');
+  body.innerHTML=
+    '<div style="font-size:11px;color:var(--text3);margin-bottom:12px">'+item.date+' · '+item.depth+(item.result?' · <span style=\"color:var(--teal);font-weight:500\">Con resultado</span>':' · Sin resultado aún')+'</div>'+
+    '<div style="margin-bottom:14px">'+
+      '<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Prompt generado</div>'+
+      '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;font-size:12px;color:var(--text2);line-height:1.6;white-space:pre-wrap;max-height:180px;overflow-y:auto">'+item.prompt+'</div>'+
+      '<button class="btn sm primary" style="margin-top:8px" onclick="cpRadarPrompt('+item.id+')">'+
+        '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>'+
+        ' Copiar prompt</button>'+
+    '</div>'+
+    (item.result?
+      '<div>'+
+        '<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Resultado de Claude</div>'+
+        '<div style="background:var(--teal-bg);border:1px solid var(--teal-bord);border-radius:var(--r-sm);padding:12px;font-size:12px;color:var(--text2);line-height:1.7;white-space:pre-wrap;max-height:240px;overflow-y:auto">'+item.result+'</div>'+
+        '<div style="display:flex;gap:8px;margin-top:8px">'+
+          '<button class="btn sm" onclick="openPasteRadarResult('+item.id+')">Editar resultado</button>'+
+          '<button class="btn sm accent-ghost" onclick="loadRadarToGenerar('+item.id+')">Usar en Generar →</button>'+
+        '</div>'+
+      '</div>':
+      '<div style="background:var(--surface2);border:1px dashed var(--border2);border-radius:var(--r-sm);padding:16px;text-align:center">'+
+        '<div style="font-size:13px;color:var(--text2);margin-bottom:6px">Sin resultado aún</div>'+
+        '<div style="font-size:12px;color:var(--text3);margin-bottom:12px">Copia el prompt → pégalo en Claude → vuelve y pega la respuesta</div>'+
+        '<button class="btn primary sm" onclick="openPasteRadarResult('+item.id+')">📥 Pegar resultado de Claude</button>'+
+      '</div>');
+  openM('m-radar-item');
+}
+function cpRadarPrompt(id){
+  const item=db.radarHistory.find(r=>r.id===id);if(!item)return;
+  navigator.clipboard.writeText(item.prompt).then(()=>toast('✓ Prompt copiado',false,2000)).catch(()=>{const ta=document.createElement('textarea');ta.value=item.prompt;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✓ Copiado',false,2000);});
+}
+function loadRadarToGenerar(id){
+  selectedRadarId=id;closeM('m-radar-item');go('generar');renderRadarSel();toast('✓ Tendencias seleccionadas',false,2000);
+}
+function toggleRadarSel(id){
+  selectedRadarId=selectedRadarId===id?null:id;
+  renderRadarSel();
+}
+function renderRadarSel(){
+  db.radarHistory=db.radarHistory||[];
+  const withResult=db.radarHistory.filter(r=>r.result);
+  const empty=document.getElementById('radar-sel-empty');
+  const list=document.getElementById('radar-sel-list');
+  if(!list)return;
+  if(!withResult.length){list.innerHTML='';if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';
+  list.innerHTML=withResult.map(r=>`
+    <div class="radar-sel-item ${selectedRadarId===r.id?'on':''}" onclick="toggleRadarSel(${r.id})">
+      <div class="radar-sel-dot"></div>
+      <div style="flex:1;overflow:hidden">
+        <div style="font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.niche} · ${r.plat}</div>
+        <div style="font-size:10px;color:var(--text3)">${r.date} · ${r.depth}</div>
+      </div>
+      ${selectedRadarId===r.id?'<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}
+    </div>`).join('');
+}
+function renderRadarHistory(){
+  db.radarHistory=db.radarHistory||[];
+  const el=document.getElementById('radar-hist-list');if(!el)return;
+  if(!db.radarHistory.length){
+    el.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><div class="empty-title">Sin búsquedas aún</div><div class="empty-sub">Genera un prompt arriba y el historial aparecerá aquí.</div></div>`;
+    return;
+  }
+  el.innerHTML=db.radarHistory.map(r=>`
+    <div class="radar-hist-item ${r.result?'has-result':''}" style="cursor:pointer" onclick="openRadarItemModal(${r.id})">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <div style="flex:1">
+          <div class="radar-hist-title">${r.niche} · ${r.plat}</div>
+          <div class="radar-hist-meta">${r.date} · ${r.depth} · ${r.result?'<span style="color:var(--teal);font-weight:500">✓ Con resultado — clic para ver</span>':'<span style="color:var(--text3)">Sin resultado — clic para pegar</span>'}</div>
+        </div>
+        <div style="display:flex;gap:4px" onclick="event.stopPropagation()">
+          <button class="ib del" onclick="delRadarItem(${r.id})" title="Eliminar"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function reuseRadarPrompt(id){
+  const item=db.radarHistory.find(r=>r.id===id);if(!item)return;
+  document.getElementById('trends-ta').value=item.prompt;
+  document.getElementById('trends-pb').style.display='block';
+  document.getElementById('trends-pb').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function togP(el,v){el.classList.toggle('on');if(el.classList.contains('on'))gP.push(v);else gP=gP.filter(x=>x!==v);}
+function selFmt(el,v){
+  // Radio — solo uno a la vez
+  document.querySelectorAll('#gfmt .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  gF=[v];
+}
+function togF(el,v){selFmt(el,v);} // alias por compatibilidad
+function togT(el,v){
+  // Multi-select — varios tonos a la vez
+  el.classList.toggle('on');
+  if(el.classList.contains('on'))gT=[...new Set([...getGT(),v])];
+  else{const arr=getGT().filter(x=>x!==v);gT=arr.length?arr:['educativo'];}
+}
+function togTOtro(el){
+  el.classList.toggle('on');
+  const wrap=document.getElementById('tono-otro-wrap');
+  if(el.classList.contains('on')){wrap.style.display='block';document.getElementById('tono-otro').focus();}
+  else{wrap.style.display='none';document.getElementById('tono-otro').value='';updateTOtro('');}
+}
+function updateTOtro(v){
+  // El tono "otro" se añade o remueve del array
+  gT=getGT().filter(x=>!x.startsWith('__otro:'));
+  if(v.trim())gT.push('__otro:'+v.trim());
+}
+function getGT(){
+  // Devuelve array de tonos activos (incluyendo "otro")
+  if(Array.isArray(gT))return gT;
+  return gT?[gT]:['educativo'];
+}
+function fmtTone(){
+  // Para usar en buildPrompt — texto legible del tono
+  const arr=getGT();
+  return arr.map(t=>t.startsWith('__otro:')?t.replace('__otro:',''):t).join(', ')||'educativo';
+}
+function selType(t,el){gType=t;document.querySelectorAll('.type-chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+function syncGenCl(){if(activeClId){const el=document.getElementById('gc');if(el)el.value=activeClId;}loadCtx();renderRadarSel();}
+function loadCtx(){const id=document.getElementById('gc').value;const c=db.clients.find(x=>x.id==id);const el=document.getElementById('ctxp');if(c){el.style.display='block';let h=`<strong>${c.name}</strong>`;if(c.niche)h+=` · ${c.niche}`;if(c.restrict)h+=`<br><span style="color:var(--orange)">Restricciones: ${c.restrict}</span>`;if(c.avoid)h+=`<br><span style="color:var(--red)">Evitar: ${c.avoid}</span>`;el.innerHTML=h;}else el.style.display='none';renderBP();}
+function toggleBP(){bpOpen=!bpOpen;document.getElementById('bp-drop').style.display=bpOpen?'block':'none';if(bpOpen)renderBP();}
+function closeBP(){bpOpen=false;const el=document.getElementById('bp-drop');if(el)el.style.display='none';}
+document.addEventListener('click',e=>{if(bpOpen&&!e.target.closest('.brief-load')&&!e.target.closest('.brief-pick'))closeBP();});
+function renderBP(){
+  const list=document.getElementById('bp-list');
+  const cid=document.getElementById('gc').value;
+  const ideas=cid&&cid!=='general'
+    ?db.ideas.filter(i=>i.clientId==cid||i.clientIds?.includes(String(cid)))
+    :db.ideas;
+  if(!ideas.length){list.innerHTML=`<div class="bp-empty" style="padding:14px;text-align:center;font-size:13px;color:var(--text2)">Sin ideas guardadas.</div>`;return;}
+  list.innerHTML=ideas.slice(0,30).map(i=>{
+    const st=STATUS[normalizeStatus(i.status)]||STATUS.cruda;
+    const nets=i.platforms&&i.platforms.length?i.platforms:(i.platform&&i.platform!=='General'?[i.platform]:[]);
+    return`<div class="bp-item" onclick="loadIdeaBrief(${i.id})">
+      <div style="flex:1">
+        <div class="bp-t">${i.text}</div>
+        <div class="bp-m" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">
+          <span style="font-size:10px">${st.l}</span>
+          ${i.clientName?`<span style="color:var(--text3)">·</span><span style="font-size:10px;color:var(--text3)">${i.clientName}</span>`:''}
+          ${nets.map(n=>`<span style="font-size:10px;color:${NET_COLORS[n]||'var(--text3)'}">${n}</span>`).join('')}
+          ${i.notes?`<span style="color:var(--text3)">·</span><span style="font-size:10px;color:var(--text3)">${i.notes.slice(0,40)}${i.notes.length>40?'…':''}</span>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function loadIdeaBrief(id){
+  const idea=db.ideas.find(i=>i.id===id);if(!idea)return;
+  // Construir un briefing completo con todo el contexto de la idea
+  let parts=[];
+  parts.push(idea.text);
+  if(idea.notes)parts.push(idea.notes);
+  const nets=idea.platforms&&idea.platforms.length?idea.platforms:(idea.platform&&idea.platform!=='General'?[idea.platform]:[]);
+  const meta=[];
+  if(nets.length)meta.push('Plataforma: '+nets.join(', '));
+  if(idea.format)meta.push('Formato: '+idea.format);
+  if(meta.length)parts.push(meta.join(' · '));
+  if(idea.links&&idea.links.length){
+    const linkLines=idea.links.map(l=>`- ${l.desc||l.url} (${l.url})`).join('\n');
+    parts.push('Referencias:\n'+linkLines);
+  }
+  document.getElementById('briefing').value=parts.join('\n\n');
+  closeBP();
+  toast('✓ Idea cargada con todo el contexto',false,2000);
+}
+function bCtx(){const id=document.getElementById('gc').value;const c=db.clients.find(x=>x.id==id);const briefing=document.getElementById('briefing').value.trim();let parts=[];if(c){let cp=`CLIENTE: ${c.name}\nNicho: ${c.niche||'-'}\nPlataformas: ${c.platforms&&c.platforms.length?c.platforms.join(', '):'No especificadas'}\nTono y personalidad: ${c.tone||'-'}`;if(c.restrict)cp+=`\nRESTRICCIONES DE PRODUCCIÓN (respetar siempre): ${c.restrict}`;cp+=`\nContenido prohibido: ${c.avoid||'-'}\nReferencias exitosas: ${c.refs||'-'}`;parts.push(cp);}if(briefing)parts.push(`BRIEFING DE ESTA PIEZA:\n${briefing}`);if(selectedRadarId){const r=db.radarHistory.find(x=>x.id===selectedRadarId);if(r&&r.result)parts.push(`TENDENCIAS (búsqueda: ${r.niche} · ${r.plat} · ${r.date}):\n${r.result.slice(0,800)}`);}return parts.join('\n\n');}
+
+function buildPrompt(type){
+  const ctx=bCtx();const base=ctx?`${ctx}\n\n---\n\n`:'';
+  const plats=gP.length?gP.join(', '):'redes sociales';
+  const briefing=document.getElementById('briefing').value.trim();
+  const bn=briefing?'Toma el siguiente briefing como punto de partida y desarrolla a partir de él:\n"'+briefing+'"\n\n':'';
+
+  // Detectar formato principal para adaptar estructura
+  const fmt=gF[0]||'Reels/Video corto';
+  const isReel=fmt.includes('Reel')||fmt.includes('Video');
+  const isCarrusel=fmt.includes('Carrusel');
+  const isHistoria=fmt.includes('Historia');
+  const isPost=fmt.includes('estático');
+  const isLive=fmt.includes('Live');
+
+  // Descripción de formato para el prompt
+  const fmtDesc=isReel?'Reel / video corto (vertical, máx 90 segundos)':
+    isCarrusel?'Carrusel (serie de slides deslizables)':
+    isHistoria?'Historia / Story (vertical, 15 segundos por frame, desaparece en 24h)':
+    isPost?'Post estático (imagen o gráfico fijo)':
+    isLive?'Transmisión en vivo (Live)':fmt;
+
+  // Instrucciones de estructura por formato
+  const fmtInstr=isReel?
+`Estructura nativa del formato Reel:
+- GANCHO (primeros 3 seg): qué se ve + qué se escucha. Detén el scroll antes de que desaparezca.
+- DESARROLLO: cortes rápidos, texto overlay, ritmo visual ágil. No más de 7 segundos sin un cambio visual.
+- CTA al final: pregunta, guardar, seguir o comentar.
+- Audio: sugiere sonido trending o voz en off.
+- Duración ideal: 30-60 seg para máximo alcance.`:
+    isCarrusel?
+`Estructura nativa del formato Carrusel:
+- SLIDE 1 (portada): título que obligue a deslizar. Es el gancho — si no lo abren, nada más importa.
+- SLIDES 2-8 (desarrollo): una idea por slide. Texto corto, visual limpio. Cada slide debe dar valor por sí solo.
+- SLIDE FINAL: resumen, CTA o "guarda esto para después".
+- Tip: el primer y último slide son los más vistos. Diseña en consecuencia.
+- Incluye el copy exacto de cada slide (título + texto de apoyo).`:
+    isHistoria?
+`Estructura nativa del formato Historia/Story:
+- Duración: 15 segundos por frame. Diseña para consumo vertical e instantáneo.
+- Frame 1: gancho visual o pregunta directa. Tap-through es tu enemigo.
+- Frames 2-4: desarrollo rápido o interacción (encuesta, pregunta, slider).
+- Frame final: CTA o swipe-up si aplica.
+- Tip: usa elementos interactivos — encuestas y preguntas duplican las respuestas.
+- Incluye el copy de cada frame y el tipo de elemento interactivo si aplica.`:
+    isPost?
+`Estructura nativa del Post estático:
+- La imagen lo es todo — el texto apoya, la imagen vende.
+- Copy de la imagen: máximo 7 palabras. Debe entenderse en 2 segundos.
+- Caption largo: hook en la primera línea (lo que se ve antes del "ver más"), luego valor, luego CTA.
+- El objetivo del post estático es guardar y compartir, no el alcance orgánico.
+- Incluye: concepto visual, copy de la imagen, y caption completo.`:
+    isLive?
+`Estructura para Transmisión en vivo:
+- Apertura (primeros 2 min): preséntate, di exactamente qué van a aprender/ver. Engancha a los que llegan tarde.
+- Desarrollo (cuerpo): divide en bloques de 10-15 min con momentos de interacción.
+- Interacción: preguntas al chat cada 5-7 min. El Live muere si no hay respuesta.
+- Cierre: resumen, CTA claro, anuncia el próximo Live.
+- Incluye guión de apertura y puntos clave de cada bloque.`:
+`Formato: ${fmt}. Adapta la estructura al formato.`;
+
+  const prompts={
+    ideas:`${base}${bn}Eres estratega de contenido especialista en ${plats}. Genera exactamente 5 ideas distintas para el siguiente formato:
+
+FORMATO: ${fmtDesc}
+${fmtInstr}
+
+Para cada idea entrega:
+1. **Título** — específico, llamativo, no genérico
+2. **Concepto** — qué se hace exactamente, adaptado a la estructura del formato
+3. **Hook o gancho** — cómo abre la pieza para capturar la atención inmediata
+4. **Por qué funciona** — mecanismo psicológico (curiosity gap, FOMO, relatabilidad, sorpresa)
+5. **Nota de producción** — cómo ejecutarlo de forma concreta en ${plats}
+
+Tono: ${fmtTone()}. Las ideas deben sentirse nativas del formato, no adaptaciones de otro.`,
+
+    hooks:`${base}${bn}Eres copywriter especialista en ${plats}. Genera 8 hooks distintos para este formato:
+
+FORMATO: ${fmtDesc}
+
+${isReel?'Los hooks son para los primeros 3 segundos del video — deben detener el scroll antes de que el dedo se mueva.':
+isCarrusel?'Los hooks son para la portada del carrusel — deben obligar a deslizar el primer slide.':
+isHistoria?'Los hooks son para el primer frame de la historia — deben evitar el tap-through inmediato.':
+isPost?'Los hooks son para el copy de la imagen y la primera línea del caption.':
+'Los hooks deben funcionar específicamente en el formato indicado.'}
+
+Un mecanismo psicológico diferente por hook:
+1. **Curiosity gap** — crea una brecha que el cerebro necesita cerrar
+2. **Dato contraintuitivo** — va contra lo que la gente cree
+3. **Amenaza o urgencia** — si no ves esto, te pasa X
+4. **Identificación directa** — para quien hace/es/siente X exactamente
+5. **Promesa de resultado** — en X tiempo / con X pasos lograrás Y
+6. **Controversia controlada** — opinión polémica pero defendible
+7. **Storytelling de apertura** — arranca en el clímax de una historia
+8. **POV inmersivo** — te pone dentro de una situación concreta
+
+Por cada hook: texto exacto adaptado al formato + por qué funciona psicológicamente. Tono: ${fmtTone()}.`,
+
+    caption:`${base}${bn}Eres copywriter especialista en ${plats}. Escribe 3 captions completos para este formato:
+
+FORMATO: ${fmtDesc}
+
+${isReel||isHistoria?
+'Para Reels e Historias el caption es secundario — la gente casi no lo lee. Hazlo corto, con un hook fuerte en la primera línea visible y un CTA claro. Hashtags al final.':
+isCarrusel?
+'Para Carruseles el caption sí importa — la gente que deslizó hasta el final lo lee. Puede ser más largo y con más contexto.':
+isPost?
+'Para posts estáticos el caption es clave — sin movimiento, el texto tiene que cargar el engagement.':
+'Adapta el caption al comportamiento de lectura específico de este formato.'}
+
+Cada caption incluye:
+- **Primera línea** (el hook — lo único que se ve antes de "ver más")
+- **Cuerpo** — valor, historia o contexto (máx 3 párrafos, adaptado al formato)
+- **CTA** — pregunta o llamada a la acción que invite a comentar o guardar
+- **Hashtags** — 5-8 mezclando volumen alto, medio y nicho
+
+Tono: ${fmtTone()}. Plataformas: ${plats}.`,
+
+    guion:`${base}${bn}Eres director creativo y guionista especialista en ${plats}.
+
+${isCarrusel?
+`Escribe el guión completo de un CARRUSEL para ${plats}, tono ${fmtTone()}.
+
+**SLIDE 1 — PORTADA (el gancho)**
+→ Texto principal (máx 8 palabras):
+→ Texto secundario (opcional):
+→ Elemento visual sugerido:
+
+**SLIDES 2-7 — DESARROLLO**
+(Una idea por slide. Incluye: título del slide + texto de apoyo + visual sugerido)
+
+Slide 2:
+→ Título:
+→ Texto:
+→ Visual:
+
+Slide 3: [repetir estructura]
+Slide 4: [repetir estructura]
+Slide 5: [repetir estructura]
+Slide 6: [repetir estructura]
+
+**SLIDE FINAL — CIERRE**
+→ Resumen o conclusión:
+→ CTA:
+
+**NOTAS DE DISEÑO:**
+- Paleta de colores sugerida
+- Tipografía recomendada (bold para títulos, regular para cuerpo)
+- Coherencia visual entre slides`:
+
+isHistoria?
+`Escribe el guión completo de una secuencia de HISTORIAS para ${plats}, tono ${fmtTone()}.
+
+**FRAME 1 — GANCHO** (15 seg)
+→ Copy:
+→ Visual:
+→ Elemento interactivo (si aplica):
+
+**FRAME 2** (15 seg)
+→ Copy:
+→ Visual:
+
+**FRAME 3** (15 seg)
+→ Copy:
+→ Visual:
+→ Elemento interactivo:
+
+**FRAME FINAL** (15 seg)
+→ Copy:
+→ CTA / swipe-up:
+
+**NOTAS:**
+- Fondo y estética
+- Música o audio sugerido
+- Stickers o elementos de interacción recomendados`:
+
+isPost?
+`Escribe el brief creativo completo de un POST ESTÁTICO para ${plats}, tono ${fmtTone()}.
+
+**CONCEPTO VISUAL**
+→ Qué muestra la imagen/gráfico:
+→ Composición sugerida:
+→ Colores y estética:
+
+**COPY DE LA IMAGEN** (máx 7 palabras — debe entenderse en 2 seg):
+
+**CAPTION COMPLETO**
+→ Primera línea (hook):
+→ Cuerpo:
+→ CTA:
+→ Hashtags:
+
+**NOTAS DE DISEÑO:**
+- Herramienta sugerida (Canva, Adobe Express, etc.)
+- Referencia visual`:
+
+isLive?
+`Escribe el guión completo de una TRANSMISIÓN EN VIVO para ${plats}, tono ${fmtTone()}.
+
+**APERTURA (0:00 - 2:00)**
+→ Saludo y presentación:
+→ Qué van a aprender/ver hoy:
+→ Primera pregunta al chat para activar:
+
+**BLOQUE 1 (2:00 - 15:00)**
+→ Tema:
+→ Puntos clave a cubrir:
+→ Momento de interacción con el chat:
+
+**BLOQUE 2 (15:00 - 30:00)**
+→ Tema:
+→ Puntos clave:
+→ Interacción:
+
+**BLOQUE 3 (30:00 - 45:00)**
+→ Tema:
+→ Puntos clave:
+→ Interacción:
+
+**CIERRE (45:00 - 50:00)**
+→ Resumen de lo visto:
+→ CTA principal:
+→ Anuncio del próximo Live:`:
+
+`Escribe un guión completo para REEL / VIDEO CORTO en ${plats}, tono ${fmtTone()}.
+
+**[00:00-00:03] GANCHO**
+→ Qué se ve en pantalla:
+→ Qué se dice/escucha:
+(Detén el scroll en menos de 3 segundos)
+
+**[00:03-00:15] SETUP**
+→ Establece el problema, tema o premisa
+
+**[00:15-00:45] DESARROLLO**
+→ El contenido central — detalla cada corte, texto overlay y acción concreta
+
+**[00:45-01:00] CIERRE + CTA**
+→ Resolución y llamada a la acción exacta
+
+**NOTAS DE PRODUCCIÓN:**
+- Música/audio sugerido
+- Tipo de edición (ritmo, cortes, transiciones)
+- Elementos visuales clave (texto overlay, colores, encuadre)`}`,
+
+    calendar:`${base}${bn}Eres estratega de contenido para ${plats}, tono ${fmtTone()}. Crea un calendario de contenido para los próximos 7 días priorizando el formato: ${fmtDesc}.
+
+| Día | Tema | Formato | Plataforma | Hora óptima | Objetivo | Idea en una línea |
+|-----|------|---------|------------|-------------|----------|-----------------|
+
+Después del calendario:
+- **Hilo conductor** — cómo los 7 posts se conectan entre sí
+- **Post estrella** — cuál tiene más potencial viral y por qué
+- **Repurposing** — cómo reutilizar el post más fuerte en otros formatos o plataformas
+
+Nota: prioriza ${fmtDesc} pero mezcla formatos para no saturar al algoritmo.`
+  };
+  return prompts[type]||prompts.ideas;
+}
+
+const tIc={ideas:'💡',hooks:'🪝',caption:'📝',guion:'🎬',calendar:'📅'};
+const tLb={ideas:'5 ideas',hooks:'Hooks',caption:'Captions',guion:'Guión',calendar:'Calendario'};
+
+// ══════════════════════════════════
+// RADAR — PROMPT GENERATORS
+// ══════════════════════════════════
+function cpTrends(){const t=document.getElementById('trends-ta').value;navigator.clipboard.writeText(t).then(()=>toast('✓ Copiado — pégalo en Claude',false,2000)).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✓ Copiado',false,2000);});}
+
+function genTrends(){
+  const niche=document.getElementById('tr-niche').value.trim();
+  if(!niche){toast('Escribe el nicho primero',false);return;}
+  const plat=document.getElementById('tr-plat').value;
+  const region=document.getElementById('tr-region').value;
+  const depth=document.getElementById('tr-depth').value;
+  const ctx=document.getElementById('tr-context').value.trim();
+  const today=new Date().toLocaleDateString('es',{day:'numeric',month:'long',year:'numeric'});
+  let pt='';
+  if(depth==='resumen'){
+    pt=`Hoy es ${today}. Dame un resumen rápido (máximo 5 minutos de lectura) de las tendencias actuales para el nicho de "${niche}" en ${plat}, mercado ${region}.${ctx?'\n\nContexto: '+ctx:''}\n\nEn formato muy conciso:\n1. **3 temas calientes ahora** — una línea cada uno\n2. **2 formatos que están funcionando** — nombre + por qué\n3. **3 sonidos o audios trending** — nombre + uso sugerido\n4. **Temporalidad relevante** — qué fechas o eventos próximos considerar\n\nSin explicaciones largas. Solo lo accionable.`;
+  } else if(depth==='competencia'){
+    pt=`Eres analista de redes sociales. Hoy es ${today}. Busca en la web información actualizada.\n\nNecesito un análisis de benchmarks y competencia para el nicho de "${niche}" en ${plat}, mercado ${region}.${ctx?'\nContexto: '+ctx:''}\n\n1. **Top 5 cuentas de referencia** — nombre, seguidores aprox., qué hace cada una diferente\n2. **Formato estrella de la competencia** — el tipo de contenido que más engagement genera\n3. **Frecuencia y horarios** — cada cuánto publican y a qué horas\n4. **Ganchos que repiten** — los hooks o ángulos que más usan\n5. **Oportunidades de diferenciación** — qué no está haciendo nadie todavía\n6. **Tendencia que la competencia ya adoptó** — en qué subieron ya el tren\n\nPara cada punto: dato concreto + fuente + qué hacer tú diferente.`;
+  } else {
+    pt=`Eres analista experto en tendencias de redes sociales con acceso a datos en tiempo real. Hoy es ${today}.\n\nBusca y analiza las tendencias actuales para el nicho de "${niche}" en ${plat}, mercado ${region}.${ctx?'\nContexto adicional: '+ctx:''}\n\nBusca en fuentes como TikTok Creative Center, Meta Ads Library, Social Media Today, Later Blog, Hootsuite Insights y noticias recientes del sector.\n\n## 1. TEMAS Y CONVERSACIONES CALIENTES\n- Tópicos que generan más engagement esta semana en "${niche}"\n- Ángulos que resuenan con la audiencia y por qué\n\n## 2. FORMATOS VIRALES EN ESTE MOMENTO\n- Tipos de video/publicación que están explotando en ${plat}\n- Estructura específica, duración óptima y elementos clave\n\n## 3. SONIDOS Y MÚSICAS TRENDING\n- Top 5 audios virales ahora para este nicho\n- Por qué funciona cada uno y cómo usarlo en "${niche}"\n\n## 4. TEMPORALIDAD Y CONTEXTO\n- Fechas, eventos o estaciones relevantes próximas\n- Cómo aprovecharlas para contenido oportuno\n\n## 5. REFERENTES Y BENCHMARKS\n- 3-5 cuentas de "${niche}" creciendo ahora y qué hacen diferente\n\n## 6. TENDENCIA EMERGENTE\n- Algo que aún no explotó pero tiene señales claras y cómo posicionarte antes\n\nPara cada punto: dato concreto + fuente + acción práctica inmediata.`;
+  }
+  const depthLabel=depth==='resumen'?'Resumen rápido':depth==='competencia'?'Competencia':'Análisis completo';
+  _showTrendsPb(pt,niche,plat,depthLabel);
+}
+
+function genTrendsDiario(){
+  const niche=document.getElementById('tr-niche').value.trim()||'marketing digital';
+  const plat=document.getElementById('tr-plat').value;
+  const region=document.getElementById('tr-region').value;
+  const today=new Date().toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const pt=`Hoy es ${today}. Busca en la web las novedades de las últimas 24-48 horas en redes sociales para el nicho de "${niche}" en ${region}.\n\nBriefing diario rápido:\n1. **Noticia del día** — algo relevante que está pasando en ${plat} o en el sector de "${niche}"\n2. **Audio o sonido nuevo** — si hay alguno despegando en las últimas 24h\n3. **Tema o meme viral** — algo que se está compartiendo mucho ahora mismo\n4. **Oportunidad de contenido** — qué tipo de post haría hoy para "${niche}" en ${plat}\n\nSé concreto. No más de 300 palabras.`;
+  _showTrendsPb(pt,niche,plat,'Actualización diaria');
+}
+
+function genQuickTrend(type){
+  const niche=document.getElementById('tr-niche').value.trim()||'contenido en redes sociales';
+  const plat=document.getElementById('tr-plat').value;
+  const today=new Date().toLocaleDateString('es',{day:'numeric',month:'long',year:'numeric'});
+  const prompts={
+    musica:`Hoy es ${today}. Busca en la web los sonidos y músicas más trending en ${plat} para "${niche}". Top 8: nombre del audio, por qué está viralizando, cómo usarlo. Nombres reales de audios o canciones.`,
+    formatos:`Hoy es ${today}. Busca en la web los formatos más virales en ${plat} para "${niche}": los 5 con más engagement, estructura exacta, duración óptima y ejemplo concreto.`,
+    hashtags:`Hoy es ${today}. Busca hashtags en crecimiento para "${niche}" en ${plat}. Dame 20: 5 masivos (>1M), 8 medianos (100K-1M), 7 de nicho (<100K). Volumen aproximado y si está subiendo o estable.`,
+    nicho:`Hoy es ${today}. ¿Qué temas generan más engagement en "${niche}" en ${plat} esta semana? Top 6: por qué resuenan, qué emoción activan, ángulo de contenido para aprovecharlo.`
+  };
+  const labels={musica:'Músicas trending',formatos:'Formatos virales',hashtags:'Hashtags',nicho:'Temas del nicho'};
+  _showTrendsPb(prompts[type]||prompts.musica,niche,plat,labels[type]||'Rápido');
+}
+
+function _showTrendsPb(pt,niche,plat,label){
+  const rid=saveToRadarHistory(pt,niche,plat,label);
+  // Abrir popup del item recién creado para que el usuario copie el prompt
+  setTimeout(()=>{
+    openRadarItemModal(rid);
+    renderRadarHistory();renderRadarSel();
+  },80);
+  toast('✓ Prompt creado — está en tu biblioteca',false,2500);
+}
+
+function gen(){
+  const pt=buildPrompt(gType);document.getElementById('pta').value=pt;document.getElementById('pb').style.display='block';
+  setTimeout(()=>document.getElementById('pb').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+  const cid=document.getElementById('gc').value;const c=db.clients.find(x=>x.id==cid);
+  const briefing=document.getElementById('briefing').value.trim();
+  const hi={id:Date.now(),type:gType,icon:tIc[gType],label:tLb[gType],client:c?c.name:'General',topic:briefing?briefing.slice(0,50):'',text:pt,date:new Date().toLocaleDateString('es')};
+  db.history.unshift(hi);if(db.history.length>50)db.history=db.history.slice(0,50);
+  save();renderHist();setAH(hi.id);
+}
+function cpPrompt(){const t=document.getElementById('pta').value;navigator.clipboard.writeText(t).then(()=>toast('✓ Copiado — pégalo en Claude',false,2000)).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✓ Copiado',false,2000);});}
+function sav2idea(){const briefing=document.getElementById('briefing').value.trim();if(!briefing){toast('Escribe algo en el briefing primero',false);return;}const cid=document.getElementById('gc').value;const c=db.clients.find(x=>x.id==cid);const fl=briefing.split('\n')[0].slice(0,120);db.ideas.unshift({id:Date.now(),text:fl,clientId:cid,clientName:c?c.name:'General',platform:'General',format:'',status:'cruda',notes:briefing.length>fl.length?briefing.slice(fl.length).trim():'',links:[],date:new Date().toLocaleDateString('es')});save();rId();renderBP();renderDash();toast('✓ Idea guardada en el banco',false);}
+
+// ══════════════════════════════════
+// HISTORIAL
+// ══════════════════════════════════
+function renderHist(){
+  const list=document.getElementById('hist-list');
+  if(!db.history.length){list.innerHTML=`<div style="font-size:11px;color:var(--text3);padding:3px 8px 3px 18px">Sin prompts aún</div>`;return;}
+  list.innerHTML=db.history.slice(0,8).map(h=>`
+    <div class="hi ${aHId===h.id?'on':''}" id="hi-${h.id}">
+      <div class="hi-ic" onclick="loadH(${h.id})">${h.icon}</div>
+      <div class="hi-b" onclick="loadH(${h.id})">
+        <div class="hi-t ${aHId===h.id?'on':''}">${h.label}${h.client!=='General'?' · '+h.client:''}${h.topic?' — '+h.topic:''}</div>
+        <div class="hi-m">${h.date}</div>
+      </div>
+      <button class="hi-del" onclick="delH(${h.id})">✕</button>
+    </div>`).join('')+
+    (db.history.length>8?`<button class="hist-more" onclick="go('generar')">+${db.history.length-8} más…</button>`:'');
+}
+function setAH(id){aHId=id;document.querySelectorAll('.hi').forEach(el=>{const hid=parseInt(el.id.replace('hi-',''));el.classList.toggle('on',hid===id);const t=el.querySelector('.hi-t');if(t)t.classList.toggle('on',hid===id);});}
+function loadH(id){const h=db.history.find(x=>x.id===id);if(!h)return;go('generar');setTimeout(()=>{document.getElementById('pta').value=h.text;document.getElementById('pb').style.display='block';document.getElementById('pb').scrollIntoView({behavior:'smooth',block:'nearest'});},80);setAH(id);}
+function delH(id){const idx=db.history.findIndex(h=>h.id===id);if(idx<0)return;lastU={type:'hi',item:db.history[idx],idx};db.history.splice(idx,1);if(aHId===id)aHId=null;save();renderHist();toast('Prompt eliminado',true);}
+
+function fillSels(){const base='<option value="general">General</option>'+db.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');['lc','gc','eic'].forEach(id=>{const el=document.getElementById(id);if(!el)return;const p=el.value;el.innerHTML=base;if(p)el.value=p;});if(activeClId){['lc','gc','eic'].forEach(id=>{const el=document.getElementById(id);if(el&&(el.value==='general'||!el.value))el.value=activeClId;});}}
+
+load();
+</script>
+<!-- FIREBASE SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+  import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2GzlrkbP13JZnBVtHbtgukevqpsyZf0c",
+    authDomain: "creative-dashboard-aba9c.firebaseapp.com",
+    projectId: "creative-dashboard-aba9c",
+    storageBucket: "creative-dashboard-aba9c.firebasestorage.app",
+    messagingSenderId: "853292296539",
+    appId: "1:853292296539:web:2447f95033a13ad24b127e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db_fs = getFirestore(app);
+
+  // Exponer al scope global para que las funciones del app las usen
+  window.fbAuth = auth;
+  window.fbDb = db_fs;
+  window.fbAuthModule = { GoogleAuthProvider, signInWithPopup, signOut };
+  window.fbFirestore = { doc, setDoc, getDoc };
+
+  // Escuchar cambios de estado de autenticación
+  onAuthStateChanged(auth, async (user) => {
+    const loginOverlay = document.getElementById('m-login');
+    const userWrap = document.getElementById('sb-user-wrap');
+    const userAvatar = document.getElementById('user-avatar');
+    const userName = document.getElementById('user-name');
+
+    if (user) {
+      // Usuario logueado
+      fbUser = user;
+      if (loginOverlay) loginOverlay.style.display = 'none';
+      if (userWrap) userWrap.style.display = 'block';
+      if (userAvatar && user.photoURL) userAvatar.src = user.photoURL;
+      if (userName) userName.textContent = user.displayName || user.email;
+
+      // Cargar datos de Firebase
+      await loadFromFirebase(user.uid);
+      fillSels();renderAll();renderHist();renderSbClients();renderDash();
+
+    } else {
+      // No hay sesión — mostrar login
+      fbUser = null;
+      if (loginOverlay) loginOverlay.style.display = 'flex';
+      if (userWrap) userWrap.style.display = 'none';
+    }
+  });
+</script>
+</body>
+</html>
