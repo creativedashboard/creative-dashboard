@@ -2713,6 +2713,9 @@ load();
   window.fbFirestore = { doc, setDoc, getDoc };
 
   // Escuchar cambios de estado de autenticación
+  // Guardar el último UID para detectar cambios de usuario
+  let lastUid = localStorage.getItem('cd_last_uid');
+
   onAuthStateChanged(auth, async (user) => {
     const loginOverlay = document.getElementById('m-login');
     const userWrap = document.getElementById('sb-user-wrap');
@@ -2720,20 +2723,34 @@ load();
     const userName = document.getElementById('user-name');
 
     if (user) {
-      // Usuario logueado
+      // Si cambió el usuario — limpiar datos del anterior
+      if (lastUid && lastUid !== user.uid) {
+        localStorage.removeItem('cd_v8');
+        localStorage.removeItem('cd_acl');
+        db = {clients:[],ideas:[],links:[],history:[],buzon:[],radarHistory:[],planner:{}};
+        fillSels();renderAll();renderHist();renderSbClients();renderDash();
+      }
+      lastUid = user.uid;
+      localStorage.setItem('cd_last_uid', user.uid);
+
       fbUser = user;
       if (loginOverlay) loginOverlay.style.display = 'none';
       if (userWrap) userWrap.style.display = 'block';
       if (userAvatar && user.photoURL) userAvatar.src = user.photoURL;
       if (userName) userName.textContent = user.displayName || user.email;
 
-      // Cargar datos de Firebase
+      // Cargar datos de Firebase (sobreescribe localStorage si hay datos en la nube)
       await loadFromFirebase(user.uid);
       fillSels();renderAll();renderHist();renderSbClients();renderDash();
 
     } else {
-      // No hay sesión — mostrar login
+      // Cerró sesión — limpiar todo
       fbUser = null;
+      lastUid = null;
+      localStorage.removeItem('cd_v8');
+      localStorage.removeItem('cd_acl');
+      localStorage.removeItem('cd_last_uid');
+      db = {clients:[],ideas:[],links:[],history:[],buzon:[],radarHistory:[],planner:{}};
       if (loginOverlay) loginOverlay.style.display = 'flex';
       if (userWrap) userWrap.style.display = 'none';
     }
