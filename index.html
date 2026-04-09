@@ -1321,30 +1321,33 @@ function save(){
 
 async function loadFromFirebase(uid){
   try{
+    // Primero cargar localStorage (inmediato, solo si es el mismo usuario)
+    const lastUid=localStorage.getItem('cd_last_uid');
+    if(lastUid===uid){
+      try{const r=localStorage.getItem('cd_v8');if(r)db=JSON.parse(r);}catch(e){}
+      db.clients=db.clients||[];db.ideas=db.ideas||[];db.links=db.links||[];
+      db.history=db.history||[];db.buzon=db.buzon||[];db.radarHistory=db.radarHistory||[];db.planner=db.planner||{};
+      db.ideas.forEach(i=>{if(!i.links)i.links=[];if(!i.status)i.status='cruda';if(!i.clientName)i.clientName='General';if(!i.clientIds)i.clientIds=[String(i.clientId||'general')];if(!i.clientNames)i.clientNames=[i.clientName];i.status=normalizeStatus(i.status);});
+      activeClId=localStorage.getItem('cd_acl')||null;
+      fillSels();renderAll();renderHist();renderSbClients();renderDash();
+    }
+    // Luego cargar desde Firestore (fuente de verdad)
     const docRef=window.fbFirestore.doc(window.fbDb,'users',uid,'data','main');
     const snap=await window.fbFirestore.getDoc(docRef);
     if(snap.exists()){
       const remote=JSON.parse(snap.data().db||'{}');
-      // Merge strategy: usar el más reciente comparando cantidad de ideas
-      const localIdeas=(db.ideas||[]).length;
-      const remoteIdeas=(remote.ideas||[]).length;
-      if(remoteIdeas>=localIdeas){
-        db=remote;
-        db.clients=db.clients||[];db.ideas=db.ideas||[];db.links=db.links||[];
-        db.history=db.history||[];db.buzon=db.buzon||[];db.radarHistory=db.radarHistory||[];db.planner=db.planner||{};
-        db.ideas.forEach(i=>{if(!i.links)i.links=[];if(!i.status)i.status='cruda';if(!i.clientName)i.clientName='General';if(!i.clientIds)i.clientIds=[String(i.clientId||'general')];if(!i.clientNames)i.clientNames=[i.clientName];i.status=normalizeStatus(i.status);});
-        localStorage.setItem('cd_v8',JSON.stringify(db));
-        fillSels();renderAll();renderHist();renderSbClients();renderDash();
-        toast('✓ Datos sincronizados desde la nube',false,2500);
-      } else {
-        // Local tiene más datos — subir a Firebase
-        save();
-        toast('✓ Datos locales sincronizados a la nube',false,2500);
-      }
+      db=remote;
+      db.clients=db.clients||[];db.ideas=db.ideas||[];db.links=db.links||[];
+      db.history=db.history||[];db.buzon=db.buzon||[];db.radarHistory=db.radarHistory||[];db.planner=db.planner||{};
+      db.ideas.forEach(i=>{if(!i.links)i.links=[];if(!i.status)i.status='cruda';if(!i.clientName)i.clientName='General';if(!i.clientIds)i.clientIds=[String(i.clientId||'general')];if(!i.clientNames)i.clientNames=[i.clientName];i.status=normalizeStatus(i.status);});
+      activeClId=localStorage.getItem('cd_acl_'+uid)||null;
+      localStorage.setItem('cd_v8',JSON.stringify(db));
     } else {
-      // Primera vez en la nube — subir datos locales
-      save();
+      // Primera vez — subir datos locales si los hay
+      if(db.clients.length||db.ideas.length){save();}
     }
+    const seen=localStorage.getItem('cd_onb_seen_'+uid);
+    if(!seen&&!db.clients.length)setTimeout(()=>openM('m-onb'),600);
   }catch(e){console.warn('Firebase load error:',e);}
 }
 
@@ -1359,7 +1362,7 @@ function fbSignOut(){
   window.fbAuthModule.signOut(window.fbAuth);
 }
 function renderAll(){rCl();rId();rLk();}
-function closeOnb(){closeM('m-onb');localStorage.setItem('cd_onb_seen','1');}
+function closeOnb(){closeM('m-onb');localStorage.setItem('cd_onb_seen','1');if(fbUser)localStorage.setItem('cd_onb_seen_'+fbUser.uid,'1');}
 
 // ══════════════════════════════════
 // THEME
@@ -1551,7 +1554,7 @@ function renderSbClients(){
       ${activeClId==c.id?'<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}
     </button>`).join('');
 }
-function setActiveCl(id){activeClId=id;localStorage.setItem('cd_acl',id||'');iF='todos';lF='todos';renderSbClients();fillSels();rId();rLk();renderDash();if(id){const el=document.getElementById('gc');if(el)el.value=id;loadCtx();}}
+function setActiveCl(id){activeClId=id;localStorage.setItem('cd_acl',id||'');if(fbUser)localStorage.setItem('cd_acl_'+fbUser.uid,id||'');iF='todos';lF='todos';renderSbClients();fillSels();rId();rLk();renderDash();if(id){const el=document.getElementById('gc');if(el)el.value=id;loadCtx();}}
 
 // ══════════════════════════════════
 // CLIENTES
@@ -2685,7 +2688,16 @@ function delH(id){const idx=db.history.findIndex(h=>h.id===id);if(idx<0)return;l
 
 function fillSels(){const base='<option value="general">General</option>'+db.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');['lc','gc','eic'].forEach(id=>{const el=document.getElementById(id);if(!el)return;const p=el.value;el.innerHTML=base;if(p)el.value=p;});if(activeClId){['lc','gc','eic'].forEach(id=>{const el=document.getElementById(id);if(el&&(el.value==='general'||!el.value))el.value=activeClId;});}}
 
-load();
+// Solo cargar tema y configuración visual — los DATOS los carga Firebase
+function load(){
+  // Solo tema
+  const saved=localStorage.getItem('cd_theme_v3');
+  if(saved){try{const td=JSON.parse(saved);applyColors(td.colors,false);activePreset=td.preset||'light';}catch(e){applyPreset('light',true);}}
+  else applyPreset('light',true);
+  // Inicializar DB vacío — Firebase lo llenará
+  db={clients:[],ideas:[],links:[],history:[],buzon:[],radarHistory:[],planner:{}};
+}
+load(); // Solo aplica tema, NO renderiza datos de otro usuario
 </script>
 <!-- FIREBASE SDK -->
 <script type="module">
