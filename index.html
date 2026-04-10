@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="es" data-theme="light">
+<!DOCTYPE html><html lang="es" data-theme="light">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Creative Dashboard</title>
@@ -677,7 +676,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
           <div><div class="page-title">Links & referencias</div><div class="page-sub">Tendencias, referencias visuales, música — incluye los links de tus ideas</div></div>
         </div>
       </div>
-      <div class="card" style="margin-bottom:20px">
+      <div class="card" style="margin-bottom:28px">
         <div class="g2" style="margin-bottom:12px">
           <div><label>URL</label><input id="lurl" placeholder="https://..." oninput="pvLink(this.value)"/></div>
           <div><label>Descripción</label><input id="ldesc" placeholder="¿Para qué sirve?"/></div>
@@ -686,19 +685,39 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
         <div class="g2">
           <div><label>Cliente</label><select id="lc"></select></div>
           <div><label>Tipo</label>
-            <select id="lt">
+            <select id="lt" onchange="toggleCreatorFields(this.value,'lc-extra')">
               <option value="🔥 Tendencia">🔥 Tendencia</option>
               <option value="🎨 Referencia visual">🎨 Referencia visual</option>
               <option value="🎵 Música/Audio">🎵 Música/Audio</option>
               <option value="🛠 Herramienta">🛠 Herramienta</option>
               <option value="👀 Competencia">👀 Competencia</option>
+              <option value="⭐ Creador de referencia">⭐ Creador de referencia</option>
               <option value="📌 Otro">📌 Otro</option>
             </select>
           </div>
         </div>
+        <!-- Campos extra para Creador de referencia -->
+        <div id="lc-extra" style="display:none;margin-top:10px">
+          <div class="g2" style="margin-bottom:10px">
+            <div><label>Handle / @usuario</label><input id="l-handle" placeholder="@nombreusuario"/></div>
+            <div><label>Red social</label>
+              <select id="l-red">
+                <option value="Instagram">Instagram</option>
+                <option value="TikTok">TikTok</option>
+                <option value="YouTube">YouTube</option>
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="Twitter/X">Twitter/X</option>
+                <option value="Facebook">Facebook</option>
+                <option value="Otra">Otra</option>
+              </select>
+            </div>
+          </div>
+          <div><label>¿Por qué los sigues? ¿Qué puedes aprender de ellos?</label><textarea id="l-why" placeholder="ej: su storytelling en Reels, cómo usan los hooks, su estilo visual..." style="min-height:60px"></textarea></div>
+        </div>
         <div style="margin-top:14px;text-align:right"><button class="btn primary" onclick="saveLink()">Guardar link</button></div>
       </div>
-      <div class="fbar" id="lfbar"></div>
+      <div id="lfbar-header" style="display:none;margin-top:28px;margin-bottom:10px;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Filtrar por cliente</div>
+      <div id="lfbar" class="fbar" style="margin-top:0"></div>
       <div id="ll"></div>
     </div>
   </div>
@@ -944,6 +963,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
   </div>
 
 </main>
+
 </div>
 
 <!-- ═══ MODALES ═══ -->
@@ -1080,6 +1100,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
               <option value="🎵 Música/Audio">🎵 Música/Audio</option>
               <option value="🛠 Herramienta">🛠 Herramienta</option>
               <option value="👀 Competencia">👀 Competencia</option>
+              <option value="⭐ Creador de referencia">⭐ Creador de referencia</option>
               <option value="📌 Otro">📌 Otro</option>
             </select>
             <button class="btn primary sm" onclick="addIL()" style="white-space:nowrap;gap:5px">
@@ -1215,42 +1236,6 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 </div>
 
 <!-- FIREBASE LOGIN -->
-<div id="m-login" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px">
-  <div style="text-align:center">
-    <div style="font-size:36px;margin-bottom:8px">⚡</div>
-    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:600;color:var(--text);margin-bottom:6px">Creative Dashboard</div>
-    <div style="font-size:14px;color:var(--text2)">Inicia sesión para sincronizar tus datos entre dispositivos</div>
-  </div>
-  <button onclick="signInWithGoogle()" style="display:flex;align-items:center;gap:12px;padding:12px 24px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;box-shadow:var(--shadow-sm)" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-    <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.31z"/></svg>
-    Continuar con Google
-  </button>
-  <div style="font-size:11px;color:var(--text3);text-align:center;max-width:300px;line-height:1.6">
-    Tus datos se sincronizan automáticamente entre todos tus dispositivos.<br>
-    Nunca compartimos tu información con terceros.
-  </div>
-</div>
-
-<!-- PANTALLA DE ACTIVACIÓN -->
-<div id="m-activation" style="position:fixed;inset:0;z-index:9998;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px">
-  <div style="text-align:center">
-    <div style="font-size:36px;margin-bottom:8px">🔑</div>
-    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px">Activa tu acceso</div>
-    <div style="font-size:14px;color:var(--text2);max-width:320px;line-height:1.6">Ingresa el código de activación que recibiste al comprar Creative Dashboard</div>
-  </div>
-  <div style="width:min(340px,90vw)">
-    <input id="activation-input" placeholder="Ej: CD-XXXX-XXXX" style="width:100%;text-align:center;font-size:18px;font-weight:600;letter-spacing:.1em;padding:14px;border:2px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;transition:border-color .15s" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')verifyActivationCode()"/>
-    <div id="activation-error" style="display:none;margin-top:8px;font-size:12px;color:var(--red);text-align:center;padding:8px;background:var(--red-bg);border-radius:var(--r-sm)"></div>
-    <button onclick="verifyActivationCode()" id="activation-btn" style="width:100%;margin-top:12px;padding:13px;border-radius:var(--r);border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s">
-      Activar Creative Dashboard →
-    </button>
-  </div>
-  <div style="font-size:11px;color:var(--text3);text-align:center;line-height:1.6">
-    ¿No tienes un código? Consíguelo en <a href="https://gumroad.com" target="_blank" style="color:var(--accent)">Gumroad</a><br>
-    <button onclick="fbSignOut()" style="background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;text-decoration:underline">Cerrar sesión</button>
-  </div>
-</div>
-
 
 <!-- USER BADGE EN SIDEBAR -->
 <div id="user-badge" style="display:none;padding:8px 10px;margin-bottom:6px;background:var(--surface2);border-radius:var(--r-sm);display:flex;align-items:center;gap:8px">
@@ -1923,18 +1908,89 @@ function rId(){
 // ══════════════════════════════════
 // LINKS
 // ══════════════════════════════════
-function saveLink(){const url=document.getElementById('lurl').value.trim();if(!url){toast('Escribe una URL',false);return;}const rawDesc=document.getElementById('ldesc').value.trim();const type=document.getElementById('lt').value;const cid=document.getElementById('lc').value;const c=db.clients.find(x=>x.id==cid);const info=platInfo(url);let desc=rawDesc||(info?.user?info.user+(info.pl?' ('+info.pl+')':''):getDom(url));db.links.unshift({id:Date.now(),url,desc,type,clientId:cid,clientName:c?c.name:'General',date:new Date().toLocaleDateString('es')});save();document.getElementById('lurl').value='';document.getElementById('ldesc').value='';document.getElementById('lpw').style.display='none';rLk();renderDash();toast('✓ Link guardado',false);}
+function toggleCreatorFields(val, wrapId){
+  const wrap=document.getElementById(wrapId);
+  if(wrap)wrap.style.display=val==='⭐ Creador de referencia'?'block':'none';
+}
+function saveLink(){
+  const url=document.getElementById('lurl').value.trim();
+  if(!url){toast('Escribe una URL',false);return;}
+  const rawDesc=document.getElementById('ldesc').value.trim();
+  const type=document.getElementById('lt').value;
+  const cid=document.getElementById('lc').value;
+  const c=db.clients.find(x=>x.id==cid);
+  const info=platInfo(url);
+  let desc=rawDesc||(info?.user?info.user+(info.pl?' ('+info.pl+')':''):getDom(url));
+  const isCreator=type==='⭐ Creador de referencia';
+  const handle=isCreator?document.getElementById('l-handle').value.trim():'';
+  const red=isCreator?document.getElementById('l-red').value:'';
+  const why=isCreator?document.getElementById('l-why').value.trim():'';
+  db.links.unshift({id:Date.now(),url,desc,type,clientId:cid,clientName:c?c.name:'General',date:new Date().toLocaleDateString('es'),handle,red,why});
+  save();
+  document.getElementById('lurl').value='';
+  document.getElementById('ldesc').value='';
+  document.getElementById('lpw').style.display='none';
+  if(isCreator){document.getElementById('l-handle').value='';document.getElementById('l-why').value='';document.getElementById('lc-extra').style.display='none';document.getElementById('lt').value='🔥 Tendencia';}
+  rLk();renderDash();toast('✓ Link guardado',false);
+}
 function delLk(id){const idx=db.links.findIndex(l=>l.id===id);if(idx<0)return;const lnk=db.links[idx];if(lnk.fromIdea){const idea=db.ideas.find(i=>i.id===lnk.fromIdea);if(idea)idea.links=idea.links.filter(l=>l.id!==id);}lastU={type:'lk',item:lnk,idx};db.links.splice(idx,1);save();rLk();rId();toast('Link eliminado',true);}
 function setLF(t){lF=t;rLk();}
 function rLk(){
   const list=document.getElementById('ll');const bar=document.getElementById('lfbar');
   let base=activeClId?db.links.filter(l=>l.clientId==activeClId):db.links;
-  if(!activeClId){const tags=['todos','General',...db.clients.map(c=>c.name)];bar.innerHTML=tags.map(t=>`<button class="fc ${t===lF?'on':''}" onclick="setLF('${t}')">${t}</button>`).join('');if(lF!=='todos')base=base.filter(l=>l.clientName===lF);}else bar.innerHTML='';
+  const header=document.getElementById('lfbar-header');
+  if(!activeClId){
+    const tags=['todos','General',...db.clients.map(c=>c.name)];
+    bar.innerHTML=tags.map(t=>`<button class="fc ${t===lF?'on':''}" onclick="setLF('${t}')">${t}</button>`).join('');
+    if(header)header.style.display='block';
+    if(lF!=='todos')base=base.filter(l=>l.clientName===lF);
+  }else{
+    bar.innerHTML='';
+    if(header)header.style.display='none';
+  }
   if(!base.length){list.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div><div class="empty-title">Sin links aún</div><div class="empty-sub">Guarda referencias, tendencias y herramientas aquí.<br>Los links vinculados a ideas también aparecen aquí.</div></div>`;return;}
-  list.innerHTML=`<p class="ctr">${base.length} link${base.length!==1?'s':''}</p>`+
-    base.map(l=>{const info=platInfo(l.url);const fav=favUrl(l.url);return`<div class="link-card">
+
+  // Separar creadores de referencia del resto
+  const creadores=base.filter(l=>l.type==='⭐ Creador de referencia');
+  const resto=base.filter(l=>l.type!=='⭐ Creador de referencia');
+
+  let html=`<p class="ctr">${base.length} link${base.length!==1?'s':''}</p>`;
+
+  // Sección de creadores si hay alguno
+  if(creadores.length){
+    html+=`<div style="margin-bottom:20px">
+      <div class="dash-section-title" style="margin-bottom:10px">⭐ Creadores de referencia</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
+        ${creadores.map(l=>{
+          const col=NET_COLORS[l.red]||'var(--accent)';
+          const fav=favUrl(l.url);
+          return`<div class="link-card" style="border-left:3px solid ${col}">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <div class="link-fav">${fav?`<img src="${fav}" onerror="this.innerHTML='⭐'">`:'<span style="font-size:14px">⭐</span>'}</div>
+              <div style="flex:1;overflow:hidden">
+                <div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.handle||l.desc}</div>
+                <div style="font-size:11px;color:${col};font-weight:500">${l.red||''}</div>
+              </div>
+              <button class="ib del" onclick="delLk(${l.id})"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+            </div>
+            <a href="${l.url}" target="_blank" style="font-size:11px;color:var(--text3);text-decoration:none;display:block;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${getDom(l.url)}</a>
+            ${l.why?`<div style="font-size:11px;color:var(--text2);line-height:1.5;border-top:1px solid var(--border);padding-top:6px;margin-top:4px">${l.why.slice(0,100)}${l.why.length>100?'…':''}</div>`:''}
+            <div style="display:flex;align-items:center;gap:5px;margin-top:6px">
+              ${!activeClId?`<span class="badge bd" style="font-size:10px">${l.clientName}</span>`:''}
+              <span style="font-size:10px;color:var(--text3);margin-left:auto">${l.date}</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Resto de links
+  if(resto.length){
+    if(creadores.length)html+=`<div class="dash-section-title" style="margin-bottom:10px">Otros links</div>`;
+    html+=resto.map(l=>{const info=platInfo(l.url);const fav=favUrl(l.url);return`<div class="link-card">
       <div style="display:flex;align-items:flex-start;gap:10px">
-        <div class="link-fav">${fav?`<img src="${fav}" onerror="this.innerHTML='🔗';this.style.cssText='font-size:14px;width:100%;height:100%;display:flex;align-items:center;justify-content:center'">`:'<span style="font-size:14px">🔗</span>'}</div>
+        <div class="link-fav">${fav?`<img src="${fav}" onerror="this.innerHTML='🔗'">`:'<span style="font-size:14px">🔗</span>'}</div>
         <div style="flex:1;overflow:hidden">
           <a href="${l.url}" target="_blank" class="link-title">${l.desc||l.url}</a>
           ${info?.user?`<div style="font-size:11px;color:var(--text2)">${info.user}</div>`:''}
@@ -1948,6 +2004,9 @@ function rLk(){
         <span style="font-size:10px;color:var(--text3);margin-left:auto">${l.date}</span>
       </div>
     </div>`;}).join('');
+  }
+
+  list.innerHTML=html;
 }
 
 // ══════════════════════════════════
@@ -2261,10 +2320,7 @@ function renderRadarHistory(){
     </div>`).join('');
 }
 function reuseRadarPrompt(id){
-  const item=db.radarHistory.find(r=>r.id===id);if(!item)return;
-  document.getElementById('trends-ta').value=item.prompt;
-  document.getElementById('trends-pb').style.display='block';
-  document.getElementById('trends-pb').scrollIntoView({behavior:'smooth',block:'nearest'});
+  openRadarItemModal(id);
 }
 
 function togP(el,v){el.classList.toggle('on');if(el.classList.contains('on'))gP.push(v);else gP=gP.filter(x=>x!==v);}
@@ -2617,7 +2673,7 @@ const tLb={ideas:'5 ideas',hooks:'Hooks',caption:'Captions',guion:'Guión',calen
 // ══════════════════════════════════
 // RADAR — PROMPT GENERATORS
 // ══════════════════════════════════
-function cpTrends(){const t=document.getElementById('trends-ta').value;navigator.clipboard.writeText(t).then(()=>toast('✓ Copiado — pégalo en Claude',false,2000)).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✓ Copiado',false,2000);});}
+function cpTrends(){/* deprecated — copying handled by cpRadarPrompt */}
 
 function genTrends(){
   const niche=document.getElementById('tr-niche').value.trim();
@@ -2664,10 +2720,10 @@ function genQuickTrend(type){
 
 function _showTrendsPb(pt,niche,plat,label){
   const rid=saveToRadarHistory(pt,niche,plat,label);
-  // Abrir popup del item recién creado para que el usuario copie el prompt
   setTimeout(()=>{
+    renderRadarHistory();
+    renderRadarSel();
     openRadarItemModal(rid);
-    renderRadarHistory();renderRadarSel();
   },80);
   toast('✓ Prompt creado — está en tu biblioteca',false,2500);
 }
@@ -2841,5 +2897,44 @@ load(); // Solo aplica tema, NO renderiza datos de otro usuario
     }
   });
 </script>
+
+<!-- LOGIN Y ACTIVACIÓN -->
+<!-- LOGIN Y ACTIVACIÓN (dentro del app para no afectar layout) -->
+<div id="m-login" style="position:fixed;inset:0;z-index:9999;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:24px">
+  <div style="text-align:center">
+    <div style="font-size:36px;margin-bottom:8px">⚡</div>
+    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:600;color:var(--text);margin-bottom:6px">Creative Dashboard</div>
+    <div style="font-size:14px;color:var(--text2)">Inicia sesión para sincronizar tus datos entre dispositivos</div>
+  </div>
+  <button onclick="signInWithGoogle()" style="display:flex;align-items:center;gap:12px;padding:12px 24px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;box-shadow:var(--shadow-sm)" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+    <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-7.18-2.54H1.83v2.07A8 8 0 0 0 8.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 0 1 0-3.04V5.41H1.83a8 8 0 0 0 0 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.4L4.5 7.49a4.77 4.77 0 0 1 4.48-3.31z"/></svg>
+    Continuar con Google
+  </button>
+  <div style="font-size:11px;color:var(--text3);text-align:center;max-width:300px;line-height:1.6">
+    Tus datos se sincronizan automáticamente entre todos tus dispositivos.<br>
+    Nunca compartimos tu información con terceros.
+  </div>
+</div>
+
+<!-- PANTALLA DE ACTIVACIÓN -->
+<div id="m-activation" style="position:fixed;inset:0;z-index:9998;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+  <div style="text-align:center">
+    <div style="font-size:36px;margin-bottom:8px">🔑</div>
+    <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:600;color:var(--text);margin-bottom:6px">Activa tu acceso</div>
+    <div style="font-size:14px;color:var(--text2);max-width:320px;line-height:1.6">Ingresa el código de activación que recibiste al comprar Creative Dashboard</div>
+  </div>
+  <div style="width:min(340px,90vw)">
+    <input id="activation-input" placeholder="Ej: CD-XXXX-XXXX" style="width:100%;text-align:center;font-size:18px;font-weight:600;letter-spacing:.1em;padding:14px;border:2px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;transition:border-color .15s" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')verifyActivationCode()"/>
+    <div id="activation-error" style="display:none;margin-top:8px;font-size:12px;color:var(--red);text-align:center;padding:8px;background:var(--red-bg);border-radius:var(--r-sm)"></div>
+    <button onclick="verifyActivationCode()" id="activation-btn" style="width:100%;margin-top:12px;padding:13px;border-radius:var(--r);border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s">
+      Activar Creative Dashboard →
+    </button>
+  </div>
+  <div style="font-size:11px;color:var(--text3);text-align:center;line-height:1.6">
+    ¿No tienes un código? Consíguelo en <a href="https://gumroad.com" target="_blank" style="color:var(--accent)">Gumroad</a><br>
+    <button onclick="fbSignOut()" style="background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;text-decoration:underline">Cerrar sesión</button>
+  </div>
+</div>
+
 </body>
 </html>
