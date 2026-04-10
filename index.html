@@ -1487,15 +1487,17 @@ async function loadFromFirebase(uid){
 function signInWithGoogle(){
   if(!window.fbAuth)return;
   const provider=new window.fbAuthModule.GoogleAuthProvider();
-  const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  if(isMobile){
-    sessionStorage.setItem('cd_redirect_pending', '1');
-    window.fbAuthModule.signInWithRedirect(window.fbAuth,provider)
-      .catch(e=>{console.error('Redirect error:',e);toast('Error al iniciar sesión',false);});
-  } else {
-    window.fbAuthModule.signInWithPopup(window.fbAuth,provider)
-      .catch(e=>{console.error('Login error:',e);toast('Error al iniciar sesión',false);});
-  }
+  window.fbAuthModule.signInWithPopup(window.fbAuth,provider)
+    .catch(e=>{
+      console.error('Popup error:',e);
+      // Si el popup falla (bloqueado en mobile), intentar redirect
+      if(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'){
+        window.fbAuthModule.signInWithRedirect(window.fbAuth,provider)
+          .catch(e2=>{toast('Error al iniciar sesión',false);});
+      } else {
+        toast('Error al iniciar sesión',false);
+      }
+    });
 }
 function fbSignOut(){
   if(!window.fbAuth)return;
