@@ -2988,34 +2988,24 @@ load(); // Solo aplica tema, NO renderiza datos de otro usuario
   };
 
 
-  // Manejar resultado del redirect en mobile
-  try {
-    const result = await getRedirectResult(auth);
-    if (result && result.user) {
-      console.log('Redirect login success:', result.user.email);
-    }
-  } catch(e) {
-    console.warn('Redirect result error:', e);
-  } finally {
-    // Limpiar el flag de redirect — ya procesamos el resultado
-    sessionStorage.removeItem('cd_redirect_pending');
-  }
-
   let lastUid = localStorage.getItem('cd_last_uid');
+  let authReady = false; // Firebase aún no resolvió el estado
 
-  onAuthStateChanged(auth, async (user) => {
+  async function handleUser(user) {
     const loginOverlay = document.getElementById('m-login');
     const activationOverlay = document.getElementById('m-activation');
     const userWrap = document.getElementById('sb-user-wrap');
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
+    const loadingOverlay = document.getElementById('m-loading');
+
+    if (loadingOverlay) loadingOverlay.style.display = 'none';
 
     if (user) {
       if (lastUid && lastUid !== user.uid) {
         localStorage.removeItem('cd_v8');
         localStorage.removeItem('cd_acl');
         db = {clients:[],ideas:[],links:[],history:[],buzon:[],radarHistory:[],planner:{}};
-        fillSels();renderAll();renderHist();renderSbClients();renderDash();
       }
       lastUid = user.uid;
       localStorage.setItem('cd_last_uid', user.uid);
@@ -3036,33 +3026,44 @@ load(); // Solo aplica tema, NO renderiza datos de otro usuario
       fillSels(); renderAll(); renderHist(); renderSbClients(); renderDash();
 
     } else {
-      // Solo limpiar si NO estamos en medio de un redirect de Google
-      // Firebase dispara onAuthStateChanged(null) antes de restaurar la sesión del redirect
-      const isRedirecting = sessionStorage.getItem('cd_redirect_pending');
-      if (isRedirecting) return; // esperar a que Firebase restaure la sesión
-
       fbUser = null;
       lastUid = null;
-      // Borrar SOLO nuestras keys — no tocar las de Firebase
-      ['cd_v8','cd_acl','cd_last_uid'].forEach(k => {
+      Object.keys(localStorage).filter(k => k.startsWith('cd_') && k !== 'cd_theme_v3').forEach(k => {
         try { localStorage.removeItem(k); } catch(e) {}
       });
-      // Borrar keys con UID
-      Object.keys(localStorage).filter(k => k.startsWith('cd_')).forEach(k => {
-        try { localStorage.removeItem(k); } catch(e) {}
-      });
-      const themeBackup = localStorage.getItem('cd_theme_v3');
-      if (!themeBackup) {
-        // ya se borró, no hacer nada
-      }
       db = {clients:[],ideas:[],links:[],history:[],buzon:[],radarHistory:[],planner:{}};
       fillSels();renderAll();renderHist();renderSbClients();renderDash();
       if (loginOverlay) loginOverlay.style.display = 'flex';
       if (activationOverlay) activationOverlay.style.display = 'none';
       if (userWrap) userWrap.style.display = 'none';
     }
+  }
+
+  // Primero resolver el redirect si viene de uno, LUEGO escuchar cambios
+  try {
+    const result = await getRedirectResult(auth);
+    authReady = true;
+    if (result && result.user) {
+      await handleUser(result.user);
+      // onAuthStateChanged también disparará — evitar doble procesamiento
+    }
+  } catch(e) {
+    console.warn('Redirect result error:', e);
+    authReady = true;
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    // Si ya manejamos el redirect con un usuario, ignorar el primer disparo
+    if (!authReady) { authReady = true; return; }
+    await handleUser(user);
   });
 </script>
+
+<!-- LOADING OVERLAY — mientras Firebase resuelve la sesión -->
+<div id="m-loading" style="position:fixed;inset:0;z-index:10000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+  <div style="font-size:32px">⚡</div>
+  <div style="font-size:14px;color:var(--text3)">Cargando...</div>
+</div>
 
 <!-- LOGIN Y ACTIVACIÓN -->
 <!-- LOGIN Y ACTIVACIÓN (dentro del app para no afectar layout) -->
