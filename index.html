@@ -2989,17 +2989,17 @@ load(); // Solo aplica tema, NO renderiza datos de otro usuario
 
 
   let lastUid = localStorage.getItem('cd_last_uid');
-  let authReady = false; // Firebase aún no resolvió el estado
 
-  async function handleUser(user) {
+  onAuthStateChanged(auth, async (user) => {
+    // Quitar el loading overlay al primer disparo (Firebase ya resolvió el estado)
+    const loadingOverlay = document.getElementById('m-loading');
+    if (loadingOverlay) loadingOverlay.style.display = 'none';
+
     const loginOverlay = document.getElementById('m-login');
     const activationOverlay = document.getElementById('m-activation');
     const userWrap = document.getElementById('sb-user-wrap');
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
-    const loadingOverlay = document.getElementById('m-loading');
-
-    if (loadingOverlay) loadingOverlay.style.display = 'none';
 
     if (user) {
       if (lastUid && lastUid !== user.uid) {
@@ -3037,25 +3037,6 @@ load(); // Solo aplica tema, NO renderiza datos de otro usuario
       if (activationOverlay) activationOverlay.style.display = 'none';
       if (userWrap) userWrap.style.display = 'none';
     }
-  }
-
-  // Primero resolver el redirect si viene de uno, LUEGO escuchar cambios
-  try {
-    const result = await getRedirectResult(auth);
-    authReady = true;
-    if (result && result.user) {
-      await handleUser(result.user);
-      // onAuthStateChanged también disparará — evitar doble procesamiento
-    }
-  } catch(e) {
-    console.warn('Redirect result error:', e);
-    authReady = true;
-  }
-
-  onAuthStateChanged(auth, async (user) => {
-    // Si ya manejamos el redirect con un usuario, ignorar el primer disparo
-    if (!authReady) { authReady = true; return; }
-    await handleUser(user);
   });
 </script>
 
