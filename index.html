@@ -1489,6 +1489,7 @@ function signInWithGoogle(){
   const provider=new window.fbAuthModule.GoogleAuthProvider();
   const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if(isMobile){
+    sessionStorage.setItem('cd_redirect_pending', '1');
     window.fbAuthModule.signInWithRedirect(window.fbAuth,provider)
       .catch(e=>{console.error('Redirect error:',e);toast('Error al iniciar sesión',false);});
   } else {
@@ -2995,6 +2996,9 @@ load(); // Solo aplica tema, NO renderiza datos de otro usuario
     }
   } catch(e) {
     console.warn('Redirect result error:', e);
+  } finally {
+    // Limpiar el flag de redirect — ya procesamos el resultado
+    sessionStorage.removeItem('cd_redirect_pending');
   }
 
   let lastUid = localStorage.getItem('cd_last_uid');
@@ -3032,11 +3036,25 @@ load(); // Solo aplica tema, NO renderiza datos de otro usuario
       fillSels(); renderAll(); renderHist(); renderSbClients(); renderDash();
 
     } else {
+      // Solo limpiar si NO estamos en medio de un redirect de Google
+      // Firebase dispara onAuthStateChanged(null) antes de restaurar la sesión del redirect
+      const isRedirecting = sessionStorage.getItem('cd_redirect_pending');
+      if (isRedirecting) return; // esperar a que Firebase restaure la sesión
+
       fbUser = null;
       lastUid = null;
+      // Borrar SOLO nuestras keys — no tocar las de Firebase
+      ['cd_v8','cd_acl','cd_last_uid'].forEach(k => {
+        try { localStorage.removeItem(k); } catch(e) {}
+      });
+      // Borrar keys con UID
+      Object.keys(localStorage).filter(k => k.startsWith('cd_')).forEach(k => {
+        try { localStorage.removeItem(k); } catch(e) {}
+      });
       const themeBackup = localStorage.getItem('cd_theme_v3');
-      localStorage.clear();
-      if(themeBackup) localStorage.setItem('cd_theme_v3', themeBackup);
+      if (!themeBackup) {
+        // ya se borró, no hacer nada
+      }
       db = {clients:[],ideas:[],links:[],history:[],buzon:[],radarHistory:[],planner:{}};
       fillSels();renderAll();renderHist();renderSbClients();renderDash();
       if (loginOverlay) loginOverlay.style.display = 'flex';
