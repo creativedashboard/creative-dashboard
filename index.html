@@ -479,14 +479,11 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
   .page-title{font-size:20px}
 
   /* Planner mobile — 1 día */
-  #planner-days{flex-direction:column}
-  .planner-day{min-width:unset;width:100%}
-
-  /* Card del planner lateral */
-  #pg-planner > div{flex-direction:column}
-  #pg-planner > div > div:first-child{width:100% !important;display:flex;gap:10px}
-  #pg-planner > div > div:first-child > div:first-child{flex:1}
-  #pg-planner > div > div:first-child > div:last-child{flex:1}
+  /* Planner mobile — selector de día */
+  #planner-days{display:none !important}
+  #mobile-day-selector{display:flex}
+  #mobile-day-view{display:block}
+  #pg-planner .pw-full{padding-bottom:90px !important}
 
   /* Ocultar solo el logo cuando el sidebar está cerrado en desktop */
   .sb-bot .sb-logo-name,.sb-bot .sb-logo-ver{font-size:11px}
@@ -842,6 +839,13 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
         <!-- KANBAN SEMANA -->
         <div style="flex:1;overflow:hidden">
           <div id="planner-week-label" style="font-size:13px;color:var(--text2);margin-bottom:12px;font-weight:500"></div>
+          <!-- SELECTOR DE DÍA MOBILE -->
+          <div id="mobile-day-selector" style="display:none;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch"></div>
+          <div id="mobile-day-view" style="display:none">
+            <div id="mobile-day-title" style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:10px"></div>
+            <div id="mobile-day-body" class="planner-col-body" style="min-height:120px"></div>
+          </div>
+          <!-- VISTA DESKTOP: kanban 7 días -->
           <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:12px">
             <div id="planner-days" style="display:flex;gap:8px;flex:1;min-width:0"></div>
           </div>
@@ -1058,9 +1062,9 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
     Radar
   </button>
-  <button class="mobile-nav-item" id="mbn-more" onclick="toggleSidebar()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-    Más
+  <button class="mobile-nav-item" id="mbn-planner" onclick="go('planner');setMobileNav('planner')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Planner
   </button>
 </nav>
 
@@ -2217,21 +2221,61 @@ function renderPlanner(){
   const sun=new Date(mon);sun.setDate(mon.getDate()+6);
   document.getElementById('planner-week-label').textContent=
     `${mon.toLocaleDateString('es',{day:'numeric',month:'long'})} — ${sun.toLocaleDateString('es',{day:'numeric',month:'long',year:'numeric'})}`;
-  // Days columns
   const daysEl=document.getElementById('planner-days');daysEl.innerHTML='';
   const today=dateStr(new Date());
+  const isMobile=window.innerWidth<=768;
+  const dayData=[];
   for(let i=0;i<7;i++){
     const d=new Date(mon);d.setDate(mon.getDate()+i);const ds=dateStr(d);
-    const isToday=ds===today;
-    const div=document.createElement('div');div.className='planner-day';
-    div.innerHTML=`<div class="planner-day-hd ${isToday?'planner-day-today':''}">
-      <div class="planner-day-name">${DAYS_ES[d.getDay()]}</div>
-      <div class="planner-day-date">${d.getDate()}</div>
-    </div>
-    <div class="planner-col-body" data-day="${ds}" id="pcol-${ds}"></div>`;
-    daysEl.appendChild(div);
+    dayData.push({d,ds,isToday:ds===today});
   }
-  // Unassigned — ideas sin día asignado que no están usadas ni descartadas
+
+  if(isMobile){
+    const selEl=document.getElementById('mobile-day-selector');
+    const viewEl=document.getElementById('mobile-day-view');
+    const titleEl=document.getElementById('mobile-day-title');
+    const bodyEl=document.getElementById('mobile-day-body');
+    if(selEl)selEl.style.display='flex';
+    if(viewEl)viewEl.style.display='block';
+    let activeDay=dayData.find(x=>x.isToday)||dayData[0];
+    function showDay(dd){
+      activeDay=dd;
+      if(selEl){selEl.querySelectorAll('.mobile-day-btn').forEach(b=>{
+        const on=b.dataset.ds===dd.ds;
+        b.style.background=on?'var(--accent)':'var(--surface)';
+        b.style.color=on?'#fff':'var(--text2)';
+        b.style.borderColor=on?'var(--accent)':'var(--border)';
+      });}
+      if(titleEl)titleEl.textContent=`${DAYS_ES[dd.d.getDay()]} ${dd.d.getDate()}${dd.isToday?' · Hoy':''}`;
+      if(bodyEl){
+        bodyEl.innerHTML='';bodyEl.dataset.day=dd.ds;
+        const ids=db.planner&&db.planner[dd.ds]||[];
+        ids.forEach(id=>{const idea=db.ideas.find(x=>x.id===id);if(idea)bodyEl.appendChild(makePlanCard(idea,dd.ds));});
+        setupColDnD(bodyEl);
+      }
+    }
+    if(selEl){
+      selEl.innerHTML=dayData.map(dd=>`<button class="mobile-day-btn" data-ds="${dd.ds}" onclick="window._showMobileDay('${dd.ds}')" style="flex-shrink:0;padding:8px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;transition:all .15s"><div style="font-size:10px">${DAYS_ES[dd.d.getDay()].slice(0,3)}</div><div style="font-size:15px;font-weight:600;line-height:1.2">${dd.d.getDate()}</div></button>`).join('');
+    }
+    window._showMobileDay=function(ds){const dd=dayData.find(x=>x.ds===ds);if(dd)showDay(dd);};
+    showDay(activeDay);
+  } else {
+    const selEl=document.getElementById('mobile-day-selector');
+    const viewEl=document.getElementById('mobile-day-view');
+    if(selEl)selEl.style.display='none';
+    if(viewEl)viewEl.style.display='none';
+    dayData.forEach(({d,ds,isToday})=>{
+      const div=document.createElement('div');div.className='planner-day';
+      div.innerHTML=`<div class="planner-day-hd ${isToday?'planner-day-today':''}">
+        <div class="planner-day-name">${DAYS_ES[d.getDay()]}</div>
+        <div class="planner-day-date">${d.getDate()}</div>
+      </div>
+      <div class="planner-col-body" data-day="${ds}" id="pcol-${ds}"></div>`;
+      daysEl.appendChild(div);
+    });
+  }
+
+  // Ideas sin asignar
   const assigned=new Set(Object.values(db.planner||{}).flat().map(String));
   const unassigned=db.ideas.filter(i=>i.status!=='usada'&&i.status!=='descartada'&&!assigned.has(String(i.id)));
   const uEl=document.getElementById('planner-unassigned-list');uEl.innerHTML='';
@@ -2241,13 +2285,14 @@ function renderPlanner(){
   } else {
     unassigned.forEach(i=>uEl.appendChild(makePlanCard(i,'unassigned')));
   }
-  // Fill day columns
-  Object.entries(db.planner||{}).forEach(([ds,ids])=>{
-    const col=document.getElementById('pcol-'+ds);if(!col)return;
-    ids.forEach(id=>{const idea=db.ideas.find(x=>x.id===id);if(idea)col.appendChild(makePlanCard(idea,ds));});
-  });
-  // Setup drag & drop on all cols
-  document.querySelectorAll('.planner-col-body').forEach(col=>setupColDnD(col));
+  // Fill day columns (desktop)
+  if(!isMobile){
+    Object.entries(db.planner||{}).forEach(([ds,ids])=>{
+      const col=document.getElementById('pcol-'+ds);if(!col)return;
+      ids.forEach(id=>{const idea=db.ideas.find(x=>x.id===id);if(idea)col.appendChild(makePlanCard(idea,ds));});
+    });
+    document.querySelectorAll('.planner-col-body').forEach(col=>setupColDnD(col));
+  }
 }
 
 const PLAN_STATUS_COLORS={planeado:{bg:'var(--blue-bg)',color:'var(--blue)',label:'Planeado'},produccion:{bg:'var(--orange-bg)',color:'var(--orange)',label:'Producción'},listo:{bg:'var(--green-bg)',color:'var(--green)',label:'Listo'},publicado:{bg:'var(--teal-bg)',color:'var(--teal)',label:'Publicado'}};
