@@ -1878,8 +1878,8 @@ function normalizeStatus(s){
 
 
 const PRESETS={
-  light:{label:'☀️ Claro',bg:'#f8f7f5',surface:'#ffffff',surface2:'#f1f0ee',surface3:'#e8e6e2',border:'#e2e0dc',border2:'#ccc9c3',text:'#1a1916',text2:'#6b6860',text3:'#a8a49e',accent:'#5b4fcf'},
-  dark:{label:'🌙 Oscuro',bg:'#111110',surface:'#1c1c1a',surface2:'#252522',surface3:'#2e2e2b',border:'#2e2e2b',border2:'#3d3d39',text:'#f2f0ec',text2:'#8a8780',text3:'#5a5855',accent:'#7c6df0'},
+  light:{label:'☀️ Claro',bg:'#FAF7F0',surface:'#ffffff',surface2:'#F4EFE6',surface3:'#ebe6dc',border:'#ebe6dc',border2:'#d8d2c4',text:'#1a1a1a',text2:'#5c5c5c',text3:'#9a9489',accent:'#E63329'},
+  dark:{label:'🌙 Oscuro',bg:'#101010',surface:'#1c1c1a',surface2:'#252522',surface3:'#2e2e2b',border:'#2e2e2b',border2:'#3d3d39',text:'#F4EFE6',text2:'#a8a299',text3:'#6a655d',accent:'#E63329'},
   tiktok:{label:'🎵 TikTok',bg:'#010101',surface:'#161616',surface2:'#1f1f1f',surface3:'#2a2a2a',border:'#2a2a2a',border2:'#3d3d3d',text:'#ffffff',text2:'#a0a0a0',text3:'#666666',accent:'#fe2c55'},
   facebook:{label:'📘 Facebook',bg:'#0e1723',surface:'#1a2640',surface2:'#1e2d4a',surface3:'#243554',border:'#1e3060',border2:'#2a4070',text:'#e7f0fd',text2:'#7a9cc0',text3:'#4a6880',accent:'#1877f2'}
 };
@@ -1894,7 +1894,7 @@ function load(){
   db.clients=db.clients||[];db.ideas=db.ideas||[];db.links=db.links||[];db.history=db.history||[];db.buzon=db.buzon||[];db.radarHistory=db.radarHistory||[];db.planner=db.planner||{};db.briefs=db.briefs||[];db.customPrompts=db.customPrompts||[];db.trash=db.trash||[];db.tags=db.tags||[];
   db.ideas.forEach(i=>{if(!i.links)i.links=[];if(!i.status)i.status='cruda';if(!i.clientName)i.clientName='General';if(!i.clientIds)i.clientIds=[String(i.clientId||'general')];if(!i.clientNames)i.clientNames=[i.clientName];i.status=normalizeStatus(i.status);});
   activeClId=localStorage.getItem('cd_acl')||null;
-  const saved=localStorage.getItem('cd_theme_v3');
+  const saved=localStorage.getItem('cd_theme_v4');
   if(saved){try{const td=JSON.parse(saved);applyColors(td.colors,false);activePreset=td.preset||'light';}catch(e){applyPreset('light',true);}}
   else applyPreset('light',true);
   fillSels();renderAll();renderHist();renderSbClients();renderDash();updateBuzonBadge();
@@ -2013,7 +2013,7 @@ function applyColors(c,persist){
     s.setProperty('--'+k,v);
     if(k==='accent'){const rgb=h2r(v);if(rgb){s.setProperty('--accent-light',`rgba(${rgb.r},${rgb.g},${rgb.b},0.08)`);s.setProperty('--accent-mid',`rgba(${rgb.r},${rgb.g},${rgb.b},0.15)`);s.setProperty('--accent-bord',`rgba(${rgb.r},${rgb.g},${rgb.b},0.25)`);}}
   });
-  if(persist!==false)localStorage.setItem('cd_theme_v3',JSON.stringify({preset:activePreset,colors:c}));
+  if(persist!==false)localStorage.setItem('cd_theme_v4',JSON.stringify({preset:activePreset,colors:c}));
 }
 function toggleTheme(){
   applyPreset(activePreset==='light'?'dark':'light');
@@ -5139,8 +5139,8 @@ load(); // Solo aplica tema
     } else {
       fbUser = null;
       lastUid = null;
-      const themeBackup = localStorage.getItem('cd_theme_v3');
-      Object.keys(localStorage).filter(k => k.startsWith('cd_') && k !== 'cd_theme_v3').forEach(k => {
+      const themeBackup = localStorage.getItem('cd_theme_v4');
+      Object.keys(localStorage).filter(k => k.startsWith('cd_') && k !== 'cd_theme_v4').forEach(k => {
         try { localStorage.removeItem(k); } catch(e) {}
       });
       db = {clients:[],ideas:[],links:[],history:[],buzon:[],radarHistory:[],planner:{},briefs:[],customPrompts:[]};
