@@ -103,6 +103,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 .ni.on{color:var(--accent);background:var(--accent-light);font-weight:500}
 .ni.on svg{opacity:1;color:var(--accent)}
 .ni svg{width:15px;height:15px;flex-shrink:0;opacity:.55;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:opacity .12s}
+.ni-sub:hover{background:var(--surface2);color:var(--text) !important}
+.ni-sub.on{color:var(--brand-yellow,#b88a00) !important;background:rgba(245,197,24,0.1)}
 .ni-client{padding-left:14px;font-size:12px}
 .ni-client.ac{color:var(--accent);font-weight:600;background:var(--accent-light)}
 .ni-client.ac .ni-dot{background:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
@@ -316,6 +318,27 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
    MODALS
 ════════════════════════════ */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(4px)}
+
+/* Voice capture overlay */
+.voice-fab{display:none}
+.voice-ov{position:fixed;inset:0;background:rgba(16,16,16,.85);display:none;align-items:flex-end;justify-content:center;z-index:600;backdrop-filter:blur(6px)}
+.voice-ov.open{display:flex}
+.voice-modal{background:var(--surface);width:100%;max-width:540px;border-radius:20px 20px 0 0;display:flex;flex-direction:column;animation:slideUp .25s ease-out;max-height:85vh}
+.voice-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.voice-body{padding:24px 20px 18px;display:flex;flex-direction:column;align-items:center}
+.voice-mic-circle{width:84px;height:84px;border-radius:50%;background:var(--brand-red,#E63329);color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 0 0 8px rgba(230,51,41,.15);animation:micPulse 1.5s ease-in-out infinite}
+.voice-mic-circle.paused{animation:none;background:var(--text3);box-shadow:0 0 0 8px rgba(0,0,0,.06)}
+.voice-mic-circle svg{width:36px;height:36px}
+.voice-footer{display:flex;gap:10px;padding:14px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--border)}
+.voice-footer .btn{padding:14px 16px;font-size:14px;font-weight:600}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 8px rgba(230,51,41,.15);transform:scale(1)}50%{box-shadow:0 0 0 14px rgba(230,51,41,.08);transform:scale(1.04)}}
+
+@media (min-width:769px){
+  /* Desktop: voice modal centrado, no slide-up */
+  .voice-ov{align-items:center}
+  .voice-modal{max-width:480px;border-radius:16px;animation:none}
+}
 .ov.open{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:24px;width:min(600px,92vw);max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-md)}
 .modal-hd{display:flex;align-items:center;gap:10px;margin-bottom:20px}
@@ -489,6 +512,11 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
   .mobile-nav-item.on{color:var(--accent)}
   .mobile-nav-item svg{width:20px;height:20px}
 
+  /* Voice FAB — solo mobile */
+  .voice-fab{display:flex !important;position:fixed;bottom:calc(76px + env(safe-area-inset-bottom));right:18px;width:56px;height:56px;border-radius:50%;background:var(--brand-red,#E63329);color:#fff;border:none;cursor:pointer;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(230,51,41,.4),0 0 0 4px rgba(230,51,41,.12);z-index:99;transition:transform .15s}
+  .voice-fab:active{transform:scale(.92)}
+  .voice-fab svg{width:24px;height:24px}
+
   /* Padding del contenido con bottom nav */
   .pw,.pw-full{padding:16px 16px 90px !important}
   .g2,.g3,.g4{grid-template-columns:1fr}
@@ -528,6 +556,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 @media(min-width:769px){
   .mobile-topbar{display:none !important}
   .mobile-bottom-nav{display:none !important}
+  .voice-fab{display:none !important}
   .sb-overlay{display:none !important}
 }
 
@@ -584,7 +613,14 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
     <!-- CLIENTES -->
     <div class="sb-group">
       <div class="sb-group-label">
-        <span onclick="go('clientes')" style="cursor:pointer;transition:color .12s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color=''">Clientes</span>
+        <span style="display:flex;align-items:center;gap:6px">
+          <button onclick="toggleClientsSub(event)" title="Plegar/desplegar clientes" style="width:18px;height:18px;border-radius:4px;border:none;background:none;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s" onmouseover="this.style.background='var(--surface2)';this.style.color='var(--text)'" onmouseout="this.style.background='none';this.style.color='var(--text3)'">
+            <span id="clients-chev" style="display:flex;align-items:center;transition:transform .15s">
+              <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+          </button>
+          <span onclick="go('clientes')" style="cursor:pointer;transition:color .12s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color=''">Clientes</span>
+        </span>
         <div style="display:flex;gap:4px">
           <button onclick="go('clientes')" title="Ver todos los clientes" style="opacity:.6">
             <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -605,10 +641,23 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
         <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         Dashboard
       </button>
-      <button class="ni" id="ni-ideas" onclick="go('ideas')">
-        <svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
-        Ideas
-      </button>
+      <div style="display:flex;align-items:center;gap:0;position:relative">
+        <button class="ni" id="ni-ideas" onclick="goIdeasClean()" style="flex:1;padding-right:30px">
+          <svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
+          Ideas
+        </button>
+        <button id="ni-ideas-chev-btn" onclick="toggleIdeasSub(event)" title="Mostrar/ocultar submenú" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:6px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all .15s" onmouseover="this.style.background='var(--surface3)';this.style.color='var(--text)'" onmouseout="this.style.background='none';this.style.color='var(--text3)'">
+          <span id="ni-ideas-chev" style="display:flex;align-items:center;transition:transform .15s">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </button>
+      </div>
+      <div id="ni-ideas-sub" style="display:none;padding-left:8px;margin-top:-2px;margin-bottom:4px">
+        <button class="ni-sub" onclick="goIdeasFiltered('generated')" style="display:flex;align-items:center;gap:8px;padding:6px 12px 6px 30px;font-size:12px;color:var(--text2);background:none;border:none;width:100%;text-align:left;cursor:pointer;border-radius:var(--r-sm);transition:all .12s;font-family:'Inter',sans-serif">
+          <span style="font-size:11px">⚡</span>
+          <span>Con contenido generado</span>
+        </button>
+      </div>
       <button class="ni" id="ni-briefs" onclick="go('briefs')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         Briefings
@@ -840,10 +889,10 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
           <option value="alfa">Alfabético A-Z</option>
           <option value="alfaz">Alfabético Z-A</option>
         </select>
-        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Inter',sans-serif;font-weight:400;margin:0;text-transform:none;letter-spacing:0;background:var(--surface);border:1px solid var(--border);padding:7px 10px;border-radius:var(--r-sm)">
-          <input type="checkbox" id="idea-only-generated" onchange="ideaOnlyGenerated=this.checked;rId()" style="margin:0;cursor:pointer"/>
-          <span>⚡ Con contenido generado</span>
-        </label>
+        <button id="idea-generated-pill" onclick="toggleOnlyGenerated()" class="filter-pill" style="display:flex;align-items:center;gap:6px;padding:8px 12px;font-size:12px;font-weight:500;font-family:'Inter',sans-serif;border:1.5px solid var(--border);background:var(--surface);color:var(--text2);border-radius:20px;cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1">
+          <span style="font-size:13px">⚡</span>
+          <span>Con contenido generado</span>
+        </button>
       </div>
       <!-- Filtros de etiquetas -->
       <div id="idea-tags-filter" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
@@ -1275,6 +1324,36 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 
     </div>
   </div>
+<!-- VOICE FAB — solo mobile -->
+<button id="voice-fab" class="voice-fab" onclick="openVoiceCapture()" title="Grabar idea por voz">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+</button>
+
+<!-- VOICE OVERLAY — pantalla completa para grabar -->
+<div id="voice-ov" class="voice-ov" onclick="if(event.target===this)closeVoiceCapture()">
+  <div class="voice-modal">
+    <div class="voice-hd">
+      <span style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--text3)">CAPTURA POR VOZ</span>
+      <button onclick="closeVoiceCapture()" style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:0;line-height:1">×</button>
+    </div>
+    <div class="voice-body">
+      <div class="voice-mic-circle" id="voice-mic-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </div>
+      <div id="voice-status" style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--brand-red,#E63329);font-weight:600;margin-bottom:10px;height:14px">ESCUCHANDO...</div>
+      <div id="voice-hint" style="font-size:13px;color:var(--text3);margin-bottom:18px;text-align:center;line-height:1.5;padding:0 8px">Habla naturalmente — toca el micrófono para pausar</div>
+      <textarea id="voice-text" placeholder="Tu idea aparecerá aquí..." style="width:100%;min-height:140px;padding:14px;font-size:15px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);color:var(--text);resize:vertical;font-family:'Inter',sans-serif"></textarea>
+    </div>
+    <div class="voice-footer">
+      <button class="btn" onclick="closeVoiceCapture()" style="flex:1">Cancelar</button>
+      <button class="btn primary" onclick="saveVoiceIdea()" style="flex:2;justify-content:center">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Guardar idea
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- MOBILE BOTTOM NAV -->
 <nav class="mobile-bottom-nav">
   <button class="mobile-nav-item" id="mbn-home" onclick="go('home');setMobileNav('home')">
@@ -1910,7 +1989,7 @@ function load(){
   const saved=localStorage.getItem('cd_theme_v4');
   if(saved){try{const td=JSON.parse(saved);applyColors(td.colors,false);activePreset=td.preset||'light';}catch(e){applyPreset('light',true);}}
   else applyPreset('light',true);
-  fillSels();renderAll();renderHist();renderSbClients();renderDash();updateBuzonBadge();
+  fillSels();renderAll();renderHist();renderSbClients();renderDash();updateBuzonBadge();restoreSidebarState();
   // onboarding manejado por Firebase auth — no mostrar aquí
 }
 // ══════════════════════════════════
@@ -2143,7 +2222,9 @@ function pvIL(url){clearTimeout(pvTm);const w=document.getElementById('eilpv');i
 // ══════════════════════════════════
 function fillSels(){const base='<option value="general">General</option>'+db.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');['lc','gc','eic','tr-client'].forEach(id=>{const el=document.getElementById(id);if(!el)return;const p=el.value;el.innerHTML=base;if(p)el.value=p;});if(activeClId){['lc','gc','eic'].forEach(id=>{const el=document.getElementById(id);if(el&&(el.value==='general'||!el.value))el.value=activeClId;});}}
 function openM(id){document.getElementById(id).classList.add('open');}
-function closeM(id){document.getElementById(id).classList.remove('open');}
+function closeM(id){
+  document.getElementById(id).classList.remove('open');
+}
 function initials(name){return(name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
 function clColor(id){const idx=db.clients.findIndex(c=>c.id===id);return CLIENT_COLORS[idx%CLIENT_COLORS.length]||CLIENT_COLORS[0];}
 function stBadge(s){const st=STATUS[s]||STATUS.cruda;return`<span class="badge ${st.c}">${st.l}</span>`;}
@@ -3755,6 +3836,14 @@ function gen(){
   const hi={id:Date.now(),type:gType,icon:tIc[gType]||'✨',label:tLb[gType]||gType,client:c?c.name:'General',topic:briefing?briefing.slice(0,50):'',text:pt,date:new Date().toLocaleDateString('es'),relatedIdeaId:relatedIdeaId};
   db.history.unshift(hi);if(db.history.length>50)db.history=db.history.slice(0,50);
   save();renderHist();setAH(hi.id);
+  // Toast cuando se asocia a una idea
+  if(relatedIdeaId){
+    const idea=db.ideas.find(i=>i.id===relatedIdeaId);
+    if(idea){
+      const txt=idea.text.length>40?idea.text.slice(0,40)+'…':idea.text;
+      setTimeout(()=>toast(`✓ Prompt vinculado a "${txt}"`,false,3000),300);
+    }
+  }
 }
 
 // ════════════════════════════════════════
@@ -4116,6 +4205,160 @@ function openQuickCapture(){
   setTimeout(()=>document.getElementById('qc-text').focus(),100);
 }
 
+// ════════════════════════════════════════
+// VOICE CAPTURE — FAB mobile con overlay
+// ════════════════════════════════════════
+window._isRecording=false;
+window._speechRec=null;
+
+function openVoiceCapture(){
+  // Verificar soporte del navegador
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    toast('Tu navegador no soporta grabación de voz. Prueba con Chrome o Safari.',true,4000);
+    return;
+  }
+  // Limpiar estado y abrir overlay
+  document.getElementById('voice-text').value='';
+  document.getElementById('voice-ov').classList.add('open');
+  // Empezar a grabar automáticamente
+  setTimeout(()=>startVoiceCapture(),200);
+}
+
+function closeVoiceCapture(){
+  if(window._isRecording)stopVoiceCapture();
+  document.getElementById('voice-ov').classList.remove('open');
+}
+
+function toggleVoiceCapture(){
+  if(window._isRecording){
+    stopVoiceCapture();
+  } else {
+    startVoiceCapture();
+  }
+}
+
+function startVoiceCapture(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR)return;
+  const rec=new SR();
+  rec.lang='es-MX';
+  rec.continuous=true;
+  rec.interimResults=true;
+
+  const txt=document.getElementById('voice-text');
+  const circle=document.getElementById('voice-mic-circle');
+  const status=document.getElementById('voice-status');
+  if(!txt)return;
+
+  // Estado visual: grabando
+  window._isRecording=true;
+  if(circle)circle.classList.remove('paused');
+  if(status){status.textContent='ESCUCHANDO...';status.style.color='var(--brand-red,#E63329)';}
+
+  // Guardar el texto que ya había para no sobreescribirlo
+  const baseText=txt.value;
+  let finalTranscript=baseText;
+  let interimTranscript='';
+
+  rec.onresult=(e)=>{
+    interimTranscript='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const transcript=e.results[i][0].transcript;
+      if(e.results[i].isFinal){
+        finalTranscript+=(finalTranscript&&!finalTranscript.endsWith(' ')?' ':'')+transcript;
+      } else {
+        interimTranscript+=transcript;
+      }
+    }
+    txt.value=finalTranscript+(interimTranscript?(finalTranscript?' ':'')+interimTranscript:'');
+  };
+
+  rec.onerror=(e)=>{
+    let msg='Error al grabar';
+    if(e.error==='not-allowed'||e.error==='permission-denied'){
+      msg='Necesito permiso para usar el micrófono. Revisa la configuración del navegador.';
+    } else if(e.error==='no-speech'){
+      // No mostrar toast — solo silencio normal
+      return;
+    } else if(e.error==='network'){
+      msg='Sin conexión a internet. La grabación necesita estar online.';
+    } else if(e.error==='aborted'){
+      return;
+    }
+    toast(msg,true,4000);
+    stopVoiceCapture();
+  };
+
+  rec.onend=()=>{
+    if(window._isRecording){
+      // Si se detuvo solo (timeout del navegador) y aún estamos en modo grabación, reiniciar
+      try{rec.start();}catch(e){stopVoiceCapture();}
+    }
+  };
+
+  // Click en el círculo del micrófono pausa/reanuda
+  if(circle){
+    circle.style.cursor='pointer';
+    circle.onclick=toggleVoiceCapture;
+  }
+
+  try{
+    rec.start();
+    window._speechRec=rec;
+  }catch(e){
+    toast('Error al iniciar grabación',true,3000);
+    stopVoiceCapture();
+  }
+}
+
+function stopVoiceCapture(){
+  window._isRecording=false;
+  if(window._speechRec){
+    try{window._speechRec.stop();}catch(e){}
+    window._speechRec=null;
+  }
+  const circle=document.getElementById('voice-mic-circle');
+  const status=document.getElementById('voice-status');
+  if(circle)circle.classList.add('paused');
+  if(status){status.textContent='PAUSADO · TOCA PARA REANUDAR';status.style.color='var(--text3)';}
+}
+
+function saveVoiceIdea(){
+  const txt=document.getElementById('voice-text').value.trim();
+  if(!txt){
+    toast('La idea está vacía. Habla un poco más o cancela.',true,3000);
+    return;
+  }
+  // Detener grabación si sigue activa
+  if(window._isRecording)stopVoiceCapture();
+  // Crear idea con cliente "General" y estado "cruda"
+  const id=Date.now();
+  const idea={
+    id:id,
+    text:txt,
+    clientId:'general',
+    clientName:'General',
+    clientIds:['general'],
+    clientNames:['General'],
+    status:'cruda',
+    notes:'',
+    platform:'General',
+    platforms:[],
+    format:'',
+    links:[],
+    tags:[],
+    date:new Date().toLocaleDateString('es')
+  };
+  db.ideas.unshift(idea);
+  save();
+  rId();
+  renderDash();
+  // Cerrar overlay y mostrar toast
+  document.getElementById('voice-ov').classList.remove('open');
+  toast('✓ Idea guardada en el banco',false,2500);
+}
+
 function plannerNextWeek(){plannerBase.setDate(plannerBase.getDate()+7);renderPlanner();renderCal();}
 
 function plannerPrevWeek(){plannerBase.setDate(plannerBase.getDate()-7);renderPlanner();renderCal();}
@@ -4214,6 +4457,11 @@ function rId(){
 
   if(!base.length){
     const hasFilters=ideaSearch||ideaPlatformF||ideaTagsF.length||ideaOnlyGenerated;
+    // Empty state especial cuando solo está el filtro de "Con contenido generado"
+    const onlyGenFilter=ideaOnlyGenerated&&!ideaSearch&&!ideaPlatformF&&!ideaTagsF.length;
+    if(onlyGenFilter){
+      list.innerHTML=`<div class="empty"><div class="empty-icon" style="background:rgba(245,197,24,0.18);color:#b88a00"><span style="font-size:32px">⚡</span></div><div class="empty-title">Aún no hay ideas con contenido generado</div><div class="empty-sub">Cuando generes un prompt para una idea del banco, aparecerá aquí.<br>Selecciona la idea en el campo <strong>"¿Para alguna idea del banco?"</strong> al generar contenido.</div><button class="btn sm" style="margin-top:14px" onclick="toggleOnlyGenerated()">Ver todas las ideas</button></div>`;return;
+    }
     list.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg></div><div class="empty-title">${hasFilters?'Sin resultados':ac?'Sin ideas para este cliente':'Sin ideas aún'}</div><div class="empty-sub">${hasFilters?'Prueba con otros filtros o limpia la búsqueda':'Usa el campo de arriba para ideas rápidas<br>o &quot;+ Nueva idea&quot; para agregarla con todos los detalles.'}</div>${hasFilters?`<button class="btn sm" style="margin-top:14px" onclick="clearIdeaFilters()">Limpiar filtros</button>`:''}</div>`;return;
   }
   list.innerHTML=`<p class="ctr">${base.length} idea${base.length!==1?'s':''} · clic para ver detalles</p>`+
@@ -4336,7 +4584,10 @@ function renderEicChips(selectedIds){
 function renderHist(){
   const list=document.getElementById('hist-list');
   if(!db.history.length){list.innerHTML=`<div style="font-size:11px;color:var(--text3);padding:3px 8px 3px 18px">Sin prompts aún</div>`;return;}
-  list.innerHTML=db.history.slice(0,8).map(h=>`
+  // Si está expandido mostramos todos, si no, los primeros 8
+  const expanded=window._histExpanded===true;
+  const limit=expanded?db.history.length:8;
+  const itemsHTML=db.history.slice(0,limit).map(h=>`
     <div class="hi ${aHId===h.id?'on':''}" id="hi-${h.id}">
       <div class="hi-ic" onclick="loadH(${h.id})">${h.icon}</div>
       <div class="hi-b" onclick="loadH(${h.id})">
@@ -4344,8 +4595,29 @@ function renderHist(){
         <div class="hi-m">${h.date}</div>
       </div>
       <button class="hi-del" onclick="delH(${h.id})">✕</button>
-    </div>`).join('')+
-    (db.history.length>8?`<button class="hist-more" onclick="go('generar')">+${db.history.length-8} más…</button>`:'');
+    </div>`).join('');
+  let footerHTML='';
+  if(db.history.length>8){
+    if(expanded){
+      footerHTML=`<button class="hist-more" onclick="toggleHistExpanded()">▲ Ver menos</button>`;
+    } else {
+      footerHTML=`<button class="hist-more" onclick="toggleHistExpanded()">+${db.history.length-8} más…</button>`;
+    }
+  }
+  list.innerHTML=itemsHTML+footerHTML;
+  // Si está expandido, agregar scroll al contenedor para que no se desborde
+  if(expanded){
+    list.style.maxHeight='400px';
+    list.style.overflowY='auto';
+  } else {
+    list.style.maxHeight='';
+    list.style.overflowY='';
+  }
+}
+
+function toggleHistExpanded(){
+  window._histExpanded=!window._histExpanded;
+  renderHist();
 }
 
 function renderNetChips(selected){
@@ -5235,10 +5507,98 @@ function toggleIdeaTagFilter(tag){
   rId();
 }
 
+function toggleOnlyGenerated(){
+  ideaOnlyGenerated=!ideaOnlyGenerated;
+  updateOnlyGeneratedPill();
+  rId();
+}
+
+// Submenú de Ideas en sidebar — chevron toggle independiente
+function toggleIdeasSub(event){
+  if(event){event.stopPropagation();event.preventDefault();}
+  const sub=document.getElementById('ni-ideas-sub');
+  const chev=document.getElementById('ni-ideas-chev');
+  if(!sub)return;
+  const visible=sub.style.display!=='none';
+  sub.style.display=visible?'none':'block';
+  if(chev)chev.style.transform=visible?'rotate(0deg)':'rotate(180deg)';
+  // Recordar estado en localStorage
+  try{localStorage.setItem('cd_ideas_sub_open',visible?'0':'1');}catch(e){}
+}
+
+// Submenú de Clientes en sidebar — chevron toggle plegable
+function toggleClientsSub(event){
+  if(event){event.stopPropagation();event.preventDefault();}
+  const sub=document.getElementById('sb-clients');
+  const chev=document.getElementById('clients-chev');
+  if(!sub)return;
+  const visible=sub.style.display!=='none';
+  sub.style.display=visible?'none':'block';
+  if(chev)chev.style.transform=visible?'rotate(-90deg)':'rotate(0deg)';
+  try{localStorage.setItem('cd_clients_open',visible?'0':'1');}catch(e){}
+}
+
+// Restaurar estado al cargar
+function restoreSidebarState(){
+  try{
+    if(localStorage.getItem('cd_ideas_sub_open')==='1'){
+      const sub=document.getElementById('ni-ideas-sub');
+      const chev=document.getElementById('ni-ideas-chev');
+      if(sub){sub.style.display='block';if(chev)chev.style.transform='rotate(180deg)';}
+    }
+    if(localStorage.getItem('cd_clients_open')==='0'){
+      const sub=document.getElementById('sb-clients');
+      const chev=document.getElementById('clients-chev');
+      if(sub){sub.style.display='none';if(chev)chev.style.transform='rotate(-90deg)';}
+    }
+  }catch(e){}
+}
+
+function goIdeasMain(){
+  go('ideas');
+}
+
+// Click en "Ideas" del sidebar — vuelve al banco sin filtros activos
+function goIdeasClean(){
+  if(ideaOnlyGenerated){ideaOnlyGenerated=false;updateOnlyGeneratedPill();}
+  go('ideas');
+}
+
+function goIdeasFiltered(filter){
+  go('ideas');
+  setTimeout(()=>{
+    if(filter==='generated'){
+      ideaOnlyGenerated=true;
+      updateOnlyGeneratedPill();
+      rId();
+    }
+    // Mantener submenú abierto
+    const sub=document.getElementById('ni-ideas-sub');
+    const chev=document.getElementById('ni-ideas-chev');
+    if(sub){sub.style.display='block';if(chev)chev.style.transform='rotate(180deg)';}
+  },50);
+}
+
+function updateOnlyGeneratedPill(){
+  const pill=document.getElementById('idea-generated-pill');
+  if(!pill)return;
+  if(ideaOnlyGenerated){
+    pill.style.background='var(--brand-yellow,#F5C518)';
+    pill.style.borderColor='var(--brand-yellow,#F5C518)';
+    pill.style.color='var(--brand-black,#101010)';
+    pill.style.fontWeight='600';
+  } else {
+    pill.style.background='var(--surface)';
+    pill.style.borderColor='var(--border)';
+    pill.style.color='var(--text2)';
+    pill.style.fontWeight='500';
+  }
+}
+
 function clearIdeaFilters(){
   ideaSearch='';ideaPlatformF='';ideaFormatF='';ideaTagsF=[];ideaOnlyGenerated=false;
   const s=document.getElementById('idea-search');if(s)s.value='';
-  const og=document.getElementById('idea-only-generated');if(og)og.checked=false;
+  updateOnlyGeneratedPill();
   document.querySelectorAll('#pg-ideas select').forEach(sel=>{
     if(sel.querySelector('option[value=""]'))sel.value='';
     else if(sel.querySelector('option[value="nuevas"]'))sel.value='nuevas';
