@@ -840,6 +840,10 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
           <option value="alfa">Alfabético A-Z</option>
           <option value="alfaz">Alfabético Z-A</option>
         </select>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Inter',sans-serif;font-weight:400;margin:0;text-transform:none;letter-spacing:0;background:var(--surface);border:1px solid var(--border);padding:7px 10px;border-radius:var(--r-sm)">
+          <input type="checkbox" id="idea-only-generated" onchange="ideaOnlyGenerated=this.checked;rId()" style="margin:0;cursor:pointer"/>
+          <span>⚡ Con contenido generado</span>
+        </label>
       </div>
       <!-- Filtros de etiquetas -->
       <div id="idea-tags-filter" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
@@ -1161,8 +1165,15 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 
       <!-- 1. CLIENTE — primero -->
       <div class="g2" style="margin-bottom:16px">
-        <div><label>Cliente</label><select id="gc" onchange="loadCtx()"></select></div>
+        <div><label>Cliente</label><select id="gc" onchange="loadCtx();loadIdeasForGen()"></select></div>
         <div id="ctxp" style="display:none;font-size:12px;color:var(--text2);line-height:1.5;padding-top:20px"></div>
+      </div>
+
+      <!-- 1.5 IDEA DEL BANCO (opcional) -->
+      <div id="gen-idea-wrap" style="margin-bottom:16px;display:none">
+        <label style="display:flex;align-items:center;gap:8px"><span>¿Para alguna idea del banco?</span><span style="font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-weight:400">OPCIONAL</span></label>
+        <select id="gen-idea" onchange="onGenIdeaChange()"><option value="">Sin asociar — prompt libre</option></select>
+        <div id="gen-idea-hint" style="display:none;margin-top:8px;font-size:11px;color:var(--text3);font-style:italic"></div>
       </div>
 
       <!-- 2. BRIEFING -->
@@ -1694,6 +1705,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
         <div class="ip-text" id="ip-body-text"></div>
       </div>
       <div id="ip-links"></div>
+      <div id="ip-prompts" style="margin-top:18px"></div>
     </div>
     <div class="ip-footer">
       <button class="btn primary sm" onclick="editFromPopup()">Editar</button>
@@ -1860,7 +1872,7 @@ let eCId=null,eIId=null,popIId=null;
 let gP=['Instagram'],gF=['Reels/Video corto'],gT='educativo',gType='ideas';let currentPage='home';
 let plannerBase=new Date();
 let iF='todos',lF='todos',tL=[];
-let ideaSearch='',ideaPlatformF='',ideaFormatF='',ideaSort='nuevas',ideaTagsF=[];
+let ideaSearch='',ideaPlatformF='',ideaFormatF='',ideaSort='nuevas',ideaTagsF=[],ideaOnlyGenerated=false;
 let lastU=null,tTimer=null,aHId=null;
 let pvCache={},pvTm=null,bpOpen=false;
 let selectedRadarId=null;
@@ -3737,9 +3749,71 @@ function gen(){
   openM('m-prompt');
   const cid=document.getElementById('gc').value;const c=db.clients.find(x=>x.id==cid);
   const briefing=document.getElementById('briefing').value.trim();
-  const hi={id:Date.now(),type:gType,icon:tIc[gType]||'✨',label:tLb[gType]||gType,client:c?c.name:'General',topic:briefing?briefing.slice(0,50):'',text:pt,date:new Date().toLocaleDateString('es')};
+  // Capturar idea asociada si existe
+  const ideaSel=document.getElementById('gen-idea');
+  const relatedIdeaId=ideaSel&&ideaSel.value?parseInt(ideaSel.value):null;
+  const hi={id:Date.now(),type:gType,icon:tIc[gType]||'✨',label:tLb[gType]||gType,client:c?c.name:'General',topic:briefing?briefing.slice(0,50):'',text:pt,date:new Date().toLocaleDateString('es'),relatedIdeaId:relatedIdeaId};
   db.history.unshift(hi);if(db.history.length>50)db.history=db.history.slice(0,50);
   save();renderHist();setAH(hi.id);
+}
+
+// ════════════════════════════════════════
+// IDEA ASOCIADA AL GENERAR — funciones
+// ════════════════════════════════════════
+function loadIdeasForGen(){
+  const wrap=document.getElementById('gen-idea-wrap');
+  const sel=document.getElementById('gen-idea');
+  if(!wrap||!sel)return;
+  const cid=document.getElementById('gc').value;
+  if(!cid){wrap.style.display='none';return;}
+  // Filtrar ideas del cliente (no descartadas)
+  const ideas=db.ideas.filter(i=>i.clientId==cid&&i.status!=='descartada');
+  if(!ideas.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  // Ordenar por más recientes
+  const sorted=[...ideas].sort((a,b)=>(b.id||0)-(a.id||0));
+  sel.innerHTML='<option value="">Sin asociar — prompt libre</option>'+
+    sorted.map(i=>{
+      const txt=i.text.length>60?i.text.slice(0,60)+'…':i.text;
+      const stIcon=i.status==='cruda'?'🟡':i.status==='desarrollo'?'🔵':i.status==='usada'?'✓':'·';
+      return `<option value="${i.id}">${stIcon} ${txt}</option>`;
+    }).join('');
+  sel.value='';
+  document.getElementById('gen-idea-hint').style.display='none';
+}
+
+function onGenIdeaChange(){
+  const sel=document.getElementById('gen-idea');
+  const hint=document.getElementById('gen-idea-hint');
+  if(!sel||!hint)return;
+  if(!sel.value){hint.style.display='none';return;}
+  const idea=db.ideas.find(i=>i.id==sel.value);
+  if(!idea)return;
+  hint.style.display='block';
+  hint.textContent=`✓ El prompt y la respuesta de Claude se guardarán vinculados a esta idea.`;
+  // Auto-llenar el briefing si está vacío
+  const briefing=document.getElementById('briefing');
+  if(briefing&&!briefing.value.trim()){
+    briefing.value=idea.text+(idea.notes?'\n\nNotas: '+idea.notes:'');
+  }
+}
+
+// Helper para abrir Generar pre-llenado con una idea (desde el modal de la idea)
+function openGenForIdea(ideaId){
+  const idea=db.ideas.find(i=>i.id==ideaId);
+  if(!idea)return;
+  closeM('mi'); // cerrar modal de idea si está abierto
+  go('generar');
+  setTimeout(()=>{
+    const gc=document.getElementById('gc');
+    if(gc&&idea.clientId){
+      gc.value=idea.clientId;
+      loadCtx();
+      loadIdeasForGen();
+      const sel=document.getElementById('gen-idea');
+      if(sel){sel.value=idea.id;onGenIdeaChange();}
+    }
+  },150);
 }
 function genQuickTrend(type){
   const niche=document.getElementById('tr-niche').value.trim()||'contenido en redes sociales';
@@ -3862,7 +3936,25 @@ function loadIdeaBrief(id){
   toast('✓ Idea cargada con todo el contexto',false,2000);
 }
 
-function loadIdeaInBrief(){const idea=db.ideas.find(i=>i.id===popIId);if(!idea)return;let txt=idea.text;if(idea.notes)txt+='\n\n'+idea.notes;document.getElementById('briefing').value=txt;closeM('ip-ov');go('generar');toast('✓ Idea cargada en el briefing',false,2000);}
+function loadIdeaInBrief(){
+  const idea=db.ideas.find(i=>i.id===popIId);if(!idea)return;
+  let txt=idea.text;if(idea.notes)txt+='\n\n'+idea.notes;
+  closeM('ip-ov');
+  go('generar');
+  // Esperar a que la pantalla de generar se renderice y luego pre-llenar
+  setTimeout(()=>{
+    document.getElementById('briefing').value=txt;
+    const gc=document.getElementById('gc');
+    if(gc&&idea.clientId){
+      gc.value=idea.clientId;
+      loadCtx();
+      loadIdeasForGen();
+      const sel=document.getElementById('gen-idea');
+      if(sel){sel.value=idea.id;onGenIdeaChange();}
+    }
+    toast('✓ Idea cargada — el prompt se asociará a ella',false,2500);
+  },150);
+}
 
 function loadRadarToGenerar(id){
   selectedRadarId=id;closeM('m-radar-item');go('generar');renderRadarSel();toast('✓ Tendencias seleccionadas',false,2000);
@@ -3977,6 +4069,21 @@ function openIdeaPopup(id){
   if(i.notes){nw.style.display='block';document.getElementById('ip-body-text').textContent=i.notes;}else nw.style.display='none';
   if(i.links&&i.links.length){document.getElementById('ip-links').innerHTML=`<div class="ip-lbl" style="margin-top:8px">Links (${i.links.length})</div>`+i.links.map(l=>`<a href="${l.url}" target="_blank" class="ip-link"><img src="${favUrl(l.url)||''}" onerror="this.style.display='none'"><span>${l.desc||l.url}</span><span class="badge bd-accent" style="font-size:10px;flex-shrink:0">${l.type||''}</span></a>`).join('');}
   else document.getElementById('ip-links').innerHTML='';
+  // Prompts asociados a esta idea
+  const relPrompts=(db.history||[]).filter(h=>h.relatedIdeaId===i.id);
+  const promptsEl=document.getElementById('ip-prompts');
+  if(relPrompts.length){
+    promptsEl.innerHTML=`<div class="ip-lbl" style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span>Contenido generado</span><span style="background:var(--brand-yellow,#F5C518);color:var(--brand-black,#101010);font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:10px;letter-spacing:.08em;font-weight:600">⚡ ${relPrompts.length}</span></div>`+
+      relPrompts.map(p=>`<div onclick="closeM('ip-ov');loadH(${p.id})" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:all .12s" onmouseover="this.style.borderColor='var(--brand-red,#E63329)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <span style="font-size:13px">${p.icon||'✨'}</span>
+          <span style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--text3)">${p.label||'Prompt'} · ${p.date}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text);line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${p.text.slice(0,140)}${p.text.length>140?'…':''}</div>
+      </div>`).join('');
+  } else {
+    promptsEl.innerHTML='';
+  }
   openM('ip-ov');
 }
 
@@ -4094,6 +4201,11 @@ function rId(){
       return ideaTagsF.every(t=>itags.includes(t));
     });
   }
+  // Filtro: solo ideas con contenido generado
+  if(ideaOnlyGenerated){
+    const idsConContenido=new Set((db.history||[]).filter(h=>h.relatedIdeaId).map(h=>h.relatedIdeaId));
+    base=base.filter(i=>idsConContenido.has(i.id));
+  }
   // Ordenar
   if(ideaSort==='nuevas')base=[...base].sort((a,b)=>(b.id||0)-(a.id||0));
   else if(ideaSort==='antiguas')base=[...base].sort((a,b)=>(a.id||0)-(b.id||0));
@@ -4101,11 +4213,13 @@ function rId(){
   else if(ideaSort==='alfaz')base=[...base].sort((a,b)=>(b.text||'').localeCompare(a.text||''));
 
   if(!base.length){
-    const hasFilters=ideaSearch||ideaPlatformF||ideaTagsF.length;
+    const hasFilters=ideaSearch||ideaPlatformF||ideaTagsF.length||ideaOnlyGenerated;
     list.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg></div><div class="empty-title">${hasFilters?'Sin resultados':ac?'Sin ideas para este cliente':'Sin ideas aún'}</div><div class="empty-sub">${hasFilters?'Prueba con otros filtros o limpia la búsqueda':'Usa el campo de arriba para ideas rápidas<br>o &quot;+ Nueva idea&quot; para agregarla con todos los detalles.'}</div>${hasFilters?`<button class="btn sm" style="margin-top:14px" onclick="clearIdeaFilters()">Limpiar filtros</button>`:''}</div>`;return;
   }
   list.innerHTML=`<p class="ctr">${base.length} idea${base.length!==1?'s':''} · clic para ver detalles</p>`+
-    base.map(i=>`<div class="idea-card" onclick="openIdeaPopup(${i.id})">
+    base.map(i=>{
+      const promptCount=(db.history||[]).filter(h=>h.relatedIdeaId===i.id).length;
+      return `<div class="idea-card" onclick="openIdeaPopup(${i.id})">
       <div class="idea-card-actions" onclick="event.stopPropagation()">
         <button class="ib ed" onclick="openEI(${i.id})" title="Editar"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
         <button class="ib del" onclick="delId(${i.id})" title="Eliminar"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>
@@ -4117,11 +4231,13 @@ function rId(){
         ${(i.platforms&&i.platforms.length?i.platforms:i.platform&&i.platform!=='General'?[i.platform]:[]).map(net=>`<span class="badge" style="background:${NET_COLORS[net]||'#888'}18;color:${NET_COLORS[net]||'#888'};border-color:${NET_COLORS[net]||'#888'}44;font-weight:500">${net}</span>`).join('')}
         ${i.format?`<span class="badge bd">${i.format}</span>`:''}
         ${i.links&&i.links.length?`<span class="badge bd">🔗 ${i.links.length}</span>`:''}
+        ${promptCount?`<span class="badge" style="background:rgba(245,197,24,0.18);color:#b88a00;border-color:rgba(245,197,24,0.4);font-weight:600" title="${promptCount} prompt${promptCount!==1?'s':''} generado${promptCount!==1?'s':''} para esta idea">⚡ ${promptCount}</span>`:''}
         ${(i.tags||[]).map(t=>`<span class="badge bd-accent" style="font-size:10px">#${t}</span>`).join('')}
         <span style="font-size:11px;color:var(--text3);margin-left:auto">${i.date}</span>
       </div>
       ${i.notes?`<div class="idea-card-note">${i.notes.slice(0,90)}${i.notes.length>90?'…':''}</div>`:''}
-    </div>`).join('');
+    </div>`;
+    }).join('');
 }
 
 function rLk(){
@@ -4492,7 +4608,7 @@ function setupColDnD(col){
   });
 }
 
-function syncGenCl(){if(activeClId){const el=document.getElementById('gc');if(el)el.value=activeClId;}loadCtx();renderRadarSel();}
+function syncGenCl(){if(activeClId){const el=document.getElementById('gc');if(el)el.value=activeClId;}loadCtx();renderRadarSel();loadIdeasForGen();}
 
 function togEic(cid,el){
   el.classList.toggle('on');
@@ -5120,8 +5236,9 @@ function toggleIdeaTagFilter(tag){
 }
 
 function clearIdeaFilters(){
-  ideaSearch='';ideaPlatformF='';ideaFormatF='';ideaTagsF=[];
+  ideaSearch='';ideaPlatformF='';ideaFormatF='';ideaTagsF=[];ideaOnlyGenerated=false;
   const s=document.getElementById('idea-search');if(s)s.value='';
+  const og=document.getElementById('idea-only-generated');if(og)og.checked=false;
   document.querySelectorAll('#pg-ideas select').forEach(sel=>{
     if(sel.querySelector('option[value=""]'))sel.value='';
     else if(sel.querySelector('option[value="nuevas"]'))sel.value='nuevas';
