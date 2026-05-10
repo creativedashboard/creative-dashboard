@@ -4265,24 +4265,12 @@ function autoCorrectVoiceText(text){
   });
 }
 
-// Sonido corto al empezar a grabar (beep generado con Web Audio API)
-function playStartBeep(){
+// Feedback al iniciar grabación: vibración en mobile (no audio para no interferir con SpeechRecognition)
+function playStartFeedback(){
   try{
-    const AC=window.AudioContext||window.webkitAudioContext;
-    if(!AC)return;
-    const ctx=new AC();
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value=880; // La5 — tono claro y corto
-    osc.type='sine';
-    gain.gain.setValueAtTime(0,ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.18,ctx.currentTime+0.02);
-    gain.gain.linearRampToValueAtTime(0,ctx.currentTime+0.18);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime+0.2);
-    setTimeout(()=>{try{ctx.close();}catch(e){}},400);
+    if(navigator.vibrate){
+      navigator.vibrate(80); // Vibración corta de 80ms
+    }
   }catch(e){}
 }
 
@@ -4323,8 +4311,8 @@ function openVoiceCapture(){
   document.getElementById('voice-timer').textContent='00:00';
   document.getElementById('voice-ov').classList.add('open');
   window._voiceOvOpen=true;
-  // Empezar a grabar automáticamente
-  setTimeout(()=>startVoiceCapture(),200);
+  // Empezar a grabar automáticamente (delay para que el navegador prepare el mic limpio)
+  setTimeout(()=>startVoiceCapture(),400);
 }
 
 function closeVoiceCapture(){
@@ -4359,8 +4347,8 @@ function startVoiceCapture(){
   const status=document.getElementById('voice-status');
   if(!txt)return;
 
-  // Beep al iniciar
-  playStartBeep();
+  // Feedback al iniciar (vibración en mobile, nada audible para no interferir con el mic)
+  playStartFeedback();
 
   // Estado visual: grabando
   window._isRecording=true;
