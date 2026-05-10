@@ -1340,8 +1340,9 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
       <div class="voice-mic-circle" id="voice-mic-circle">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
       </div>
-      <div id="voice-status" style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--brand-red,#E63329);font-weight:600;margin-bottom:10px;height:14px">ESCUCHANDO...</div>
-      <div id="voice-hint" style="font-size:13px;color:var(--text3);margin-bottom:18px;text-align:center;line-height:1.5;padding:0 8px">Habla naturalmente — toca el micrófono para pausar</div>
+      <div id="voice-status" style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--brand-red,#E63329);font-weight:600;margin-bottom:6px;height:14px">ESCUCHANDO...</div>
+      <div id="voice-timer" style="font-family:var(--mono);font-size:13px;color:var(--text);font-weight:600;margin-bottom:10px;letter-spacing:.06em">00:00</div>
+      <div id="voice-hint" style="font-size:13px;color:var(--text3);margin-bottom:18px;text-align:center;line-height:1.5;padding:0 8px">Habla naturalmente — toca el micrófono para pausar<br><span style="font-size:11px;opacity:.7">Límite máximo: 5 minutos</span></div>
       <textarea id="voice-text" placeholder="Tu idea aparecerá aquí..." style="width:100%;min-height:140px;padding:14px;font-size:15px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);color:var(--text);resize:vertical;font-family:'Inter',sans-serif"></textarea>
     </div>
     <div class="voice-footer">
@@ -4210,6 +4211,56 @@ function openQuickCapture(){
 // ════════════════════════════════════════
 window._isRecording=false;
 window._speechRec=null;
+window._voiceTimerInt=null;
+window._voiceStartTime=null;
+window._voiceMaxMs=5*60*1000; // Límite máx 5 minutos
+window._voiceOvOpen=false;
+
+// Sonido corto al empezar a grabar (beep generado con Web Audio API)
+function playStartBeep(){
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return;
+    const ctx=new AC();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value=880; // La5 — tono claro y corto
+    osc.type='sine';
+    gain.gain.setValueAtTime(0,ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.18,ctx.currentTime+0.02);
+    gain.gain.linearRampToValueAtTime(0,ctx.currentTime+0.18);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime+0.2);
+    setTimeout(()=>{try{ctx.close();}catch(e){}},400);
+  }catch(e){}
+}
+
+function formatVoiceTime(ms){
+  const total=Math.floor(ms/1000);
+  const mm=Math.floor(total/60).toString().padStart(2,'0');
+  const ss=(total%60).toString().padStart(2,'0');
+  return `${mm}:${ss}`;
+}
+
+function updateVoiceTimer(){
+  const el=document.getElementById('voice-timer');
+  if(!el||!window._voiceStartTime)return;
+  const elapsed=Date.now()-window._voiceStartTime;
+  el.textContent=formatVoiceTime(elapsed);
+  // Cambiar de color cuando se acerca al límite
+  if(elapsed>=window._voiceMaxMs-30000){
+    el.style.color='var(--brand-red,#E63329)';
+  } else {
+    el.style.color='var(--text)';
+  }
+  // Auto-detener al límite
+  if(elapsed>=window._voiceMaxMs){
+    toast('Llegamos al límite de 5 minutos. Grabación detenida.',false,3500);
+    stopVoiceCapture();
+  }
+}
 
 function openVoiceCapture(){
   // Verificar soporte del navegador
@@ -4220,7 +4271,9 @@ function openVoiceCapture(){
   }
   // Limpiar estado y abrir overlay
   document.getElementById('voice-text').value='';
+  document.getElementById('voice-timer').textContent='00:00';
   document.getElementById('voice-ov').classList.add('open');
+  window._voiceOvOpen=true;
   // Empezar a grabar automáticamente
   setTimeout(()=>startVoiceCapture(),200);
 }
@@ -4228,6 +4281,7 @@ function openVoiceCapture(){
 function closeVoiceCapture(){
   if(window._isRecording)stopVoiceCapture();
   document.getElementById('voice-ov').classList.remove('open');
+  window._voiceOvOpen=false;
 }
 
 function toggleVoiceCapture(){
@@ -4251,10 +4305,21 @@ function startVoiceCapture(){
   const status=document.getElementById('voice-status');
   if(!txt)return;
 
+  // Beep al iniciar
+  playStartBeep();
+
   // Estado visual: grabando
   window._isRecording=true;
   if(circle)circle.classList.remove('paused');
   if(status){status.textContent='ESCUCHANDO...';status.style.color='var(--brand-red,#E63329)';}
+
+  // Iniciar cronómetro (solo si es la primera vez en esta sesión, no si es reinicio interno)
+  if(!window._voiceStartTime){
+    window._voiceStartTime=Date.now();
+  }
+  if(window._voiceTimerInt)clearInterval(window._voiceTimerInt);
+  window._voiceTimerInt=setInterval(updateVoiceTimer,500);
+  updateVoiceTimer();
 
   // Guardar el texto que ya había para no sobreescribirlo
   const baseText=txt.value;
@@ -4318,16 +4383,51 @@ function stopVoiceCapture(){
     try{window._speechRec.stop();}catch(e){}
     window._speechRec=null;
   }
+  // Detener cronómetro pero mantener el tiempo visible
+  if(window._voiceTimerInt){
+    clearInterval(window._voiceTimerInt);
+    window._voiceTimerInt=null;
+  }
   const circle=document.getElementById('voice-mic-circle');
   const status=document.getElementById('voice-status');
   if(circle)circle.classList.add('paused');
   if(status){status.textContent='PAUSADO · TOCA PARA REANUDAR';status.style.color='var(--text3)';}
 }
 
-function saveVoiceIdea(){
+// Auto-guardar y detener cuando se pierde visibilidad (bloqueas cel, cambias de app, cierras pestaña)
+function handleVoiceVisibilityChange(){
+  if(document.hidden&&window._voiceOvOpen&&window._isRecording){
+    // Detener grabación
+    stopVoiceCapture();
+    // Si hay texto, guardar automáticamente
+    const txt=document.getElementById('voice-text');
+    if(txt&&txt.value.trim()){
+      saveVoiceIdea(true); // true = silencioso (sin toast porque no estás viendo la pantalla)
+    } else {
+      // Sin texto: solo cerrar overlay
+      const ov=document.getElementById('voice-ov');
+      if(ov)ov.classList.remove('open');
+      window._voiceOvOpen=false;
+    }
+  }
+}
+
+document.addEventListener('visibilitychange',handleVoiceVisibilityChange);
+
+// También al cerrar/recargar la pestaña, intentar guardar
+window.addEventListener('beforeunload',()=>{
+  if(window._voiceOvOpen&&window._isRecording){
+    const txt=document.getElementById('voice-text');
+    if(txt&&txt.value.trim()){
+      saveVoiceIdea(true);
+    }
+  }
+});
+
+function saveVoiceIdea(silent){
   const txt=document.getElementById('voice-text').value.trim();
   if(!txt){
-    toast('La idea está vacía. Habla un poco más o cancela.',true,3000);
+    if(!silent)toast('La idea está vacía. Habla un poco más o cancela.',true,3000);
     return;
   }
   // Detener grabación si sigue activa
@@ -4354,9 +4454,12 @@ function saveVoiceIdea(){
   save();
   rId();
   renderDash();
-  // Cerrar overlay y mostrar toast
+  // Cerrar overlay y resetear estado
   document.getElementById('voice-ov').classList.remove('open');
-  toast('✓ Idea guardada en el banco',false,2500);
+  window._voiceOvOpen=false;
+  window._voiceStartTime=null;
+  if(window._voiceTimerInt){clearInterval(window._voiceTimerInt);window._voiceTimerInt=null;}
+  if(!silent)toast('✓ Idea guardada en el banco',false,2500);
 }
 
 function plannerNextWeek(){plannerBase.setDate(plannerBase.getDate()+7);renderPlanner();renderCal();}
