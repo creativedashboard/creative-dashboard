@@ -326,13 +326,15 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 .voice-modal{background:var(--surface);width:100%;max-width:540px;border-radius:20px 20px 0 0;display:flex;flex-direction:column;animation:slideUp .25s ease-out;max-height:85vh}
 .voice-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
 .voice-body{padding:24px 20px 18px;display:flex;flex-direction:column;align-items:center}
-.voice-mic-circle{width:84px;height:84px;border-radius:50%;background:var(--brand-red,#E63329);color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 0 0 8px rgba(230,51,41,.15);animation:micPulse 1.5s ease-in-out infinite}
+.voice-mic-circle{width:84px;height:84px;border-radius:50%;background:var(--brand-red,#E63329);color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 0 0 8px rgba(230,51,41,.15);animation:micPulse 1.5s ease-in-out infinite;transition:transform .15s,box-shadow .15s}
 .voice-mic-circle.paused{animation:none;background:var(--text3);box-shadow:0 0 0 8px rgba(0,0,0,.06)}
+.voice-mic-circle.detecting{animation:micDetecting .6s ease-in-out infinite;box-shadow:0 0 0 16px rgba(230,51,41,.22),0 0 0 28px rgba(230,51,41,.08)}
 .voice-mic-circle svg{width:36px;height:36px}
 .voice-footer{display:flex;gap:10px;padding:14px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--border)}
 .voice-footer .btn{padding:14px 16px;font-size:14px;font-weight:600}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 @keyframes micPulse{0%,100%{box-shadow:0 0 0 8px rgba(230,51,41,.15);transform:scale(1)}50%{box-shadow:0 0 0 14px rgba(230,51,41,.08);transform:scale(1.04)}}
+@keyframes micDetecting{0%,100%{transform:scale(1.05);box-shadow:0 0 0 14px rgba(230,51,41,.25),0 0 0 24px rgba(230,51,41,.1)}50%{transform:scale(1.12);box-shadow:0 0 0 22px rgba(230,51,41,.18),0 0 0 36px rgba(230,51,41,.05)}}
 
 @media (min-width:769px){
   /* Desktop: voice modal centrado, no slide-up */
@@ -4282,6 +4284,11 @@ function closeVoiceCapture(){
   if(window._isRecording)stopVoiceCapture();
   document.getElementById('voice-ov').classList.remove('open');
   window._voiceOvOpen=false;
+  // Reset completo del cronómetro al cancelar
+  window._voiceStartTime=null;
+  if(window._voiceTimerInt){clearInterval(window._voiceTimerInt);window._voiceTimerInt=null;}
+  const tEl=document.getElementById('voice-timer');
+  if(tEl){tEl.textContent='00:00';tEl.style.color='var(--text)';}
 }
 
 function toggleVoiceCapture(){
@@ -4296,7 +4303,7 @@ function startVoiceCapture(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR)return;
   const rec=new SR();
-  rec.lang='es-MX';
+  rec.lang='es-419'; // Español latinoamericano genérico — más amplia compatibilidad
   rec.continuous=true;
   rec.interimResults=true;
 
@@ -4310,7 +4317,7 @@ function startVoiceCapture(){
 
   // Estado visual: grabando
   window._isRecording=true;
-  if(circle)circle.classList.remove('paused');
+  if(circle){circle.classList.remove('paused');circle.classList.remove('detecting');}
   if(status){status.textContent='ESCUCHANDO...';status.style.color='var(--brand-red,#E63329)';}
 
   // Iniciar cronómetro (solo si es la primera vez en esta sesión, no si es reinicio interno)
@@ -4325,6 +4332,22 @@ function startVoiceCapture(){
   const baseText=txt.value;
   let finalTranscript=baseText;
   let interimTranscript='';
+
+  // Eventos de detección de voz para feedback visual
+  rec.onsoundstart=()=>{
+    if(circle)circle.classList.add('detecting');
+  };
+  rec.onsoundend=()=>{
+    if(circle)circle.classList.remove('detecting');
+  };
+  rec.onspeechstart=()=>{
+    if(circle)circle.classList.add('detecting');
+    if(status&&window._isRecording)status.textContent='TE ESCUCHO...';
+  };
+  rec.onspeechend=()=>{
+    if(circle)circle.classList.remove('detecting');
+    if(status&&window._isRecording)status.textContent='ESCUCHANDO...';
+  };
 
   rec.onresult=(e)=>{
     interimTranscript='';
@@ -4390,7 +4413,7 @@ function stopVoiceCapture(){
   }
   const circle=document.getElementById('voice-mic-circle');
   const status=document.getElementById('voice-status');
-  if(circle)circle.classList.add('paused');
+  if(circle){circle.classList.add('paused');circle.classList.remove('detecting');}
   if(status){status.textContent='PAUSADO · TOCA PARA REANUDAR';status.style.color='var(--text3)';}
 }
 
