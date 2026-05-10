@@ -4218,6 +4218,53 @@ window._voiceStartTime=null;
 window._voiceMaxMs=5*60*1000; // Límite máx 5 minutos
 window._voiceOvOpen=false;
 
+// Diccionario de auto-corrección para palabras técnicas en inglés
+// Solo incluimos palabras que NO son palabras válidas en español (para no dañar el dictado)
+const VOICE_CORRECTIONS={
+  // Plataformas (capitalizar correctamente)
+  'youtube':'YouTube','yutub':'YouTube','yutubel':'YouTube','llutub':'YouTube','yoclú':'YouTube','yutu':'YouTube',
+  'tiktok':'TikTok','tictoc':'TikTok','tic toc':'TikTok','tic tok':'TikTok',
+  'instagram':'Instagram','instagrán':'Instagram','instagrama':'Instagram',
+  'facebook':'Facebook','feibuc':'Facebook','feisbuk':'Facebook',
+  'linkedin':'LinkedIn','linkedín':'LinkedIn','linquedin':'LinkedIn',
+  'whatsapp':'WhatsApp','wasap':'WhatsApp','watsap':'WhatsApp',
+  'twitter':'Twitter','tuiter':'Twitter',
+  'pinterest':'Pinterest',
+  // Términos de marketing/redes
+  'engagement':'engagement','engachmen':'engagement','engechmen':'engagement','engachment':'engagement','engechment':'engagement','encachment':'engagement','encachmen':'engagement','inchachmen':'engagement','inchachment':'engagement',
+  'reels':'Reels','riles':'Reels','rilos':'Reels','rilse':'Reels',
+  'hook':'hook','juc':'hook','juck':'hook','joc':'hook','jook':'hook',
+  'thumbnail':'thumbnail','tumbnail':'thumbnail','tambnail':'thumbnail','tumbnel':'thumbnail','tabnail':'thumbnail',
+  'live':'live','laif':'live','laibe':'live',
+  'shorts':'Shorts','chors':'Shorts','chorts':'Shorts',
+  'feedback':'feedback','fidbac':'feedback','fidback':'feedback','feebac':'feedback',
+  'share':'share','sher':'share',
+  'followers':'followers','folowers':'followers','folovers':'followers',
+  'hashtag':'hashtag','jashtag':'hashtag','jastac':'hashtag','jashtak':'hashtag',
+  'branding':'branding','brandin':'branding',
+  'storytelling':'storytelling','storiteling':'storytelling',
+  'trending':'trending','trendin':'trending',
+  'streaming':'streaming','streamin':'streaming','estreamin':'streaming','estriming':'streaming',
+  'pitch':'pitch','pich':'pitch',
+  'workflow':'workflow','workflo':'workflow','guorkflo':'workflow',
+  'mindset':'mindset','maindset':'mindset',
+  'storyboard':'storyboard','estoriborg':'storyboard',
+  'community':'community','comunity':'community','comuniti':'community',
+  'creator':'creator','crieitor':'creator',
+  'briefing':'briefing','brifin':'briefing','briefin':'briefing'
+};
+
+function autoCorrectVoiceText(text){
+  if(!text)return text;
+  // Aplicar correcciones palabra por palabra (preservando puntuación y espacios)
+  return text.replace(/\b([\p{L}áéíóúñÁÉÍÓÚÑ]+(?:\s+[\p{L}áéíóúñÁÉÍÓÚÑ]+)?)\b/gu,(match)=>{
+    const lower=match.toLowerCase();
+    // Buscar coincidencia exacta (incluye frases de 2 palabras como "tic toc")
+    if(VOICE_CORRECTIONS[lower])return VOICE_CORRECTIONS[lower];
+    return match;
+  });
+}
+
 // Sonido corto al empezar a grabar (beep generado con Web Audio API)
 function playStartBeep(){
   try{
@@ -4303,7 +4350,7 @@ function startVoiceCapture(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR)return;
   const rec=new SR();
-  rec.lang='es-419'; // Español latinoamericano genérico — más amplia compatibilidad
+  rec.lang='es-US'; // Español de USA — mejor para Spanglish (mezcla de español con palabras en inglés)
   rec.continuous=true;
   rec.interimResults=true;
 
@@ -4354,7 +4401,9 @@ function startVoiceCapture(){
     for(let i=e.resultIndex;i<e.results.length;i++){
       const transcript=e.results[i][0].transcript;
       if(e.results[i].isFinal){
-        finalTranscript+=(finalTranscript&&!finalTranscript.endsWith(' ')?' ':'')+transcript;
+        // Aplicar auto-corrección al texto final
+        const corrected=autoCorrectVoiceText(transcript);
+        finalTranscript+=(finalTranscript&&!finalTranscript.endsWith(' ')?' ':'')+corrected;
       } else {
         interimTranscript+=transcript;
       }
@@ -4448,11 +4497,13 @@ window.addEventListener('beforeunload',()=>{
 });
 
 function saveVoiceIdea(silent){
-  const txt=document.getElementById('voice-text').value.trim();
+  let txt=document.getElementById('voice-text').value.trim();
   if(!txt){
     if(!silent)toast('La idea está vacía. Habla un poco más o cancela.',true,3000);
     return;
   }
+  // Aplicar auto-corrección final al texto completo (por si quedó algo sin corregir)
+  txt=autoCorrectVoiceText(txt);
   // Detener grabación si sigue activa
   if(window._isRecording)stopVoiceCapture();
   // Crear idea con cliente "General" y estado "cruda"
