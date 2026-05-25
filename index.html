@@ -1485,7 +1485,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
       <!-- Contenidos asignados -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Contenidos</div>
-        <button class="brief-load" onclick="openAddContentToBrief()">
+        <button class="brief-load" onclick="openAddContentToCurrentBrief()">
           <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
           Agregar idea
         </button>
@@ -1631,7 +1631,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
           <div class="onb-step-num">2</div>
           <div>
             <div class="onb-step-title">Captura tus ideas</div>
-            <div class="onb-step-sub">Guarda ideas en el banco antes de que se pierdan. Cada idea tiene su cliente, plataforma, estado y notas. Si tienes algo rápido que anotar usa el Buzón — sin pensar, solo escribir. Después las pasas al banco con un clic.</div>
+            <div class="onb-step-sub">Guarda ideas en el banco antes de que se pierdan. Cada idea tiene su cliente, plataforma, estado y notas. Si tienes algo rápido que anotar usa la Captura de idea rápida — sin pensar, solo escribir. Después la completas con un clic.</div>
           </div>
         </div>
         <div class="onb-step">
@@ -1756,7 +1756,6 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
               <option value="🎵 Música/Audio">🎵 Música/Audio</option>
               <option value="🛠 Herramienta">🛠 Herramienta</option>
               <option value="👀 Competencia">👀 Competencia</option>
-              <option value="⭐ Creador de referencia">⭐ Creador de referencia</option>
               <option value="📌 Otro">📌 Otro</option>
             </select>
             <button class="btn primary sm" onclick="addIL()" style="white-space:nowrap;gap:5px">
@@ -2192,7 +2191,11 @@ function doUndo(){
   if(!lastU)return;
   const {type,item,idx}=lastU;
   if(type==='cl')db.clients.splice(idx,0,item);
-  else if(type==='id'){db.ideas.splice(idx,0,item);if(item.links)item.links.forEach(l=>{if(l.id&&!db.links.find(x=>x.id===l.id))db.links.unshift({...l});});}
+  else if(type==='id'){db.ideas.splice(idx,0,item);if(item.links)item.links.forEach(l=>{if(l.id&&!db.links.find(x=>x.id===l.id))db.links.unshift({...l});});
+    // Restaurar calendarización en el planner y su estado de publicación
+    if(lastU.plannerDays&&lastU.plannerDays.length){db.planner=db.planner||{};lastU.plannerDays.forEach(ds=>{if(!db.planner[ds])db.planner[ds]=[];if(!db.planner[ds].includes(item.id))db.planner[ds].push(item.id);});}
+    if(lastU.plannerStatus!==undefined){db.plannerStatus=db.plannerStatus||{};db.plannerStatus[item.id]=lastU.plannerStatus;}
+  }
   else if(type==='lk')db.links.splice(idx,0,item);
   else if(type==='hi')db.history.splice(idx,0,item);
   else if(type==='bz'){db.buzon=db.buzon||[];db.buzon.splice(idx,0,item);}
@@ -2204,6 +2207,8 @@ function doUndo(){
   }
   lastU=null;save();
   renderAll();renderHist();renderSbClients();renderDash();updateBuzonBadge();
+  if(typeof renderPlanner==='function')renderPlanner();
+  if(typeof renderCal==='function')renderCal();
   if(typeof renderCustomTypeChips==='function')renderCustomTypeChips();
   document.getElementById('toast').classList.remove('show');
   toast('✓ Deshecho',false,2000);
@@ -3177,7 +3182,7 @@ async function sendToClaude(){
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,messages:[{role:'user',content:prompt}]})
     });
     if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'Error de API');}
     const data=await res.json();
@@ -3216,41 +3221,6 @@ function saveClaudeToIdeas(){
   const firstLine=t.split('\n')[0].slice(0,120);
   db.ideas.unshift({id:Date.now(),text:firstLine,clientId:cid,clientName:c?c.name:'General',platform:'General',format:'',status:'cruda',notes:t.length>firstLine.length?t.slice(firstLine.length).trim():'',links:[],date:new Date().toLocaleDateString('es'),clientIds:[String(cid||'general')],clientNames:[c?c.name:'General']});
   save();rId();renderDash();toast('✓ Guardado en banco de ideas',false,2000);
-}
-
-// Radar con Claude
-async function sendRadarToClaude(prompt){
-  const apiKey=await getApiKey();
-  if(!apiKey){toast('API key no configurada en Firestore',false,3000);return;}
-  const wrap=document.getElementById('radar-claude-wrap');
-  const body=document.getElementById('radar-claude-body');
-  const btn=document.getElementById('radar-claude-btn');
-  if(wrap)wrap.style.display='block';
-  if(body)body.textContent='';
-  if(btn){btn.disabled=true;btn.textContent='Generando...';}
-  if(wrap)wrap.scrollIntoView({behavior:'smooth',block:'nearest'});
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})
-    });
-    if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'Error');}
-    const data=await res.json();
-    const text=data.content?.[0]?.text||'';
-    if(body)body.textContent=text;
-    if(btn){btn.disabled=false;btn.textContent='Enviar a Claude ⚡';}
-    // Guardar resultado en el radar
-    if(currentRadarId){
-      const r=db.radarHistory.find(x=>x.id===currentRadarId);
-      if(r){r.result=text;save();renderRadarHistory();}
-    }
-    toast('✓ Claude respondió',false,2000);
-  }catch(e){
-    if(body)body.textContent='Error: '+e.message;
-    if(btn){btn.disabled=false;btn.textContent='Enviar a Claude ⚡';}
-    toast('Error al conectar con Claude',false,3000);
-  }
 }
 
 // Cargar datos al autenticarse
@@ -3432,7 +3402,7 @@ async function sendRadarToClaude(prompt){
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:prompt}]})
     });
     if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'Error');}
     const data=await res.json();
@@ -3786,10 +3756,29 @@ function delId(id){
   const idea=db.ideas[idx];
   confirmDelete(`¿Eliminar esta idea?\n\n"${idea.text.slice(0,100)}${idea.text.length>100?'...':''}"`, ()=>{
     if(idea.links)idea.links.forEach(l=>{if(l.id)db.links=db.links.filter(x=>x.id!==l.id);});
-    lastU={type:'id',item:idea,idx};
+    // Quitar del planner (días donde estaba calendarizada) y guardar para poder deshacer
+    const plannerDays=[];
+    if(db.planner){
+      Object.keys(db.planner).forEach(ds=>{
+        if((db.planner[ds]||[]).includes(id)){
+          plannerDays.push(ds);
+          db.planner[ds]=db.planner[ds].filter(x=>x!==id);
+          if(!db.planner[ds].length)delete db.planner[ds];
+        }
+      });
+    }
+    // Guardar y limpiar estado de publicación asociado
+    let plannerStatus;
+    if(db.plannerStatus&&db.plannerStatus[id]!==undefined){
+      plannerStatus=db.plannerStatus[id];
+      delete db.plannerStatus[id];
+    }
+    lastU={type:'id',item:idea,idx,plannerDays,plannerStatus};
     addToTrash('id',idea);
     db.ideas.splice(idx,1);
     save();rId();rLk();renderDash();
+    if(typeof renderPlanner==='function')renderPlanner();
+    if(typeof renderCal==='function')renderCal();
     toast('Idea eliminada',true);
   });
 }
@@ -4664,8 +4653,9 @@ function rLk(){
         <div class="link-fav">${fav?`<img src="${fav}" onerror="this.innerHTML='🔗';this.style.cssText='font-size:14px;width:100%;height:100%;display:flex;align-items:center;justify-content:center'">`:'<span style="font-size:14px">🔗</span>'}</div>
         <div style="flex:1;overflow:hidden">
           <a href="${l.url}" target="_blank" class="link-title">${l.desc||l.url}</a>
-          ${info?.user?`<div style="font-size:11px;color:var(--text2)">${info.user}</div>`:''}
+          ${l.creatorHandle?`<div style="font-size:11px;color:var(--text2);font-family:var(--mono)">${l.creatorHandle}${l.creatorRed?` · ${l.creatorRed}`:''}</div>`:(info?.user?`<div style="font-size:11px;color:var(--text2)">${info.user}</div>`:'')}
           <div class="link-dom">${getDom(l.url)}${l.fromIdea?' · Desde idea':''}</div>
+          ${l.creatorWhy?`<div style="font-size:11px;color:var(--text2);line-height:1.5;margin-top:6px;padding:7px 9px;background:var(--surface2);border-radius:var(--r-sm)">💡 ${l.creatorWhy}</div>`:''}
         </div>
         <button class="ib del" onclick="delLk(${l.id})"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
@@ -4970,7 +4960,47 @@ function saveIdea(){
   save();closeM('mi');rId();rLk();renderBP();renderDash();
 }
 
-function saveLink(){const url=document.getElementById('lurl').value.trim();if(!url){toast('Escribe una URL',false);return;}const rawDesc=document.getElementById('ldesc').value.trim();const type=document.getElementById('lt').value;const cid=document.getElementById('lc').value;const c=db.clients.find(x=>x.id==cid);const info=platInfo(url);let desc=rawDesc||(info?.user?info.user+(info.pl?' ('+info.pl+')':''):getDom(url));db.links.unshift({id:Date.now(),url,desc,type,clientId:cid,clientName:c?c.name:'General',date:new Date().toLocaleDateString('es')});save();document.getElementById('lurl').value='';document.getElementById('ldesc').value='';document.getElementById('lpw').style.display='none';rLk();renderDash();toast('✓ Link guardado',false);}
+// Muestra u oculta los campos extra de "Creador de referencia" según el tipo elegido
+function toggleCreatorFields(type,extraId){
+  const extra=document.getElementById(extraId||'lc-extra');
+  if(!extra)return;
+  const isCreator=(type||'').includes('Creador de referencia');
+  extra.style.display=isCreator?'block':'none';
+}
+
+function saveLink(){
+  const url=document.getElementById('lurl').value.trim();if(!url){toast('Escribe una URL',false);return;}
+  const rawDesc=document.getElementById('ldesc').value.trim();
+  const type=document.getElementById('lt').value;
+  const cid=document.getElementById('lc').value;
+  const c=db.clients.find(x=>x.id==cid);
+  const info=platInfo(url);
+  let desc=rawDesc||(info?.user?info.user+(info.pl?' ('+info.pl+')':''):getDom(url));
+  const link={id:Date.now(),url,desc,type,clientId:cid,clientName:c?c.name:'General',date:new Date().toLocaleDateString('es')};
+  // Campos extra solo si es Creador de referencia
+  if(type.includes('Creador de referencia')){
+    const handle=(document.getElementById('l-handle')?.value||'').trim();
+    const red=document.getElementById('l-red')?.value||'';
+    const why=(document.getElementById('l-why')?.value||'').trim();
+    if(handle)link.creatorHandle=handle;
+    if(red)link.creatorRed=red;
+    if(why)link.creatorWhy=why;
+    // Si no escribió descripción, usar el handle como título
+    if(!rawDesc&&handle)link.desc=handle;
+  }
+  db.links.unshift(link);
+  save();
+  // Limpiar el formulario
+  document.getElementById('lurl').value='';
+  document.getElementById('ldesc').value='';
+  document.getElementById('lpw').style.display='none';
+  const lh=document.getElementById('l-handle');if(lh)lh.value='';
+  const lw=document.getElementById('l-why');if(lw)lw.value='';
+  const lr=document.getElementById('l-red');if(lr)lr.selectedIndex=0;
+  const lt=document.getElementById('lt');if(lt)lt.selectedIndex=0;
+  toggleCreatorFields('','lc-extra');
+  rLk();renderDash();toast('✓ Link guardado',false);
+}
 
 function savePasteResult(){
   const raw=document.getElementById('paste-result').value.trim();
@@ -5222,16 +5252,6 @@ function makeBriefPlanCard(item,day,b){
 
   div.addEventListener('dragstart',e=>{e.dataTransfer.setData('briefItemId',itemId);});
   return div;
-}
-
-function assignBriefItemToDay(itemId,day){
-  const b=(db.briefs||[]).find(x=>x.id===currentBriefId);if(!b)return;
-  if(!b.contenidoFechas)b.contenidoFechas={};
-  b.contenidoFechas[itemId]=day;
-  b.contenidos.forEach(item=>{
-    if(typeof item==='object'&&String(item.id)===itemId)item.fechaAsignada=day;
-  });
-  save();renderBriefPlanner();
 }
 
 // ══════════════════════════════════
