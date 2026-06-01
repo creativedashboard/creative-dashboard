@@ -11,6 +11,10 @@
    TOKENS — LIGHT (default)
 ══════════════════════════════════ */
 :root{
+  /* Easing curves */
+  --ease-out:cubic-bezier(0.23,1,0.32,1);
+  --ease-in-out:cubic-bezier(0.77,0,0.175,1);
+  --ease-drawer:cubic-bezier(0.32,0.72,0,1);
   /* Brand DON'T KILL THE IDEA */
   --brand-red:#E63329;
   --brand-yellow:#F5C518;
@@ -96,11 +100,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 /* ─── NAV ITEMS ─── */
 .sb-group{margin-top:4px}
 .sb-group-label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;padding:8px 8px 3px;display:flex;justify-content:space-between;align-items:center}
-.sb-group-label button{width:18px;height:18px;border-radius:4px;border:none;background:none;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.sb-group-label button{width:18px;height:18px;border-radius:4px;border:none;background:none;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .12s var(--ease-out),background .12s var(--ease-out)}
 .sb-group-label button:hover{background:var(--surface2);color:var(--text)}
-.ni{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--r-sm);cursor:pointer;color:var(--text2);font-size:13px;font-weight:400;transition:all .12s;border:none;background:none;width:100%;text-align:left;position:relative}
+.ni{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--r-sm);cursor:pointer;color:var(--text2);font-size:13px;font-weight:400;transition:color .12s var(--ease-out),background .12s var(--ease-out);border:none;background:none;width:100%;text-align:left;position:relative}
+.ni:active{transform:scale(0.97)}
 .ni:hover{color:var(--text);background:var(--surface2)}
-.ni.on{color:var(--accent);background:var(--accent-light);font-weight:500}
+.ni.on{color:var(--accent);background:var(--accent-light);font-weight:500;animation:ni-active 180ms var(--ease-out) both}
+@keyframes ni-active{from{background:transparent}to{background:var(--accent-light)}}
 .ni.on svg{opacity:1;color:var(--accent)}
 .ni svg{width:15px;height:15px;flex-shrink:0;opacity:.55;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:opacity .12s}
 .ni-sub:hover{background:var(--surface2);color:var(--text) !important}
@@ -108,12 +114,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 .ni-client{padding-left:14px;font-size:12px}
 .ni-client.ac{color:var(--accent);font-weight:600;background:var(--accent-light)}
 .ni-client.ac .ni-dot{background:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}
-.ni-client.ac::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:70%;background:var(--accent);border-radius:0 3px 3px 0}
+.ni-client.ac::before{display:none}
 .ni-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:all .15s}
 .ndiv{height:1px;background:var(--border);margin:6px 0}
 
 /* ─── HISTORY ─── */
-.hi{display:flex;align-items:center;gap:6px;padding:4px 8px 4px 18px;border-radius:var(--r-sm);cursor:pointer;transition:all .12s;border:none;background:none;width:100%;text-align:left}
+.hi{display:flex;align-items:center;gap:6px;padding:4px 8px 4px 18px;border-radius:var(--r-sm);cursor:pointer;transition:background .12s var(--ease-out);border:none;background:none;width:100%;text-align:left}
 .hi:hover{background:var(--surface2)}
 .hi.on{background:var(--accent-light)}
 .hi-ic{font-size:11px;flex-shrink:0;width:14px;text-align:center}
@@ -129,7 +135,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 
 /* ─── BOTTOM ACTIONS ─── */
 .sb-actions{display:flex;gap:5px;margin-bottom:8px}
-.sb-act{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:5px 4px;font-size:11px;font-family:'Inter',sans-serif;border-radius:var(--r-sm);border:1px solid var(--border);background:none;color:var(--text2);cursor:pointer;transition:all .12s;font-weight:400}
+.sb-act{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:5px 4px;font-size:11px;font-family:'Inter',sans-serif;border-radius:var(--r-sm);border:1px solid var(--border);background:none;color:var(--text2);cursor:pointer;transition:color .12s var(--ease-out),background .12s var(--ease-out),border-color .12s var(--ease-out);font-weight:400}
 .sb-act-icon{flex:0 0 32px;padding:5px}
 .sb-act-icon svg{width:14px;height:14px}
 .sb-act svg{width:11px;height:11px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -143,7 +149,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
    MAIN
 ════════════════════════════ */
 .main{flex:1;overflow-y:auto;background:var(--bg)}
-.page{display:none}.page.on{display:block}
+.page{display:none}
+.page.on{display:block;animation:page-enter 220ms var(--ease-out) both}
+@keyframes page-enter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 .pw{padding:28px 36px 48px;max-width:940px}
 .pw-full{padding:28px 36px 48px}
 
@@ -177,12 +185,12 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 /* ════════════════════════════
    BUTTONS
 ════════════════════════════ */
-.btn{padding:7px 14px;font-size:13px;font-family:'Inter',sans-serif;font-weight:500;border-radius:var(--r-sm);cursor:pointer;transition:all .15s;border:1px solid var(--border);background:var(--surface);color:var(--text2);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn{padding:7px 14px;font-size:13px;font-family:'Inter',sans-serif;font-weight:500;border-radius:var(--r-sm);cursor:pointer;transition:color .15s var(--ease-out),background .15s var(--ease-out),border-color .15s var(--ease-out),box-shadow .15s var(--ease-out),transform .1s var(--ease-out);border:1px solid var(--border);background:var(--surface);color:var(--text2);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .btn:hover{border-color:var(--border2);color:var(--text);background:var(--surface2)}
 .btn:active{transform:scale(.98)}
 .btn svg{width:14px;height:14px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.btn.primary{background:var(--accent);color:#fff;border-color:transparent;box-shadow:0 1px 3px rgba(91,79,207,.3)}
-.btn.primary:hover{background:#4a3fb8;box-shadow:0 2px 8px rgba(91,79,207,.4)}
+.btn.primary{background:var(--accent);color:#fff;border-color:transparent;box-shadow:0 1px 3px rgba(230,51,41,.25)}
+.btn.primary:hover{background:#c2281f;box-shadow:0 2px 8px rgba(230,51,41,.35)}
 .btn.danger{color:var(--red);border-color:var(--red-bord);background:var(--red-bg)}
 .btn.danger:hover{background:var(--red);color:#fff}
 .btn.sm{padding:4px 10px;font-size:12px}
@@ -191,7 +199,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 .btn.accent-ghost{background:var(--accent-light);color:var(--accent);border-color:var(--accent-bord)}
 .btn.accent-ghost:hover{background:var(--accent-mid)}
 .btn:disabled{opacity:.4;cursor:default;pointer-events:none}
-.ib{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;border-radius:4px;transition:all .12s;display:flex;align-items:center;justify-content:center}
+.ib{background:none;border:none;cursor:pointer;color:var(--text3);padding:4px;border-radius:4px;transition:color .12s var(--ease-out),background .12s var(--ease-out);display:flex;align-items:center;justify-content:center}
 .ib svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .ib:hover{color:var(--text2);background:var(--surface2)}
 .ib.del:hover{color:var(--red);background:var(--red-bg)}
@@ -214,8 +222,8 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 .card:hover{border-color:var(--border2);box-shadow:var(--shadow-sm)}
 
 /* ─── METRIC CARD ─── */
-.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 18px 16px;box-shadow:var(--shadow-xs);transition:all .15s;cursor:pointer;position:relative}
-.metric-card:hover{border-color:var(--text2);box-shadow:var(--shadow-sm);transform:translateY(-1px)}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 18px 16px;box-shadow:var(--shadow-xs);transition:border-color .15s var(--ease-out),box-shadow .15s var(--ease-out),transform .15s var(--ease-out);cursor:pointer;position:relative}
+@media(hover:hover)and(pointer:fine){.metric-card:hover{border-color:var(--text2);box-shadow:var(--shadow-sm);transform:translateY(-1px)}}
 .metric-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;position:absolute;top:18px;right:18px}
 .metric-icon svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .metric-val{font-family:var(--display);font-size:44px;font-weight:400;color:var(--text);line-height:.95;margin-top:32px;margin-bottom:6px}
@@ -224,7 +232,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 .metric-sub{font-size:11px;color:var(--text3);margin-top:2px}
 
 /* ─── CLIENT CARD ─── */
-.client-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:all .15s;box-shadow:var(--shadow-xs);margin-bottom:10px}
+.client-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:border-color .15s var(--ease-out),box-shadow .15s var(--ease-out);box-shadow:var(--shadow-xs);margin-bottom:10px}
 .client-card:hover{border-color:var(--border2);box-shadow:var(--shadow-sm)}
 .client-card.new-highlight{animation:highlight-in .6s ease-out}
 @keyframes highlight-in{0%{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-light)}100%{border-color:var(--border);box-shadow:var(--shadow-xs)}}
@@ -237,7 +245,8 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 .client-avoid svg{width:12px;height:12px;flex-shrink:0;margin-top:1px;fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
 /* ─── IDEA CARD ─── */
-.idea-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:6px;transition:all .15s;cursor:pointer;position:relative;box-shadow:var(--shadow-xs)}
+.idea-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:6px;transition:border-color .15s var(--ease-out),box-shadow .15s var(--ease-out),transform .1s var(--ease-out);cursor:pointer;position:relative;box-shadow:var(--shadow-xs)}
+.idea-card:active{transform:scale(0.98)}
 .idea-card:hover{border-color:var(--border2);box-shadow:var(--shadow-sm)}
 .idea-card:hover .idea-card-actions{opacity:1}
 .idea-card-title{font-size:13px;font-weight:500;color:var(--text);line-height:1.4;padding-right:64px}
@@ -246,7 +255,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 .idea-card-actions{position:absolute;top:10px;right:10px;display:flex;gap:2px;opacity:0;transition:opacity .12s}
 
 /* ─── LINK CARD ─── */
-.link-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:6px;transition:all .15s;box-shadow:var(--shadow-xs)}
+.link-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:6px;transition:border-color .15s var(--ease-out),box-shadow .15s var(--ease-out);box-shadow:var(--shadow-xs)}
 .link-card:hover{border-color:var(--border2);box-shadow:var(--shadow-sm)}
 .link-fav{width:30px;height:30px;border-radius:var(--r-sm);background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
 .link-fav img{width:18px;height:18px;object-fit:contain}
@@ -278,7 +287,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
    FILTER BAR
 ════════════════════════════ */
 .fbar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
-.fc{padding:3px 10px;font-size:12px;font-weight:400;border-radius:20px;border:1px solid var(--border);background:none;cursor:pointer;color:var(--text2);font-family:'Inter',sans-serif;transition:all .12s}
+.fc{padding:3px 10px;font-size:12px;font-weight:400;border-radius:20px;border:1px solid var(--border);background:none;cursor:pointer;color:var(--text2);font-family:'Inter',sans-serif;transition:color .12s var(--ease-out),background .12s var(--ease-out),border-color .12s var(--ease-out)}
 .idea-client-pill{display:inline-flex;align-items:center;gap:7px;padding:5px 12px 5px 5px;font-size:12px;font-weight:500;border-radius:24px;border:1px solid var(--border);background:var(--surface);cursor:pointer;color:var(--text2);font-family:'Inter',sans-serif;transition:all .15s;line-height:1.2}
 .idea-client-pill:hover{border-color:var(--text3);background:var(--surface2);color:var(--text)}
 .idea-client-pill.on{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -318,6 +327,10 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
    MODALS
 ════════════════════════════ */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(4px)}
+.ov.open{animation:overlay-fade .2s var(--ease-out) both}
+@keyframes overlay-fade{from{opacity:0}to{opacity:1}}
+.ov.open .modal,.ov.open .ip,.ov.open .tp-panel,.ov.open .onb-modal{animation:modal-in .2s var(--ease-out) both}
+@keyframes modal-in{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
 
 /* Voice capture overlay */
 .voice-fab{display:none}
@@ -353,12 +366,14 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
    CHIPS
 ════════════════════════════ */
 .chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-.chip,.nc{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:400;border:1px solid var(--border);cursor:pointer;background:none;color:var(--text2);transition:all .12s;font-family:'Inter',sans-serif;user-select:none}
+.chip,.nc{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:400;border:1px solid var(--border);cursor:pointer;background:none;color:var(--text2);transition:color .12s var(--ease-out),background .12s var(--ease-out),border-color .12s var(--ease-out),transform .1s var(--ease-out);font-family:'Inter',sans-serif;user-select:none}
+.chip:active,.nc:active{transform:scale(0.96)}
 .chip:hover,.nc:hover{border-color:var(--border2);color:var(--text);background:var(--surface2)}
 .chip.on,.nc.on{color:var(--accent);border-color:var(--accent-bord);background:var(--accent-light);font-weight:500}
 
 /* ─── TYPE CHIPS ─── */
-.type-chip{padding:7px 13px;border-radius:var(--r-sm);font-size:13px;font-weight:400;border:1px solid var(--border);cursor:pointer;background:var(--surface);color:var(--text2);transition:all .15s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;box-shadow:var(--shadow-xs)}
+.type-chip{padding:7px 13px;border-radius:var(--r-sm);font-size:13px;font-weight:400;border:1px solid var(--border);cursor:pointer;background:var(--surface);color:var(--text2);transition:color .15s var(--ease-out),background .15s var(--ease-out),border-color .15s var(--ease-out),box-shadow .15s var(--ease-out),transform .1s var(--ease-out);font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;box-shadow:var(--shadow-xs)}
+.type-chip:active{transform:scale(0.96)}
 .type-chip svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .type-chip:hover{border-color:var(--border2);color:var(--text);box-shadow:var(--shadow-sm)}
 .type-chip.on{color:var(--accent);border-color:var(--accent);background:var(--accent-light);font-weight:500;box-shadow:0 0 0 3px var(--accent-light)}
@@ -432,7 +447,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
    DASHBOARD
 ════════════════════════════ */
 .dash-welcome{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px 32px;margin-bottom:28px;color:var(--text);position:relative;overflow:hidden;box-shadow:var(--shadow-xs)}
-.dash-welcome::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--brand-red)}
+.dash-welcome{border-top:3px solid var(--brand-red) !important}
 .dash-welcome-title{font-family:var(--display);font-size:44px;font-weight:400;letter-spacing:.01em;margin-bottom:10px;position:relative;z-index:1;text-transform:uppercase;line-height:1;color:var(--text)}
 .dash-welcome-sub{font-size:14px;color:var(--text2);position:relative;z-index:1;line-height:1.55;max-width:580px}
 .dash-welcome-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;position:relative;z-index:1}
@@ -447,7 +462,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 .dri-number{font-family:var(--display);font-size:22px;line-height:1;color:var(--text3);min-width:28px;transition:color .15s}
 .dash-recent-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:4px}
 .dash-quick-btn{display:flex;align-items:center;gap:10px;padding:14px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:all .15s;box-shadow:var(--shadow-xs);text-align:left;font-family:'Inter',sans-serif}
-.dash-quick-btn:hover{border-color:var(--text2);box-shadow:var(--shadow-sm);transform:translateY(-1px)}
+@media(hover:hover)and(pointer:fine){.dash-quick-btn:hover{border-color:var(--text2);box-shadow:var(--shadow-sm);transform:translateY(-1px)}}
 .dash-quick-btn-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .dash-quick-btn-icon svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .dash-quick-btn-text{font-size:12px;font-weight:500;color:var(--text)}
@@ -465,13 +480,13 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 .agent-title{font-size:14px;font-weight:600;color:var(--text)}
 .agent-sub{font-size:12px;color:var(--text2)}
 .agent-pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--teal);margin-right:4px;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.9)}}
 
 /* ════════════════════════════
    ONBOARDING
 ════════════════════════════ */
 .onb-modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:0;width:min(520px,92vw);overflow:hidden;box-shadow:var(--shadow-md)}
-.onb-header{background:linear-gradient(135deg,var(--accent) 0%,#7c6df0 100%);padding:28px 32px 24px;color:#fff;text-align:center;position:relative;overflow:hidden}
+.onb-header{background:linear-gradient(135deg,var(--brand-red) 0%,var(--brand-blue) 100%);padding:28px 32px 24px;color:#fff;text-align:center;position:relative;overflow:hidden}
 .onb-header::after{content:'';position:absolute;right:-30px;top:-30px;width:180px;height:180px;background:rgba(255,255,255,.05);border-radius:50%}
 .onb-logo{width:48px;height:48px;background:rgba(255,255,255,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;position:relative;z-index:1;backdrop-filter:blur(4px)}
 .onb-logo svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
@@ -493,7 +508,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 ════════════════════════════════════ */
 @media(max-width:768px){
   /* Sidebar oculto por defecto */
-  .sb{display:flex !important;flex-direction:column;position:fixed;top:0;left:0;width:280px !important;min-width:280px !important;height:100vh;z-index:200;transform:translateX(-100%);transition:transform .25s ease;box-shadow:4px 0 20px rgba(0,0,0,.2);overflow-y:auto}
+  .sb{display:flex !important;flex-direction:column;position:fixed;top:0;left:0;width:280px !important;min-width:280px !important;height:100vh;z-index:200;transform:translateX(-100%);transition:transform .3s var(--ease-drawer);box-shadow:4px 0 20px rgba(0,0,0,.2);overflow-y:auto}
   .sb.open{transform:translateX(0) !important}
   .sb-overlay{display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.4)}
   .sb-overlay.show{display:block}
@@ -573,7 +588,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
 .planner-day-today .planner-day-hd{background:var(--accent-light);border:1px solid var(--accent-bord)}
 .planner-col-body{background:var(--surface2);border-radius:var(--r-sm);padding:6px;min-height:180px;border:1.5px dashed var(--border);transition:border-color .15s,background .15s}
 .planner-col-body.drag-over{border-color:var(--accent);background:var(--accent-light)}
-.plan-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;margin-bottom:6px;cursor:grab;transition:all .15s;box-shadow:var(--shadow-xs);user-select:none}
+.plan-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;margin-bottom:6px;cursor:grab;transition:border-color .15s var(--ease-out),box-shadow .15s var(--ease-out),opacity .15s var(--ease-out),transform .15s var(--ease-out);box-shadow:var(--shadow-xs);user-select:none}
 .plan-card:hover{border-color:var(--border2);box-shadow:var(--shadow-sm)}
 .plan-card.dragging{opacity:.4;transform:scale(.97)}
 .plan-card-title{font-size:12px;font-weight:500;color:var(--text);line-height:1.3;margin-bottom:5px}
@@ -585,19 +600,30 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
    RADAR HISTORY
 ════════════════════════════ */
 .radar-hist-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:8px;box-shadow:var(--shadow-xs)}
-.radar-hist-item.has-result{border-left:3px solid var(--teal)}
+.radar-hist-item.has-result{border-color:var(--teal-bord);background:var(--teal-bg)}
 .radar-hist-title{font-size:13px;font-weight:500;color:var(--text)}
 .radar-hist-meta{font-size:11px;color:var(--text3);margin-top:3px}
 .radar-hist-result{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--text2);line-height:1.6;white-space:pre-wrap;max-height:120px;overflow:hidden;position:relative}
 .radar-hist-result.expanded{max-height:none}
-.radar-sel-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:all .12s}
+.radar-sel-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);cursor:pointer;transition:background .12s var(--ease-out),border-color .12s var(--ease-out)}
 .radar-sel-item:hover{border-color:var(--border2)}
 .radar-sel-item.on{border-color:var(--teal);background:var(--teal-bg)}
 .radar-sel-dot{width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:background .12s}
 .radar-sel-item.on .radar-sel-dot{background:var(--teal)}
 
-.ctx-chip{padding:5px 11px;border-radius:20px;font-size:12px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Inter',sans-serif;transition:all .12s}
+.ctx-chip{padding:5px 11px;border-radius:20px;font-size:12px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-family:'Inter',sans-serif;transition:color .12s var(--ease-out),background .12s var(--ease-out),border-color .12s var(--ease-out)}
 .ctx-chip:hover,.ctx-chip.on{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+
+/* ════════════════════════════
+   REDUCED MOTION
+════════════════════════════ */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  .sb{transition:none !important}
+  .toast{transition:opacity .15s ease !important}
+  .voice-mic-circle{animation:none !important}
+  .agent-pulse{animation:none !important}
+}
 </style>
 </head>
 <body>
@@ -1295,10 +1321,10 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
       <label style="margin-bottom:10px">Tipo de contenido</label>
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px" id="type-chips-wrap">
         <button class="type-chip on" id="tc-ideas" onclick="selType('ideas',this)">
-          <svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>5 ideas
+          <svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>Ideas
         </button>
         <button class="type-chip" id="tc-hooks" onclick="selType('hooks',this)">
-          <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>7 hooks
+          <svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Hooks
         </button>
         <button class="type-chip" id="tc-caption" onclick="selType('caption',this)">
           <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Captions
@@ -2418,7 +2444,7 @@ function renderDash(){
   const tipLabel={cruda:'PENDIENTE',radar:'SUGERENCIA',brief:'ATENCIÓN',tip:'TIP DEL DÍA'};
   const tipColor=tipColors[tipData.type]||'var(--brand-blue)';
   document.getElementById('dash-tip').innerHTML=`
-    <div style="background:var(--surface);border:1px solid var(--border);border-left:4px solid ${tipColor};border-radius:var(--r);padding:18px 22px;box-shadow:var(--shadow-xs);display:flex;align-items:flex-start;gap:14px">
+    <div style="background:var(--surface);border:1px solid var(--border);border-top:3px solid ${tipColor};border-radius:var(--r);padding:18px 22px;box-shadow:var(--shadow-xs);display:flex;align-items:flex-start;gap:14px">
       <div style="width:38px;height:38px;border-radius:8px;background:${tipColor}22;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${tipIcons[tipData.type]||'✦'}</div>
       <div style="flex:1;min-width:0">
         <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:${tipColor};font-weight:600;margin-bottom:5px">${tipLabel[tipData.type]||'TIP'}</div>
@@ -3489,61 +3515,33 @@ function buildPrompt(type){
 `Formato: ${fmt}. Adapta la estructura al formato.`;
 
   const prompts={
-    ideas:`${base}${bn}Eres estratega de contenido especialista en ${plats}. Genera exactamente 5 ideas distintas para el siguiente formato:
+    ideas:`${base}${bn}Eres estratega de contenido para ${plats}. Dame 5 ideas para ${fmtDesc}, tono ${fmtTone()}.
 
-FORMATO: ${fmtDesc}
-${fmtInstr}
+Por cada idea, solo esto:
+• **Título** — específico y con gancho, nada genérico
+• **De qué va** — una frase
+• **Gancho** — lo primero que se ve o se dice en la pieza
 
-Para cada idea entrega:
-1. **Título** — específico, llamativo, no genérico
-2. **Concepto** — qué se hace exactamente, adaptado a la estructura del formato
-3. **Hook o gancho** — cómo abre la pieza para capturar la atención inmediata
-4. **Por qué funciona** — mecanismo psicológico (curiosity gap, FOMO, relatabilidad, sorpresa)
-5. **Nota de producción** — cómo ejecutarlo de forma concreta en ${plats}
+Que sean concretas y hechas para ${plats}. Sin relleno. Si después te pido una idea en detalle, la desarrollas.`,
 
-Tono: ${fmtTone()}. Las ideas deben sentirse nativas del formato, no adaptaciones de otro.`,
+    hooks:`${base}${bn}Eres copywriter para ${plats}. Dame 8 hooks (ganchos) distintos para ${fmtDesc}, tono ${fmtTone()}.
 
-    hooks:`${base}${bn}Eres copywriter especialista en ${plats}. Genera 8 hooks distintos para este formato:
+${isReel?'Son para los primeros 3 segundos del video — tienen que frenar el scroll al instante.':
+isCarrusel?'Son para la portada del carrusel — tienen que obligar a deslizar.':
+isHistoria?'Son para el primer frame — tienen que evitar que pasen de largo.':
+isPost?'Son para el copy de la imagen y la primera línea del caption.':
+'Tienen que funcionar en el formato indicado.'}
 
-FORMATO: ${fmtDesc}
+Que sean variados entre sí: alguno con una pregunta, otro con un dato que sorprenda, otro con una promesa, otro con una opinión que genere debate, otro arrancando una historia. Solo el texto de cada hook, listo para usar.`,
 
-${isReel?'Los hooks son para los primeros 3 segundos del video — deben detener el scroll antes de que el dedo se mueva.':
-isCarrusel?'Los hooks son para la portada del carrusel — deben obligar a deslizar el primer slide.':
-isHistoria?'Los hooks son para el primer frame de la historia — deben evitar el tap-through inmediato.':
-isPost?'Los hooks son para el copy de la imagen y la primera línea del caption.':
-'Los hooks deben funcionar específicamente en el formato indicado.'}
+    caption:`${base}${bn}Eres copywriter para ${plats}. Escribe 3 captions completos para ${fmtDesc}, tono ${fmtTone()}.
 
-Un mecanismo psicológico diferente por hook:
-1. **Curiosity gap** — crea una brecha que el cerebro necesita cerrar
-2. **Dato contraintuitivo** — va contra lo que la gente cree
-3. **Amenaza o urgencia** — si no ves esto, te pasa X
-4. **Identificación directa** — para quien hace/es/siente X exactamente
-5. **Promesa de resultado** — en X tiempo / con X pasos lograrás Y
-6. **Controversia controlada** — opinión polémica pero defendible
-7. **Storytelling de apertura** — arranca en el clímax de una historia
-8. **POV inmersivo** — te pone dentro de una situación concreta
+${isReel||isHistoria?'En Reels e Historias casi nadie lee el caption: hazlo corto, con gancho en la primera línea y un CTA.':
+isCarrusel?'En carruseles sí lo leen los que llegaron al final: puede ser más largo.':
+isPost?'En posts estáticos el caption carga el peso: aquí sí desarróllalo.':
+'Adáptalo a cómo se lee el formato.'}
 
-Por cada hook: texto exacto adaptado al formato + por qué funciona psicológicamente. Tono: ${fmtTone()}.`,
-
-    caption:`${base}${bn}Eres copywriter especialista en ${plats}. Escribe 3 captions completos para este formato:
-
-FORMATO: ${fmtDesc}
-
-${isReel||isHistoria?
-'Para Reels e Historias el caption es secundario — la gente casi no lo lee. Hazlo corto, con un hook fuerte en la primera línea visible y un CTA claro. Hashtags al final.':
-isCarrusel?
-'Para Carruseles el caption sí importa — la gente que deslizó hasta el final lo lee. Puede ser más largo y con más contexto.':
-isPost?
-'Para posts estáticos el caption es clave — sin movimiento, el texto tiene que cargar el engagement.':
-'Adapta el caption al comportamiento de lectura específico de este formato.'}
-
-Cada caption incluye:
-- **Primera línea** (el hook — lo único que se ve antes de "ver más")
-- **Cuerpo** — valor, historia o contexto (máx 3 párrafos, adaptado al formato)
-- **CTA** — pregunta o llamada a la acción que invite a comentar o guardar
-- **Hashtags** — 5-8 mezclando volumen alto, medio y nicho
-
-Tono: ${fmtTone()}. Plataformas: ${plats}.`,
+Cada caption: primera línea (el gancho, lo único que se ve antes del "ver más"), cuerpo breve, un CTA, y 5-8 hashtags. Listos para copiar y pegar.`,
 
     guion:`${base}${bn}Eres director creativo y guionista especialista en ${plats}.
 
@@ -3672,23 +3670,23 @@ isLive?
 - Tipo de edición (ritmo, cortes, transiciones)
 - Elementos visuales clave (texto overlay, colores, encuadre)`}`,
 
-    calendar:`${base}${bn}Eres estratega de contenido para ${plats}, tono ${fmtTone()}. Crea un calendario de contenido para los próximos 7 días priorizando el formato: ${fmtDesc}.
+    calendar:`${base}${bn}Eres estratega de contenido para ${plats}, tono ${fmtTone()}. Arma un calendario de 7 días priorizando ${fmtDesc}.
 
-| Día | Tema | Formato | Plataforma | Hora óptima | Objetivo | Idea en una línea |
-|-----|------|---------|------------|-------------|----------|-----------------|
+| Día | Tema | Formato | Hora de publicar | Idea en una línea |
+|-----|------|---------|------------------|-------------------|
 
-Después del calendario:
-- **Hilo conductor** — cómo los 7 posts se conectan entre sí
-- **Post estrella** — cuál tiene más potencial viral y por qué
-- **Repurposing** — cómo reutilizar el post más fuerte en otros formatos o plataformas
+Después del calendario, en pocas líneas:
+- Cómo se conectan los 7 posts entre sí
+- Cuál tiene más potencial y por qué
+- Cómo reutilizar el más fuerte en otro formato
 
-Nota: prioriza ${fmtDesc} pero mezcla formatos para no saturar al algoritmo.`
+Mezcla formatos para no saturar.`
   };
   return prompts[type]||prompts.ideas;
 }
 
 const tIc={ideas:'💡',hooks:'🪝',caption:'📝',guion:'🎬',calendar:'📅'};
-const tLb={ideas:'5 ideas',hooks:'Hooks',caption:'Captions',guion:'Guión',calendar:'Calendario'};
+const tLb={ideas:'Ideas',hooks:'Hooks',caption:'Captions',guion:'Guión',calendar:'Calendario'};
 
 function calNextMonth(){calBase.setDate(1);calBase.setMonth(calBase.getMonth()+1);renderCal();}
 
@@ -4085,7 +4083,7 @@ function makeBriefPlannerCard(item, briefId, day){
   const cl=db.clients.find(c=>c.id==b.clienteId);
   const cc=cl?clColor(cl.id):'var(--text3)';
 
-  div.style.cssText=`background:var(--surface);border:1px solid var(--border);border-left:3px solid ${color};border-radius:6px;padding:8px 10px;margin-bottom:6px;cursor:pointer;font-size:12px`;
+  div.style.cssText=`background:var(--surface);border:1px solid var(--border);border-top:2px solid ${color};border-radius:6px;padding:8px 10px;margin-bottom:6px;cursor:pointer;font-size:12px`;
   div.innerHTML=`
     <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:4px">
       <span style="font-size:11px;flex-shrink:0">${icon}</span>
@@ -5246,7 +5244,7 @@ function makeBriefPlanCard(item,day,b){
     icon='💡';color='var(--orange)';
   }
 
-  div.style.cssText=`background:var(--surface2);border:1px solid var(--border);border-left:3px solid ${color};border-radius:4px;padding:4px 6px;margin-bottom:3px;cursor:grab;font-size:11px;color:var(--text);line-height:1.3`;
+  div.style.cssText=`background:var(--surface2);border:1px solid var(--border);border-top:2px solid ${color};border-radius:4px;padding:4px 6px;margin-bottom:3px;cursor:grab;font-size:11px;color:var(--text);line-height:1.3`;
   div.innerHTML=`<span style="margin-right:3px">${icon}</span>${title}${title.length===50?'…':''}
     <button onclick="event.stopPropagation();removeFromBriefDetail(${b.id},'${itemId}')" style="float:right;background:none;border:none;cursor:pointer;color:var(--text3);font-size:10px;padding:0 2px" title="Quitar">✕</button>`;
 
@@ -5386,7 +5384,7 @@ function renderBriefCal(){
         div.draggable=true;
         div.dataset.briefItemId=itemId;
         const {title,icon,color}=getBriefItemMeta(item);
-        div.style.cssText=`background:var(--surface);border:2px solid ${color};border-left:6px solid ${color};border-radius:10px;padding:12px 16px;cursor:grab;display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text);transition:all .15s;box-shadow:0 2px 6px rgba(0,0,0,0.08);min-width:220px;max-width:320px;font-weight:500`;
+        div.style.cssText=`background:var(--surface);border:2px solid ${color};border-radius:10px;padding:12px 16px;cursor:grab;display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text);transition:all .15s;box-shadow:0 2px 6px rgba(0,0,0,0.08);min-width:220px;max-width:320px;font-weight:500`;
         div.innerHTML=`
           <span style="font-size:18px;flex-shrink:0">${icon}</span>
           <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${title}</span>
