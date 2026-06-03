@@ -2024,11 +2024,14 @@ let selectedRadarId=null;
 let activeClId=null,newClId=null;
 
 // ═══════════ PLANES · Pro / Flex / Admin ═══════════
-const ADMIN_UID='MfWiPKHPa2dhFVMQfl2JJuz63aL2';
+const ADMIN_UID='ip211zQzobQk20Mfz2v9lhjtXeD2';
 let cdPlan=null;        // 'pro' | 'flex' — plan real del usuario
 let cdValidUntil=null;  // ISO (flex) | null (pro = de por vida)
 let cdSimPlan=null;     // simulador admin: 'pro'|'flex'|'expired'|null
 function isAdmin(){return !!(fbUser&&fbUser.uid===ADMIN_UID);}
+// Modo lectura: un Flex vencido puede ver y exportar, pero no crear/editar/borrar
+function canWrite(){return effectivePlan()!=='expired';}
+function guardWrite(){if(canWrite())return true;toast('Tu suscripción venció — renueva para volver a editar. Puedes ver y exportar tus datos.',false,3500);return false;}
 function effectivePlan(){
   if(cdSimPlan&&isAdmin())return cdSimPlan;
   if(cdPlan==='flex'&&cdValidUntil&&new Date()>new Date(cdValidUntil))return 'expired';
@@ -2064,6 +2067,24 @@ function setSimPlan(p){
 function renderAdminPanel(){
   const el=document.getElementById('admin-sim-state');
   if(el)el.textContent=cdSimPlan?('▶ Simulando '+cdSimPlan.toUpperCase()):('Plan real: '+(cdPlan?cdPlan.toUpperCase():'ninguno'));
+}
+async function generateCode(){
+  if(!isAdmin())return;
+  const plan=document.getElementById('gen-code-plan').value;
+  const days=parseInt(document.getElementById('gen-code-days').value)||30;
+  const r4=()=>Math.random().toString(36).slice(2,6).toUpperCase();
+  const code='CD-'+r4()+'-'+r4();
+  const res=document.getElementById('gen-code-result');
+  if(res)res.innerHTML='<span style="font-size:12px;color:var(--text3)">Generando…</span>';
+  try{
+    await window.fbFirestore.setDoc(
+      window.fbFirestore.doc(window.fbDb,'activation_codes',code),
+      {plan:plan,durationDays:plan==='flex'?days:null,used:false,createdAt:new Date().toISOString()}
+    );
+    if(res)res.innerHTML=`<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm)"><span style="font-family:var(--mono);font-size:14px;font-weight:600;color:var(--accent);flex:1;letter-spacing:.05em">${code}</span><span style="font-size:10px;font-family:var(--mono);text-transform:uppercase;color:var(--text3)">${plan}${plan==='flex'?' · '+days+'d':''}</span><button class="btn sm" onclick="navigator.clipboard.writeText('${code}').then(()=>toast('✓ Código copiado',false,1500))">Copiar</button></div>`;
+  }catch(e){
+    if(res)res.innerHTML='<span style="font-size:12px;color:var(--red)">Error: '+(e.message||'no se pudo generar')+'</span>';
+  }
 }
 
 const CLIENT_COLORS=['#5b4fcf','#2563eb','#16a34a','#d97706','#dc2626','#7c3aed','#0891b2','#db2777'];
@@ -2135,6 +2156,8 @@ let fbUser=null;
 let saveTimeout=null;
 
 function save(){
+  // Modo lectura (Flex vencido): no persistir nada
+  if(typeof effectivePlan==='function'&&effectivePlan()==='expired')return;
   // Siempre guardar en localStorage (funciona offline)
   try{localStorage.setItem('cd_v8',JSON.stringify(db));}catch(e){}
   // Guardar en Firestore con debounce de 1.5s
@@ -2707,6 +2730,7 @@ function openCM(id){
   openM('mc');
 }
 function saveCl(){
+  if(!guardWrite())return;
   const name=document.getElementById('cn').value.trim();if(!name){toast('Escribe el nombre del cliente',false);return;}
   const platforms=[...document.querySelectorAll('#cnets .nc.on')].map(el=>el.textContent);
   const av=document.getElementById('c-avatar-preview');
@@ -2846,6 +2870,7 @@ function editBrief(id){closeM('m-brief-detail');openBriefModal(id);}
 function editBriefFromDetail(){openBriefModal(currentBriefId);}
 
 function saveBrief(){
+  if(!guardWrite())return;
   const nombre=document.getElementById('brief-name').value.trim();
   if(!nombre){toast('Escribe el nombre de la campaña',false);return;}
   const cid=document.getElementById('brief-client').value;
@@ -2881,6 +2906,7 @@ function saveBrief(){
 }
 
 function delBrief(id){
+  if(!guardWrite())return;
   const idx=(db.briefs||[]).findIndex(b=>b.id===id);if(idx<0)return;
   const b=db.briefs[idx];
   const contCount=(b.contenidos||[]).length;
@@ -2895,6 +2921,7 @@ function delBrief(id){
 }
 
 function delBriefFromDetail(){
+  if(!guardWrite())return;
   const idx=(db.briefs||[]).findIndex(b=>b.id===currentBriefId);if(idx<0)return;
   const b=db.briefs[idx];
   const contCount=(b.contenidos||[]).length;
@@ -2925,6 +2952,7 @@ function openBriefDetail(id){
 }
 
 function saveBriefResumen(){
+  if(!guardWrite())return;
   const b=(db.briefs||[]).find(x=>x.id===currentBriefId);if(!b)return;
   b.resumen=document.getElementById('bpd-resumen').value;save();
 }
@@ -3804,6 +3832,7 @@ function cpTrends(){const t=document.getElementById('trends-ta').value;navigator
 
 function cycleIdeaStatus(id,btn,e){
   e.stopPropagation();
+  if(!guardWrite())return;
   const idea=db.ideas.find(i=>i.id===id);if(!idea)return;
   const cur=normalizeStatus(idea.status);
   const next=STATUS_ORDER[(STATUS_ORDER.indexOf(cur)+1)%STATUS_ORDER.length];
@@ -3833,6 +3862,7 @@ function delBuzonItem(id){db.buzon=db.buzon.filter(b=>b.id!==id);save();rBuzon()
 function delH(id){const idx=db.history.findIndex(h=>h.id===id);if(idx<0)return;const item=db.history[idx];lastU={type:'hi',item,idx};addToTrash('hi',item);db.history.splice(idx,1);if(aHId===id)aHId=null;save();renderHist();toast('Prompt eliminado',true);}
 
 function delId(id){
+  if(!guardWrite())return;
   const idx=db.ideas.findIndex(i=>i.id===id);if(idx<0)return;
   const idea=db.ideas[idx];
   confirmDelete(`¿Eliminar esta idea?\n\n"${idea.text.slice(0,100)}${idea.text.length>100?'...':''}"`, ()=>{
@@ -3864,7 +3894,7 @@ function delId(id){
   });
 }
 
-function delLk(id){const idx=db.links.findIndex(l=>l.id===id);if(idx<0)return;const lnk=db.links[idx];if(lnk.fromIdea){const idea=db.ideas.find(i=>i.id===lnk.fromIdea);if(idea)idea.links=idea.links.filter(l=>l.id!==id);}lastU={type:'lk',item:lnk,idx};addToTrash('lk',lnk);db.links.splice(idx,1);save();rLk();rId();toast('Link eliminado',true);}
+function delLk(id){if(!guardWrite())return;const idx=db.links.findIndex(l=>l.id===id);if(idx<0)return;const lnk=db.links[idx];if(lnk.fromIdea){const idea=db.ideas.find(i=>i.id===lnk.fromIdea);if(idea)idea.links=idea.links.filter(l=>l.id!==id);}lastU={type:'lk',item:lnk,idx};addToTrash('lk',lnk);db.links.splice(idx,1);save();rLk();rId();toast('Link eliminado',true);}
 
 function delRadarItem(id){
   db.radarHistory=db.radarHistory.filter(r=>r.id!==id);
@@ -4575,6 +4605,7 @@ window.addEventListener('beforeunload',()=>{
 });
 
 function saveVoiceIdea(silent){
+  if(!guardWrite())return;
   let txt=document.getElementById('voice-text').value.trim();
   if(!txt){
     if(!silent)toast('La idea está vacía. Habla un poco más o cancela.',true,3000);
@@ -5048,6 +5079,7 @@ document.addEventListener('keydown',e=>{
 });
 
 function saveIdea(){
+  if(!guardWrite())return;
   const text=document.getElementById('eit').value.trim();if(!text){toast('Escribe la idea',false);return;}
   const selCids=getSelEic();
   const firstCid=selCids[0]||'general';
@@ -5087,6 +5119,7 @@ function toggleCreatorFields(type,extraId){
 }
 
 function saveLink(){
+  if(!guardWrite())return;
   const url=document.getElementById('lurl').value.trim();if(!url){toast('Escribe una URL',false);return;}
   const rawDesc=document.getElementById('ldesc').value.trim();
   const type=document.getElementById('lt').value;
@@ -5132,10 +5165,11 @@ function savePasteResult(){
   toast('✓ Resultado guardado en el Radar',false,2500);
 }
 
-function saveQI(){const el=document.getElementById('qi');const v=el.value.trim();if(!v)return;const cid=activeClId||'general';const c=db.clients.find(x=>x.id==cid);const k=ideaKindView==='nota'?'nota':'idea';db.ideas.unshift({id:Date.now(),text:v,kind:k,clientId:cid,clientName:c?c.name:'General',platform:'General',format:'',status:'cruda',notes:'',links:[],date:new Date().toLocaleDateString('es')});save();el.value='';rId();renderBP();renderDash();toast(k==='nota'?'✓ Nota guardada':'✓ Idea guardada',false);}
+function saveQI(){if(!guardWrite())return;const el=document.getElementById('qi');const v=el.value.trim();if(!v)return;const cid=activeClId||'general';const c=db.clients.find(x=>x.id==cid);const k=ideaKindView==='nota'?'nota':'idea';db.ideas.unshift({id:Date.now(),text:v,kind:k,clientId:cid,clientName:c?c.name:'General',platform:'General',format:'',status:'cruda',notes:'',links:[],date:new Date().toLocaleDateString('es')});save();el.value='';rId();renderBP();renderDash();toast(k==='nota'?'✓ Nota guardada':'✓ Idea guardada',false);}
 document.getElementById('qi').addEventListener('keydown',e=>{if(e.key==='Enter')saveQI();});
 
 function saveQuickCapture(){
+  if(!guardWrite())return;
   const txt=document.getElementById('qc-text').value.trim();
   if(!txt){toast('Escribe la idea primero',false);return;}
   const cid=document.getElementById('qc-client').value;
@@ -6156,7 +6190,7 @@ load(); // Solo aplica tema
 
 <!-- BANNER FLEX VENCIDO -->
 <div id="flex-renew-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:var(--red);color:#fff;padding:9px 16px;align-items:center;justify-content:center;gap:14px;font-size:13px;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,.15)">
-  <span>Tu suscripción Flex venció — Claude está pausado. Tus datos siguen a salvo.</span>
+  <span>Tu suscripción Flex venció — estás en modo lectura. Puedes ver y exportar tus datos, pero no editar.</span>
   <a href="https://gumroad.com" target="_blank" rel="noopener" style="background:#fff;color:var(--red);padding:5px 13px;border-radius:var(--r-sm);text-decoration:none;font-weight:700;font-size:12px;white-space:nowrap">Renovar →</a>
 </div>
 
@@ -6176,7 +6210,15 @@ load(); // Solo aplica tema
       <button class="btn ghost" onclick="cdSimPlan=null;applyPlanUI();renderAdminPanel();toast('Simulador apagado',false,1500)">Apagar simulador</button>
     </div>
     <div class="sep"></div>
-    <div style="font-size:11px;color:var(--text3);line-height:1.6">El dashboard completo (usuarios, códigos usados, prompts totales) llega en la siguiente fase. Por ahora esto te deja validar las dos experiencias de plan.</div>
+    <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">Generar código de activación</div>
+    <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+      <div style="flex:1;min-width:140px"><label>Plan</label><select id="gen-code-plan" onchange="document.getElementById('gen-code-days-wrap').style.display=this.value==='flex'?'block':'none'"><option value="pro">Pro · $23 de por vida</option><option value="flex">Flex · $9/mes</option></select></div>
+      <div id="gen-code-days-wrap" style="display:none;width:84px"><label>Días</label><input id="gen-code-days" type="number" value="30" min="1"/></div>
+      <button class="btn primary" onclick="generateCode()">Generar</button>
+    </div>
+    <div id="gen-code-result" style="margin-top:10px"></div>
+    <div class="sep"></div>
+    <div style="font-size:11px;color:var(--text3);line-height:1.6">El código queda guardado en Firestore listo para usarse una sola vez. El dashboard completo (usuarios, prompts, métricas) llega en la siguiente fase.</div>
   </div>
 </div>
 
