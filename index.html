@@ -1779,14 +1779,14 @@ body[data-plan="pro"] .pro-claude-hint,body[data-plan="expired"] .pro-claude-hin
         </div>
       </div>
       <div class="mf"><label id="eit-label">Idea</label><textarea id="eit" style="min-height:80px" placeholder="Describe la idea..."></textarea></div>
-      <div class="mf"><label>Notas</label><textarea id="ein" placeholder="Detalles, ángulo, contexto..." style="min-height:56px"></textarea></div>
+      <div class="mf" id="descripcion-field"><label>Descripción</label><textarea id="ein" placeholder="Detalles, ángulo, contexto..." style="min-height:56px"></textarea></div>
       <div class="mf">
         <label>Links relacionados <span style="font-size:10px;color:var(--text3);text-transform:none;font-weight:400">(aparecen en Links &amp; refs)</span></label>
         <div id="eil"></div>
         <div style="margin-top:8px">
           <div class="row" style="margin-bottom:6px">
-            <div class="grow"><input id="eilurl" placeholder="https://..." oninput="pvIL(this.value)"/></div>
-            <div class="grow"><input id="eildesc" placeholder="Descripción"/></div>
+            <div class="grow"><input id="eilurl" placeholder="https://..." oninput="pvIL(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('eildesc').focus();}"/></div>
+            <div class="grow"><input id="eildesc" placeholder="Nombre / descripción" onkeydown="if(event.key==='Enter'){event.preventDefault();addIL();}"/></div>
           </div>
           <div id="eilpv" style="display:none;margin-bottom:8px"></div>
           <div class="row" style="margin-bottom:0">
@@ -2364,9 +2364,9 @@ function renderDash(){
       <div class="dash-welcome-title">${greet1} <span style="font-family:var(--serif);font-style:italic;color:var(--brand-red);text-transform:lowercase;font-weight:400;letter-spacing:-.02em">${greet2}</span> <span style="font-family:'Inter',sans-serif;display:inline-block;transform:translateY(-3px);font-size:.85em">👋</span></div>
       <div class="dash-welcome-sub">Tienes ${db.clients.length} cliente${db.clients.length!==1?'s':''}, ${db.ideas.filter(i=>i.status==='cruda').length} ideas crudas y ${db.radarHistory.filter(r=>r.result).length} búsquedas en el Radar.</div>
       <div class="dash-welcome-actions">
-        <button class="btn" onclick="openCM()">+ Nuevo cliente</button>
         <button class="btn" onclick="openIM()">+ Nueva idea</button>
         <button class="btn" onclick="go('generar')">Generar prompt →</button>
+        <button class="btn" onclick="openCM()">+ Nuevo cliente</button>
       </div>
     </div>`;
 
@@ -3533,7 +3533,7 @@ async function sendRadarToClaude(prompt){
 
 
 // ══ FUNCIONES RESTAURADAS ══
-function addIL(){const url=document.getElementById('eilurl').value.trim();if(!url){toast('Escribe una URL',false);return;}const desc=document.getElementById('eildesc').value.trim();const type=document.getElementById('eiltype').value;const info=platInfo(url);let d=desc||(info?.user?info.user+(info.pl?' ('+info.pl+')':''):getDom(url));tL.push({id:Date.now()+Math.random(),url,desc:d,type});document.getElementById('eilurl').value='';document.getElementById('eildesc').value='';document.getElementById('eilpv').style.display='none';renderTL();}
+function addIL(){const url=document.getElementById('eilurl').value.trim();if(!url){toast('Escribe una URL',false);return;}const desc=document.getElementById('eildesc').value.trim();const type=document.getElementById('eiltype').value;const info=platInfo(url);let d=desc||(info?.user?info.user+(info.pl?' ('+info.pl+')':''):getDom(url));tL.push({id:Date.now()+Math.random(),url,desc:d,type});document.getElementById('eilurl').value='';document.getElementById('eildesc').value='';document.getElementById('eilpv').style.display='none';renderTL();document.getElementById('eilurl').focus();}
 
 function bCtx(){const id=document.getElementById('gc').value;const c=db.clients.find(x=>x.id==id);const briefing=document.getElementById('briefing').value.trim();let parts=[];if(c){let cp=`CLIENTE: ${c.name}\nNicho: ${c.niche||'-'}\nPlataformas: ${c.platforms&&c.platforms.length?c.platforms.join(', '):'No especificadas'}\nTono y personalidad: ${c.tone||'-'}`;if(c.restrict)cp+=`\nRESTRICCIONES DE PRODUCCIÓN (respetar siempre): ${c.restrict}`;cp+=`\nContenido prohibido: ${c.avoid||'-'}\nReferencias exitosas: ${c.refs||'-'}`;parts.push(cp);}if(briefing)parts.push(`BRIEFING DE ESTA PIEZA:\n${briefing}`);if(selectedRadarId){const r=db.radarHistory.find(x=>x.id===selectedRadarId);if(r&&r.result)parts.push(`TENDENCIAS (búsqueda: ${r.niche} · ${r.plat} · ${r.date}):\n${r.result.slice(0,800)}`);}return parts.join('\n\n');}
 
@@ -4221,6 +4221,8 @@ function setIdeaKind(kind){
   if(tn)tn.classList.toggle('on',isNota);
   const ideaOnly=document.getElementById('idea-only-fields');
   if(ideaOnly)ideaOnly.style.display=isNota?'none':'block';
+  const desc=document.getElementById('descripcion-field');
+  if(desc)desc.style.display=isNota?'none':'block';
   const lbl=document.getElementById('eit-label');
   if(lbl)lbl.textContent=isNota?'Nota':'Idea';
   const ta=document.getElementById('eit');
