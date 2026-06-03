@@ -4290,7 +4290,7 @@ function openIdeaPopup(id){
   if(i.links&&i.links.length){document.getElementById('ip-links').innerHTML=`<div class="ip-lbl" style="margin-top:8px">Links (${i.links.length})</div>`+i.links.map(l=>`<a href="${l.url}" target="_blank" class="ip-link"><img src="${favUrl(l.url)||''}" onerror="this.style.display='none'"><span>${l.desc||l.url}</span><span class="badge bd-accent" style="font-size:10px;flex-shrink:0">${l.type||''}</span></a>`).join('');}
   else document.getElementById('ip-links').innerHTML='';
   // Prompts asociados a esta idea
-  const relPrompts=(db.history||[]).filter(h=>h.relatedIdeaId===i.id);
+  const relPrompts=(db.history||[]).filter(h=>h.relatedIdeaId===i.id&&h.claudeResponse);
   const promptsEl=document.getElementById('ip-prompts');
   if(relPrompts.length){
     promptsEl.innerHTML=`<div class="ip-lbl" style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span>Contenido generado</span><span style="background:var(--brand-yellow,#F5C518);color:var(--brand-black,#101010);font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:10px;letter-spacing:.08em;font-weight:600">⚡ ${relPrompts.length}</span></div>`+
@@ -4754,7 +4754,7 @@ function rId(){
   }
   // Filtro: solo ideas con contenido generado
   if(ideaOnlyGenerated){
-    const idsConContenido=new Set((db.history||[]).filter(h=>h.relatedIdeaId).map(h=>h.relatedIdeaId));
+    const idsConContenido=new Set((db.history||[]).filter(h=>h.relatedIdeaId&&h.claudeResponse).map(h=>h.relatedIdeaId));
     base=base.filter(i=>idsConContenido.has(i.id));
   }
   // Ordenar
@@ -4777,7 +4777,7 @@ function rId(){
   }
   list.innerHTML=`<p class="ctr">${base.length} ${isNotaView?'nota':'idea'}${base.length!==1?'s':''} · clic para ver detalles</p>`+
     base.map(i=>{
-      const promptCount=(db.history||[]).filter(h=>h.relatedIdeaId===i.id).length;
+      const promptCount=(db.history||[]).filter(h=>h.relatedIdeaId===i.id&&h.claudeResponse).length;
       const isNota=(i.kind||'idea')==='nota';
       return `<div class="idea-card" onclick="openIdeaPopup(${i.id})">
       <div class="idea-card-actions" onclick="event.stopPropagation()">
