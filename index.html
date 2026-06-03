@@ -624,6 +624,23 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
   .voice-mic-circle{animation:none !important}
   .agent-pulse{animation:none !important}
 }
+
+/* ════════════════════════════
+   PLANES (Pro / Flex)
+════════════════════════════ */
+/* Pro y vencido no ven el botón de Claude integrado */
+body[data-plan="pro"] .claude-gated,body[data-plan="expired"] .claude-gated{display:none!important}
+/* Hint para Pro/vencido donde estaría el botón */
+.pro-claude-hint{display:none}
+body[data-plan="pro"] .pro-claude-hint,body[data-plan="expired"] .pro-claude-hint{display:block!important}
+.sb-plan-badge{font-size:10px;font-weight:700;letter-spacing:.08em;padding:2px 8px;border-radius:20px;border:1px solid var(--border2);font-family:var(--mono);display:inline-flex;align-items:center;gap:4px}
+
+/* ════════════════════════════
+   TOGGLE IDEA / NOTA
+════════════════════════════ */
+.kind-toggle{display:inline-flex;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:3px;gap:3px}
+.kind-tab{padding:6px 16px;font-size:13px;font-weight:500;border:none;background:none;color:var(--text2);cursor:pointer;border-radius:5px;font-family:'Inter',sans-serif;transition:color .12s var(--ease-out),background .12s var(--ease-out)}
+.kind-tab.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow-xs)}
 </style>
 </head>
 <body>
@@ -685,6 +702,10 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
           <span style="font-size:11px">⚡</span>
           <span>Con contenido generado</span>
         </button>
+        <button class="ni-sub" onclick="goNotas()" style="display:flex;align-items:center;gap:8px;padding:6px 12px 6px 30px;font-size:12px;color:var(--text2);background:none;border:none;width:100%;text-align:left;cursor:pointer;border-radius:var(--r-sm);transition:all .12s;font-family:'Inter',sans-serif">
+          <span style="font-size:11px">📝</span>
+          <span>Notas</span>
+        </button>
       </div>
       <button class="ni" id="ni-briefs" onclick="go('briefs')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
@@ -734,6 +755,13 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
       Captura de idea rápida
     </button>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px;min-height:22px">
+      <span id="sb-plan-badge" class="sb-plan-badge" style="display:none"></span>
+      <button id="sb-admin-btn" onclick="openM('m-admin');renderAdminPanel()" style="display:none;align-items:center;gap:4px;background:none;border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text3);font-size:11px;padding:3px 8px;cursor:pointer;font-family:var(--mono);letter-spacing:.05em;margin-left:auto" title="Panel de administrador">
+        <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Admin
+      </button>
+    </div>
     <div class="sb-actions">
       <button class="sb-act sb-act-icon" onclick="openM('m-onb')" title="Guía de uso">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -875,8 +903,8 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
           <div class="pi orange"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg></div>
           <div><div class="page-title" id="ideas-title">Ideas</div><div class="page-sub" id="ideas-ps">Captura ideas antes de que se escapen</div></div>
         </div>
-        <button class="btn primary" onclick="openIM()">
-          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Nueva idea
+        <button class="btn primary" id="ideas-add-btn" onclick="openIM(ideaKindView)">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span id="ideas-add-label">Nueva idea</span>
         </button>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:20px;position:relative">
@@ -1389,7 +1417,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     Inicio
   </button>
-  <button class="mobile-nav-item" id="mbn-ideas" onclick="go('ideas');setMobileNav('ideas')">
+  <button class="mobile-nav-item" id="mbn-ideas" onclick="goIdeasClean();setMobileNav('ideas')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
     Ideas
   </button>
@@ -1434,10 +1462,11 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
     <div style="flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:14px;min-height:0">
       <textarea class="pta" id="pta" spellcheck="false" style="flex:1;min-height:180px;resize:vertical"></textarea>
       <!-- Botón grande Enviar a Claude -->
-      <button id="btn-send-claude" onclick="sendToClaude()" style="width:100%;padding:14px;border-radius:var(--r);border:none;background:var(--accent);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .15s">
+      <button id="btn-send-claude" class="claude-gated" onclick="sendToClaude()" style="width:100%;padding:14px;border-radius:var(--r);border:none;background:var(--accent);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .15s">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         Enviar a Claude ⚡
       </button>
+      <div class="pro-claude-hint" style="font-size:12px;color:var(--text2);text-align:center;padding:11px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);line-height:1.55">Copia este prompt y úsalo en tu ChatGPT o Claude.<br><a href="https://gumroad.com" target="_blank" rel="noopener" style="color:var(--accent);cursor:pointer;font-weight:500;text-decoration:none">¿Quieres Claude aquí dentro? Pásate a Flex →</a></div>
       <!-- Respuesta de Claude (dentro del mismo popup) -->
       <div id="claude-resp-wrap" style="display:none;border-top:1px solid var(--border);padding-top:14px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -1742,30 +1771,15 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
       <span class="modal-title" id="mit">Nueva idea</span>
     </div>
     <div style="overflow-y:auto;padding:18px 22px;flex:1">
-      <div class="mf"><label>Idea</label><textarea id="eit" style="min-height:80px" placeholder="Describe la idea..."></textarea></div>
-      <div class="g2">
-        <div class="mf">
-          <label>Clientes <span style="font-size:10px;color:var(--text3);text-transform:none;font-weight:400">(puedes seleccionar varios)</span></label>
-          <div id="eic-chips" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);min-height:38px"></div>
-        </div>
-        <div class="mf"><label>Plataformas <span style="font-size:10px;color:var(--text3);text-transform:none;font-weight:400">(una o varias)</span></label>
-          <div id="eip-chips" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm)"></div>
-        </div>
-      </div>
-      <div class="g2">
-        <div class="mf"><label>Formato</label>
-          <select id="eif"><option value="">Sin especificar</option><option value="Reels/Video corto">Reels/Video corto</option><option value="Carrusel">Carrusel</option><option value="Historia">Historia</option><option value="Post estático">Post estático</option><option value="Live">Live</option></select>
-        </div>
-        <div class="mf"><label>Estado</label>
-          <select id="eis"><option value="cruda">💡 Cruda</option><option value="desarrollo">🔧 En desarrollo</option><option value="usada">✅ Usada</option><option value="descartada">🗑 Descartada</option></select>
-        </div>
-      </div>
-      <div class="mf"><label>Notas</label><textarea id="ein" placeholder="Detalles, ángulo, contexto..." style="min-height:56px"></textarea></div>
+      <!-- Toggle Idea / Nota -->
       <div class="mf">
-        <label>Etiquetas <span style="font-size:10px;color:var(--text3);font-weight:400;text-transform:none">(separa con Enter o coma)</span></label>
-        <div id="ei-tags-list" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);min-height:38px;margin-bottom:6px"></div>
-        <input id="ei-tag-input" placeholder="ej: navideño, evergreen, tutorial..." onkeydown="handleTagInputKey(event)" style="font-size:12px"/>
+        <div class="kind-toggle">
+          <button type="button" id="kind-idea" class="kind-tab on" onclick="setIdeaKind('idea')">💡 Idea</button>
+          <button type="button" id="kind-nota" class="kind-tab" onclick="setIdeaKind('nota')">📝 Nota</button>
+        </div>
       </div>
+      <div class="mf"><label id="eit-label">Idea</label><textarea id="eit" style="min-height:80px" placeholder="Describe la idea..."></textarea></div>
+      <div class="mf"><label>Notas</label><textarea id="ein" placeholder="Detalles, ángulo, contexto..." style="min-height:56px"></textarea></div>
       <div class="mf">
         <label>Links relacionados <span style="font-size:10px;color:var(--text3);text-transform:none;font-weight:400">(aparecen en Links &amp; refs)</span></label>
         <div id="eil"></div>
@@ -1791,10 +1805,32 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
           </div>
         </div>
       </div>
+      <div class="mf">
+        <label>Clientes <span style="font-size:10px;color:var(--text3);text-transform:none;font-weight:400">(puedes seleccionar varios)</span></label>
+        <div id="eic-chips" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);min-height:38px"></div>
+      </div>
+      <div id="idea-only-fields">
+        <div class="mf"><label>Plataformas <span style="font-size:10px;color:var(--text3);text-transform:none;font-weight:400">(una o varias)</span></label>
+          <div id="eip-chips" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm)"></div>
+        </div>
+        <div class="g2">
+          <div class="mf"><label>Formato</label>
+            <select id="eif"><option value="">Sin especificar</option><option value="Reels/Video corto">Reels/Video corto</option><option value="Carrusel">Carrusel</option><option value="Historia">Historia</option><option value="Post estático">Post estático</option><option value="Live">Live</option></select>
+          </div>
+          <div class="mf"><label>Estado</label>
+            <select id="eis"><option value="cruda">💡 Cruda</option><option value="desarrollo">🔧 En desarrollo</option><option value="usada">✅ Usada</option><option value="descartada">🗑 Descartada</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="mf">
+        <label>Etiquetas <span style="font-size:10px;color:var(--text3);font-weight:400;text-transform:none">(separa con Enter o coma)</span></label>
+        <div id="ei-tags-list" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);min-height:38px;margin-bottom:6px"></div>
+        <input id="ei-tag-input" placeholder="ej: navideño, evergreen, tutorial..." onkeydown="handleTagInputKey(event)" style="font-size:12px"/>
+      </div>
     </div>
     <div style="padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;background:var(--surface)">
       <button class="btn" onclick="closeM('mi')">Cancelar</button>
-      <button class="btn primary" onclick="saveIdea()">Guardar idea</button>
+      <button class="btn primary" id="mi-save-btn" onclick="saveIdea()">Guardar idea</button>
     </div>
   </div>
 </div>
@@ -1882,7 +1918,7 @@ label{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-s
         <textarea id="ri-prompt" spellcheck="false" style="font-size:12px;min-height:120px;resize:vertical"></textarea>
       </div>
       <!-- Botón Enviar a Claude -->
-      <button onclick="sendRadarPromptToClaude()" id="radar-claude-btn" style="width:100%;padding:12px;border-radius:var(--r);border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s">
+      <button onclick="sendRadarPromptToClaude()" id="radar-claude-btn" class="claude-gated" style="width:100%;padding:12px;border-radius:var(--r);border:none;background:var(--accent);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         Enviar a Claude ⚡
       </button>
@@ -1980,10 +2016,55 @@ let gP=['Instagram'],gF=['Reels/Video corto'],gT='educativo',gType='ideas';let c
 let plannerBase=new Date();
 let iF='todos',lF='todos',tL=[];
 let ideaSearch='',ideaPlatformF='',ideaFormatF='',ideaSort='nuevas',ideaTagsF=[],ideaOnlyGenerated=false;
+let ideaKindView='idea';  // vista del banco: 'idea' | 'nota'
+let eiKind='idea';        // tipo que se está editando en el modal
 let lastU=null,tTimer=null,aHId=null;
 let pvCache={},pvTm=null,bpOpen=false;
 let selectedRadarId=null;
 let activeClId=null,newClId=null;
+
+// ═══════════ PLANES · Pro / Flex / Admin ═══════════
+const ADMIN_UID='MfWiPKHPa2dhFVMQfl2JJuz63aL2';
+let cdPlan=null;        // 'pro' | 'flex' — plan real del usuario
+let cdValidUntil=null;  // ISO (flex) | null (pro = de por vida)
+let cdSimPlan=null;     // simulador admin: 'pro'|'flex'|'expired'|null
+function isAdmin(){return !!(fbUser&&fbUser.uid===ADMIN_UID);}
+function effectivePlan(){
+  if(cdSimPlan&&isAdmin())return cdSimPlan;
+  if(cdPlan==='flex'&&cdValidUntil&&new Date()>new Date(cdValidUntil))return 'expired';
+  return cdPlan;
+}
+function flexDaysLeft(){
+  if(cdSimPlan==='flex'&&isAdmin())return 30;
+  if(!cdValidUntil)return null;
+  return Math.ceil((new Date(cdValidUntil)-new Date())/86400000);
+}
+function applyPlanUI(){
+  const p=effectivePlan();
+  document.body.dataset.plan=p||'none';
+  const badge=document.getElementById('sb-plan-badge');
+  if(badge){
+    badge.style.display='inline-flex';
+    if(p==='pro'){badge.textContent='PRO';badge.style.color='var(--text2)';}
+    else if(p==='flex'){const d=flexDaysLeft();badge.textContent=d!=null?('FLEX · '+d+'d'):'FLEX';badge.style.color='var(--accent)';}
+    else if(p==='expired'){badge.textContent='FLEX VENCIÓ';badge.style.color='var(--red)';}
+    else{badge.style.display='none';}
+  }
+  const renew=document.getElementById('flex-renew-banner');
+  if(renew)renew.style.display=(p==='expired')?'flex':'none';
+  const adminBtn=document.getElementById('sb-admin-btn');
+  if(adminBtn)adminBtn.style.display=isAdmin()?'flex':'none';
+}
+function setSimPlan(p){
+  if(!isAdmin())return;
+  cdSimPlan=(cdSimPlan===p)?null:p;
+  applyPlanUI();renderAdminPanel();
+  toast(cdSimPlan?('Simulando: '+cdSimPlan.toUpperCase()):'Simulador apagado — plan real',false,2000);
+}
+function renderAdminPanel(){
+  const el=document.getElementById('admin-sim-state');
+  if(el)el.textContent=cdSimPlan?('▶ Simulando '+cdSimPlan.toUpperCase()):('Plan real: '+(cdPlan?cdPlan.toUpperCase():'ninguno'));
+}
 
 const CLIENT_COLORS=['#5b4fcf','#2563eb','#16a34a','#d97706','#dc2626','#7c3aed','#0891b2','#db2777'];
 const DAYS_ES=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
@@ -2200,7 +2281,7 @@ function go(p){
   closeSidebar();
   setMobileNav(p);
   if(p==='home')renderDash();
-  if(p==='ideas')rId();
+  if(p==='ideas'){ideaKindView='idea';rId();}
   if(p==='links'){fillSels();rLk();}
   if(p==='briefs'){rBriefs();}
   if(p==='planner'){renderPlanner();renderCal();}
@@ -3165,6 +3246,7 @@ async function getApiKey(){
 async function sendToClaude(){
   const prompt=document.getElementById('pta').value.trim();
   if(!prompt){toast('Genera un prompt primero',false);return;}
+  if(effectivePlan()!=='flex'){toast('Claude integrado es exclusivo del plan Flex',false,2500);return;}
   const DAILY_LIMIT=10;
   const today=new Date().toISOString().slice(0,10);
   // Leer contador desde Firestore
@@ -3396,6 +3478,7 @@ function saveRadarResult(){
 async function sendRadarPromptToClaude(){
   const prompt=document.getElementById('ri-prompt').value.trim();
   if(!prompt){toast('No hay prompt para enviar',false);return;}
+  if(effectivePlan()!=='flex'){toast('Claude integrado es exclusivo del plan Flex',false,2500);return;}
   await sendRadarToClaude(prompt);
 }
 
@@ -4130,9 +4213,27 @@ function moveIdeaToUnassigned(){
   toast('✓ Idea quitada del planner',false,2000);
 }
 
-function openEI(id){eIId=id;const idea=db.ideas.find(i=>i.id===id);if(!idea)return;document.getElementById('mit').textContent='Editar idea';fillSels();document.getElementById('eit').value=idea.text||'';const savedNets=idea.platforms&&idea.platforms.length?idea.platforms:(idea.platform&&idea.platform!=='General'?[idea.platform]:[]);renderNetChips(savedNets);document.getElementById('eif').value=idea.format||'';document.getElementById('eis').value=normalizeStatus(idea.status||'cruda');document.getElementById('ein').value=idea.notes||'';tL=(idea.links||[]).map(l=>({...l}));renderTL();document.getElementById('eilpv').style.display='none';renderEicChips(idea.clientIds||[String(idea.clientId||'general')]);window._editingIdeaTags=[...(idea.tags||[])];const ti=document.getElementById('ei-tag-input');if(ti)ti.value='';renderIdeaTagsEditor();openM('mi');}
+function setIdeaKind(kind){
+  eiKind=kind;
+  const isNota=kind==='nota';
+  const ti=document.getElementById('kind-idea'),tn=document.getElementById('kind-nota');
+  if(ti)ti.classList.toggle('on',!isNota);
+  if(tn)tn.classList.toggle('on',isNota);
+  const ideaOnly=document.getElementById('idea-only-fields');
+  if(ideaOnly)ideaOnly.style.display=isNota?'none':'block';
+  const lbl=document.getElementById('eit-label');
+  if(lbl)lbl.textContent=isNota?'Nota':'Idea';
+  const ta=document.getElementById('eit');
+  if(ta)ta.placeholder=isNota?'Escribe tu nota...':'Describe la idea...';
+  const mit=document.getElementById('mit');
+  if(mit)mit.textContent=(eIId?'Editar ':'Nueva ')+(isNota?'nota':'idea');
+  const sb=document.getElementById('mi-save-btn');
+  if(sb)sb.textContent=isNota?'Guardar nota':'Guardar idea';
+}
 
-function openIM(){eIId=null;document.getElementById('mit').textContent='Nueva idea';fillSels();['eit','ein'].forEach(f=>document.getElementById(f).value='');renderNetChips([]);document.getElementById('eif').value='';document.getElementById('eis').value='cruda';tL=[];renderTL();document.getElementById('eilpv').style.display='none';renderEicChips(activeClId?[String(activeClId)]:['general']);window._editingIdeaTags=[];const ti=document.getElementById('ei-tag-input');if(ti)ti.value='';renderIdeaTagsEditor();openM('mi');}
+function openEI(id){eIId=id;const idea=db.ideas.find(i=>i.id===id);if(!idea)return;document.getElementById('mit').textContent='Editar idea';fillSels();document.getElementById('eit').value=idea.text||'';const savedNets=idea.platforms&&idea.platforms.length?idea.platforms:(idea.platform&&idea.platform!=='General'?[idea.platform]:[]);renderNetChips(savedNets);document.getElementById('eif').value=idea.format||'';document.getElementById('eis').value=normalizeStatus(idea.status||'cruda');document.getElementById('ein').value=idea.notes||'';tL=(idea.links||[]).map(l=>({...l}));renderTL();document.getElementById('eilpv').style.display='none';renderEicChips(idea.clientIds||[String(idea.clientId||'general')]);window._editingIdeaTags=[...(idea.tags||[])];const ti=document.getElementById('ei-tag-input');if(ti)ti.value='';renderIdeaTagsEditor();setIdeaKind(idea.kind||'idea');openM('mi');}
+
+function openIM(kind){eIId=null;fillSels();['eit','ein'].forEach(f=>document.getElementById(f).value='');renderNetChips([]);document.getElementById('eif').value='';document.getElementById('eis').value='cruda';tL=[];renderTL();document.getElementById('eilpv').style.display='none';renderEicChips(activeClId?[String(activeClId)]:['general']);window._editingIdeaTags=[];const ti=document.getElementById('ei-tag-input');if(ti)ti.value='';renderIdeaTagsEditor();setIdeaKind(typeof kind==='string'?kind:'idea');openM('mi');}
 
 function openIdeaPopup(id){
   popIId=id;const i=db.ideas.find(x=>x.id===id);if(!i)return;
@@ -4541,8 +4642,18 @@ function promoBuzon(id){
 function rId(){
   const list=document.getElementById('il');const bar=document.getElementById('ifbar');
   const ac=activeClId?db.clients.find(c=>c.id==activeClId):null;
-  document.getElementById('ideas-title').textContent=ac?ac.name:'Ideas';
-  document.getElementById('ideas-ps').textContent=ac?`Ideas de ${ac.name}`:'Captura ideas antes de que se escapen';
+  const isNotaView=ideaKindView==='nota';
+  if(isNotaView){
+    document.getElementById('ideas-title').textContent='Notas';
+    document.getElementById('ideas-ps').textContent='Notas y referencias sueltas';
+  }else{
+    document.getElementById('ideas-title').textContent=ac?ac.name:'Ideas';
+    document.getElementById('ideas-ps').textContent=ac?`Ideas de ${ac.name}`:'Captura ideas antes de que se escapen';
+  }
+  const addLbl=document.getElementById('ideas-add-label');
+  if(addLbl)addLbl.textContent=isNotaView?'Nueva nota':'Nueva idea';
+  const qiEl=document.getElementById('qi');
+  if(qiEl)qiEl.placeholder=isNotaView?'Nota rápida — Enter para guardar...':'Idea rápida — Enter para guardar...';
 
   // Render etiquetas disponibles para filtrar
   renderIdeaTagsFilter();
@@ -4568,6 +4679,9 @@ function rId(){
     }).join('');
     if(iF!=='todos')base=base.filter(i=>(i.clientNames&&i.clientNames.includes(iF))||i.clientName===iF);
   }else bar.innerHTML='';
+
+  // Filtro por tipo: el banco muestra ideas; las notas viven en su propia vista
+  base=base.filter(i=>((i.kind||'idea')===ideaKindView));
 
   // Aplicar búsqueda de texto
   if(ideaSearch){
@@ -4614,11 +4728,15 @@ function rId(){
     if(onlyGenFilter){
       list.innerHTML=`<div class="empty"><div class="empty-icon" style="background:rgba(245,197,24,0.18);color:#b88a00"><span style="font-size:32px">⚡</span></div><div class="empty-title">Aún no hay ideas con contenido generado</div><div class="empty-sub">Cuando generes un prompt para una idea del banco, aparecerá aquí.<br>Selecciona la idea en el campo <strong>"¿Para alguna idea del banco?"</strong> al generar contenido.</div><button class="btn sm" style="margin-top:14px" onclick="toggleOnlyGenerated()">Ver todas las ideas</button></div>`;return;
     }
+    if(isNotaView&&!hasFilters){
+      list.innerHTML=`<div class="empty"><div class="empty-icon"><span style="font-size:30px">📝</span></div><div class="empty-title">Sin notas aún</div><div class="empty-sub">Las notas son para pensamientos sueltos, referencias o recordatorios que todavía no son una idea de contenido.</div><button class="btn sm" style="margin-top:14px" onclick="openIM('nota')">+ Nueva nota</button></div>`;return;
+    }
     list.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg></div><div class="empty-title">${hasFilters?'Sin resultados':ac?'Sin ideas para este cliente':'Sin ideas aún'}</div><div class="empty-sub">${hasFilters?'Prueba con otros filtros o limpia la búsqueda':'Usa el campo de arriba para ideas rápidas<br>o &quot;+ Nueva idea&quot; para agregarla con todos los detalles.'}</div>${hasFilters?`<button class="btn sm" style="margin-top:14px" onclick="clearIdeaFilters()">Limpiar filtros</button>`:''}</div>`;return;
   }
-  list.innerHTML=`<p class="ctr">${base.length} idea${base.length!==1?'s':''} · clic para ver detalles</p>`+
+  list.innerHTML=`<p class="ctr">${base.length} ${isNotaView?'nota':'idea'}${base.length!==1?'s':''} · clic para ver detalles</p>`+
     base.map(i=>{
       const promptCount=(db.history||[]).filter(h=>h.relatedIdeaId===i.id).length;
+      const isNota=(i.kind||'idea')==='nota';
       return `<div class="idea-card" onclick="openIdeaPopup(${i.id})">
       <div class="idea-card-actions" onclick="event.stopPropagation()">
         <button class="ib ed" onclick="openEI(${i.id})" title="Editar"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
@@ -4626,10 +4744,10 @@ function rId(){
       </div>
       <div class="idea-card-title">${i.text}</div>
       <div class="idea-card-meta">
-        <button class="badge ${STATUS[normalizeStatus(i.status)]?.c||'bd'}" onclick="cycleIdeaStatus(${i.id},this,event)" style="cursor:pointer;border:none;font-family:'Inter',sans-serif" title="Clic para cambiar estado">${STATUS[normalizeStatus(i.status)]?.l||'💡 Cruda'}</button>
+        ${isNota?`<span class="badge bd">📝 Nota</span>`:`<button class="badge ${STATUS[normalizeStatus(i.status)]?.c||'bd'}" onclick="cycleIdeaStatus(${i.id},this,event)" style="cursor:pointer;border:none;font-family:'Inter',sans-serif" title="Clic para cambiar estado">${STATUS[normalizeStatus(i.status)]?.l||'💡 Cruda'}</button>`}
         ${!activeClId?(i.clientNames&&i.clientNames.length>1?i.clientNames.map(n=>`<span class="badge bd">${n}</span>`).join(''):`<span class="badge bd">${i.clientName}</span>`):''}
-        ${(i.platforms&&i.platforms.length?i.platforms:i.platform&&i.platform!=='General'?[i.platform]:[]).map(net=>`<span class="badge" style="background:${NET_COLORS[net]||'#888'}18;color:${NET_COLORS[net]||'#888'};border-color:${NET_COLORS[net]||'#888'}44;font-weight:500">${net}</span>`).join('')}
-        ${i.format?`<span class="badge bd">${i.format}</span>`:''}
+        ${isNota?'':(i.platforms&&i.platforms.length?i.platforms:i.platform&&i.platform!=='General'?[i.platform]:[]).map(net=>`<span class="badge" style="background:${NET_COLORS[net]||'#888'}18;color:${NET_COLORS[net]||'#888'};border-color:${NET_COLORS[net]||'#888'}44;font-weight:500">${net}</span>`).join('')}
+        ${(!isNota&&i.format)?`<span class="badge bd">${i.format}</span>`:''}
         ${i.links&&i.links.length?`<span class="badge bd">🔗 ${i.links.length}</span>`:''}
         ${promptCount?`<span class="badge" style="background:rgba(245,197,24,0.18);color:#b88a00;border-color:rgba(245,197,24,0.4);font-weight:600" title="${promptCount} prompt${promptCount!==1?'s':''} generado${promptCount!==1?'s':''} para esta idea">⚡ ${promptCount}</span>`:''}
         ${(i.tags||[]).map(t=>`<span class="badge bd-accent" style="font-size:10px">#${t}</span>`).join('')}
@@ -4944,15 +5062,15 @@ function saveIdea(){
     idea.text=text;idea.clientId=firstCid;idea.clientName=cn;idea.clientIds=selCids;idea.clientNames=allCnames;
     const nets=getSelNets();idea.platforms=nets;idea.platform=nets[0]||'General';idea.format=document.getElementById('eif').value;
     idea.status=document.getElementById('eis').value;idea.notes=document.getElementById('ein').value.trim();idea.links=[...tL];
-    idea.tags=[...(window._editingIdeaTags||[])];
-    toast('✓ Idea actualizada',false);
+    idea.tags=[...(window._editingIdeaTags||[])];idea.kind=eiKind;
+    toast(eiKind==='nota'?'✓ Nota actualizada':'✓ Idea actualizada',false);
     // If came from buzón, remove it
     if(window._buzonPromoId){delBuzonItem(window._buzonPromoId);delete window._buzonPromoId;}
   } else {
     const iid=Date.now();
     tL.forEach(l=>db.links.unshift({id:l.id,url:l.url,desc:l.desc||text,type:l.type,clientId:firstCid,clientName:cn,fromIdea:iid,date:new Date().toLocaleDateString('es')}));
-    const nets2=getSelNets();db.ideas.unshift({id:iid,text,clientId:firstCid,clientName:cn,clientIds:selCids,clientNames:allCnames,platforms:nets2,platform:nets2[0]||'General',format:document.getElementById('eif').value,status:document.getElementById('eis').value,notes:document.getElementById('ein').value.trim(),links:[...tL],tags:[...(window._editingIdeaTags||[])],date:new Date().toLocaleDateString('es')});
-    toast('✓ Idea guardada',false);
+    const nets2=getSelNets();db.ideas.unshift({id:iid,text,kind:eiKind,clientId:firstCid,clientName:cn,clientIds:selCids,clientNames:allCnames,platforms:nets2,platform:nets2[0]||'General',format:document.getElementById('eif').value,status:document.getElementById('eis').value,notes:document.getElementById('ein').value.trim(),links:[...tL],tags:[...(window._editingIdeaTags||[])],date:new Date().toLocaleDateString('es')});
+    toast(eiKind==='nota'?'✓ Nota guardada':'✓ Idea guardada',false);
     if(window._buzonPromoId){delBuzonItem(window._buzonPromoId);delete window._buzonPromoId;}
   }
   save();closeM('mi');rId();rLk();renderBP();renderDash();
@@ -5012,7 +5130,7 @@ function savePasteResult(){
   toast('✓ Resultado guardado en el Radar',false,2500);
 }
 
-function saveQI(){const el=document.getElementById('qi');const v=el.value.trim();if(!v)return;const cid=activeClId||'general';const c=db.clients.find(x=>x.id==cid);db.ideas.unshift({id:Date.now(),text:v,clientId:cid,clientName:c?c.name:'General',platform:'General',format:'',status:'cruda',notes:'',links:[],date:new Date().toLocaleDateString('es')});save();el.value='';rId();renderBP();renderDash();toast('✓ Idea guardada',false);}
+function saveQI(){const el=document.getElementById('qi');const v=el.value.trim();if(!v)return;const cid=activeClId||'general';const c=db.clients.find(x=>x.id==cid);const k=ideaKindView==='nota'?'nota':'idea';db.ideas.unshift({id:Date.now(),text:v,kind:k,clientId:cid,clientName:c?c.name:'General',platform:'General',format:'',status:'cruda',notes:'',links:[],date:new Date().toLocaleDateString('es')});save();el.value='';rId();renderBP();renderDash();toast(k==='nota'?'✓ Nota guardada':'✓ Idea guardada',false);}
 document.getElementById('qi').addEventListener('keydown',e=>{if(e.key==='Enter')saveQI();});
 
 function saveQuickCapture(){
@@ -5738,16 +5856,32 @@ function restoreSidebarState(){
 }
 
 function goIdeasMain(){
+  ideaKindView='idea';
   go('ideas');
 }
 
 // Click en "Ideas" del sidebar — vuelve al banco sin filtros activos
 function goIdeasClean(){
+  ideaKindView='idea';
   if(ideaOnlyGenerated){ideaOnlyGenerated=false;updateOnlyGeneratedPill();}
   go('ideas');
 }
 
+// Vista de Notas (submenú bajo Ideas)
+function goNotas(){
+  if(ideaOnlyGenerated){ideaOnlyGenerated=false;updateOnlyGeneratedPill();}
+  go('ideas');
+  setTimeout(()=>{
+    ideaKindView='nota';   // se fija después del reset que hace go()
+    rId();
+    const sub=document.getElementById('ni-ideas-sub');
+    const chev=document.getElementById('ni-ideas-chev');
+    if(sub){sub.style.display='block';if(chev)chev.style.transform='rotate(180deg)';}
+  },50);
+}
+
 function goIdeasFiltered(filter){
+  ideaKindView='idea';
   go('ideas');
   setTimeout(()=>{
     if(filter==='generated'){
@@ -5865,7 +5999,8 @@ load(); // Solo aplica tema
   async function checkActivation(uid) {
     const docRef = doc(db_fs, 'users', uid, 'data', 'activation');
     const snap = await getDoc(docRef);
-    return snap.exists() && snap.data().activated === true;
+    if (snap.exists() && snap.data().activated === true) return snap.data();
+    return null;
   }
 
   window.verifyActivationCode = async function() {
@@ -5893,9 +6028,13 @@ load(); // Solo aplica tema
         btn.textContent = 'Activar Creative Dashboard →'; btn.style.opacity = '1'; btn.disabled = false;
         return;
       }
+      const plan = codeData.plan || 'pro';                 // sin plan en el código = pro
+      const durationDays = codeData.durationDays || 30;
+      const validUntil = plan === 'flex' ? new Date(Date.now() + durationDays*86400000).toISOString() : null;
       await updateDoc(codeRef, { used: true, uid: fbUser.uid, activatedAt: new Date().toISOString(), email: fbUser.email });
       const actRef = doc(db_fs, 'users', fbUser.uid, 'data', 'activation');
-      await setDoc(actRef, { activated: true, code: code, activatedAt: new Date().toISOString() });
+      await setDoc(actRef, { activated: true, code: code, plan: plan, validUntil: validUntil, activatedAt: new Date().toISOString() });
+      cdPlan = plan; cdValidUntil = validUntil;
       document.getElementById('m-activation').style.display = 'none';
       const userWrap = document.getElementById('sb-user-wrap');
       const userAvatar = document.getElementById('user-avatar');
@@ -5905,6 +6044,7 @@ load(); // Solo aplica tema
       if (userName) userName.textContent = fbUser.displayName || fbUser.email;
       await loadFromFirebase(fbUser.uid);
       _initApp();
+      applyPlanUI();
     } catch(e) {
       console.error(e);
       errorEl.textContent = 'Error al verificar. Intenta de nuevo.';
@@ -5936,11 +6076,13 @@ load(); // Solo aplica tema
       fbUser = user;
       if (loginOverlay) loginOverlay.style.display = 'none';
 
-      const activated = await checkActivation(user.uid);
-      if (!activated) {
+      const act = await checkActivation(user.uid);
+      if (!act) {
         if (activationOverlay) activationOverlay.style.display = 'flex';
         return;
       }
+      cdPlan = act.plan || 'pro';          // sin plan explícito = pro (sin Claude)
+      cdValidUntil = act.validUntil || null;
 
       if (activationOverlay) activationOverlay.style.display = 'none';
       if (userWrap) userWrap.style.display = 'block';
@@ -5948,6 +6090,7 @@ load(); // Solo aplica tema
       if (userName) userName.textContent = user.displayName || user.email;
       await loadFromFirebase(user.uid);
       _initApp();
+      applyPlanUI();
 
     } else {
       fbUser = null;
@@ -5957,7 +6100,9 @@ load(); // Solo aplica tema
         try { localStorage.removeItem(k); } catch(e) {}
       });
       db = {clients:[],ideas:[],links:[],history:[],buzon:[],radarHistory:[],planner:{},briefs:[],customPrompts:[]};
+      cdPlan = null; cdValidUntil = null; cdSimPlan = null;
       _initApp();
+      applyPlanUI();
       if (loginOverlay) loginOverlay.style.display = 'flex';
       if (activationOverlay) activationOverlay.style.display = 'none';
       if (userWrap) userWrap.style.display = 'none';
@@ -6004,6 +6149,32 @@ load(); // Solo aplica tema
   <div style="font-size:11px;color:var(--text3);text-align:center;line-height:1.6">
     ¿No tienes un código? Consíguelo en Gumroad<br>
     <button onclick="fbSignOut()" style="background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;text-decoration:underline">Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- BANNER FLEX VENCIDO -->
+<div id="flex-renew-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:var(--red);color:#fff;padding:9px 16px;align-items:center;justify-content:center;gap:14px;font-size:13px;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,.15)">
+  <span>Tu suscripción Flex venció — Claude está pausado. Tus datos siguen a salvo.</span>
+  <a href="https://gumroad.com" target="_blank" rel="noopener" style="background:#fff;color:var(--red);padding:5px 13px;border-radius:var(--r-sm);text-decoration:none;font-weight:700;font-size:12px;white-space:nowrap">Renovar →</a>
+</div>
+
+<!-- PANEL ADMIN (simulador de planes) -->
+<div id="m-admin" class="ov" onclick="if(event.target===this)closeM('m-admin')">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-hd">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <div class="modal-title">Panel admin</div>
+    </div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.55">Simulador de planes — solo tú ves esto. Prueba cómo se ve la app en cada plan sin pagar nada.</div>
+    <div id="admin-sim-state" style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:12px;padding:9px 11px;background:var(--surface2);border-radius:var(--r-sm)"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <button class="btn" onclick="setSimPlan('pro')">Probar PRO</button>
+      <button class="btn" onclick="setSimPlan('flex')">Probar FLEX</button>
+      <button class="btn" onclick="setSimPlan('expired')">Probar VENCIDO</button>
+      <button class="btn ghost" onclick="cdSimPlan=null;applyPlanUI();renderAdminPanel();toast('Simulador apagado',false,1500)">Apagar simulador</button>
+    </div>
+    <div class="sep"></div>
+    <div style="font-size:11px;color:var(--text3);line-height:1.6">El dashboard completo (usuarios, códigos usados, prompts totales) llega en la siguiente fase. Por ahora esto te deja validar las dos experiencias de plan.</div>
   </div>
 </div>
 
