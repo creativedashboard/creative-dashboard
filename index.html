@@ -633,6 +633,9 @@ body[data-plan="pro"] .claude-gated,body[data-plan="expired"] .claude-gated{disp
 /* Hint para Pro/vencido donde estaría el botón */
 .pro-claude-hint{display:none}
 body[data-plan="pro"] .pro-claude-hint,body[data-plan="expired"] .pro-claude-hint{display:block!important}
+/* Caja para pegar resultado externo — solo Pro */
+.pro-paste-result{display:none}
+body[data-plan="pro"] .pro-paste-result{display:block!important}
 .sb-plan-badge{font-size:10px;font-weight:700;letter-spacing:.08em;padding:2px 8px;border-radius:20px;border:1px solid var(--border2);font-family:var(--mono);display:inline-flex;align-items:center;gap:4px}
 
 /* ════════════════════════════
@@ -1467,6 +1470,12 @@ body[data-plan="pro"] .pro-claude-hint,body[data-plan="expired"] .pro-claude-hin
         Enviar a Claude ⚡
       </button>
       <div class="pro-claude-hint" style="font-size:12px;color:var(--text2);text-align:center;padding:11px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);line-height:1.55">Copia este prompt y úsalo en tu ChatGPT o Claude.<br><a href="https://gumroad.com" target="_blank" rel="noopener" style="color:var(--accent);cursor:pointer;font-weight:500;text-decoration:none">¿Quieres Claude aquí dentro? Pásate a Flex →</a></div>
+      <!-- Pegar resultado externo (solo Pro) -->
+      <div class="pro-paste-result">
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Pega aquí el resultado de tu IA</div>
+        <textarea id="gen-paste-result" placeholder="Pega la respuesta que te dio ChatGPT o Claude..." style="font-size:12px;min-height:110px"></textarea>
+        <button class="btn primary sm" onclick="saveGenPasteResult()" style="margin-top:6px;width:100%;justify-content:center">Guardar en Contenido generado</button>
+      </div>
       <!-- Respuesta de Claude (dentro del mismo popup) -->
       <div id="claude-resp-wrap" style="display:none;border-top:1px solid var(--border);padding-top:14px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
@@ -1478,7 +1487,7 @@ body[data-plan="pro"] .pro-claude-hint,body[data-plan="expired"] .pro-claude-hin
           <div style="display:flex;gap:6px;align-items:center">
             <span id="claude-limit-badge" style="font-size:11px;color:var(--text3)"></span>
             <button class="btn sm" onclick="cpClaudeResponse()" id="btn-cp-claude" style="display:none">Copiar</button>
-            <button class="btn sm" onclick="saveClaudeToIdeas()" id="btn-save-claude" style="display:none">Guardar como idea</button>
+            <button class="btn sm" onclick="saveClaudeToIdeas()" id="btn-save-claude" style="display:none">Guardar como idea nueva</button>
             <button class="btn sm" onclick="openAddToBriefFromPrompt()" id="btn-add-brief" style="display:none">+ Briefing</button>
           </div>
         </div>
@@ -1655,7 +1664,7 @@ body[data-plan="pro"] .pro-claude-hint,body[data-plan="expired"] .pro-claude-hin
           <svg viewBox="0 0 24 24" width="12" height="12"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copiar
         </button>
         <button class="btn sm" onclick="saveClaudeToIdeas()" id="btn-save-claude" style="display:none">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>Guardar como idea
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17H8v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>Guardar como idea nueva
         </button>
         <button class="btn sm danger" onclick="closeM('m-claude')">✕</button>
       </div>
@@ -1932,19 +1941,14 @@ body[data-plan="pro"] .pro-claude-hint,body[data-plan="expired"] .pro-claude-hin
         <svg viewBox="0 0 24 24" width="12" height="12"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         Copiar prompt
       </button>
-      <!-- Resultado de Claude -->
-      <div id="ri-result-wrap" style="display:none">
-        <div style="font-size:11px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Resultado</div>
-        <div id="ri-result" style="font-size:13px;color:var(--text);line-height:1.8;background:var(--teal-bg);border:1px solid var(--teal-bord);border-radius:var(--r-sm);padding:12px;white-space:pre-wrap;min-height:60px"></div>
-        <div style="display:flex;gap:6px;margin-top:8px">
-          <button class="btn sm" onclick="navigator.clipboard.writeText(document.getElementById('ri-result').textContent).then(()=>toast('✓ Copiado',false,2000))">Copiar resultado</button>
-        </div>
-      </div>
-      <!-- Pegar resultado manualmente -->
+      <!-- Resultado (editable: pega el de tu IA o edítalo aquí) -->
       <div>
-        <div style="font-size:11px;color:var(--text3);margin-bottom:6px">¿Pegaste en Claude manualmente? Guarda el resultado aquí:</div>
-        <textarea id="ri-result-manual" placeholder="Pega aquí el resultado de Claude..." style="font-size:12px;min-height:80px"></textarea>
-        <button class="btn sm" onclick="saveRadarResultManual()" style="margin-top:6px">Guardar resultado</button>
+        <div style="font-size:11px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Resultado <span style="text-transform:none;font-weight:400;color:var(--text3)">· pega el de tu IA o edítalo aquí</span></div>
+        <textarea id="ri-result-manual" placeholder="Pega aquí el resultado de tu IA..." style="font-size:12px;min-height:120px;background:var(--teal-bg);border-color:var(--teal-bord)"></textarea>
+        <div style="display:flex;gap:6px;margin-top:6px">
+          <button class="btn sm primary" onclick="saveRadarResultManual()">Guardar resultado</button>
+          <button class="btn sm" onclick="navigator.clipboard.writeText(document.getElementById('ri-result-manual').value).then(()=>toast('✓ Copiado',false,2000))">Copiar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -3339,8 +3343,10 @@ async function sendToClaude(){
     }catch(e){console.warn('Error guardando uso:',e);}
     if(badge)badge.textContent=(DAILY_LIMIT-newCount)+' restantes hoy';
     const lastId=aHId;
-    if(lastId){const hi=db.history.find(h=>h.id===lastId);if(hi){hi.claudeResponse=text;save();renderHist();}}
-    toast('✓ Claude respondió',false,2000);
+    let savedToIdea=null;
+    if(lastId){const hi=db.history.find(h=>h.id===lastId);if(hi){hi.claudeResponse=text;save();renderHist();renderDash();if(hi.relatedIdeaId){const idea=db.ideas.find(x=>x.id===hi.relatedIdeaId);if(idea)savedToIdea=idea.text;}}}
+    if(savedToIdea){const t=savedToIdea.length>34?savedToIdea.slice(0,34)+'…':savedToIdea;toast('✓ Guardado en Contenido generado de "'+t+'"',false,3000);}
+    else toast('✓ Claude respondió',false,2000);
   }catch(e){
     if(loading)loading.style.display='none';
     if(body)body.textContent='Error: '+e.message;
@@ -3351,6 +3357,20 @@ async function sendToClaude(){
 
 function cpPrompt(){const t=document.getElementById('pta').value;navigator.clipboard.writeText(t).then(()=>toast('✓ Copiado',false,2000)).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✓ Copiado',false,2000);});}
 function cpClaudeResponse(){const t=document.getElementById('claude-response-body').textContent;navigator.clipboard.writeText(t).then(()=>toast('✓ Respuesta copiada',false,2000)).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('✓ Copiado',false,2000);});}
+function saveGenPasteResult(){
+  if(!guardWrite())return;
+  const ta=document.getElementById('gen-paste-result');
+  const t=(ta?ta.value:'').trim();
+  if(!t){toast('Pega el resultado primero',false);return;}
+  const hi=db.history.find(h=>h.id===aHId);
+  if(!hi){toast('Genera un prompt primero',false);return;}
+  hi.claudeResponse=t;save();renderHist();renderDash();
+  let savedToIdea=null;
+  if(hi.relatedIdeaId){const idea=db.ideas.find(x=>x.id===hi.relatedIdeaId);if(idea)savedToIdea=idea.text;}
+  if(ta)ta.value='';
+  if(savedToIdea){const n=savedToIdea.length>34?savedToIdea.slice(0,34)+'…':savedToIdea;toast('✓ Guardado en Contenido generado de "'+n+'"',false,3000);}
+  else toast('✓ Resultado guardado en el historial',false,2500);
+}
 function saveClaudeToIdeas(){
   const t=document.getElementById('claude-response-body').textContent.trim();if(!t)return;
   const cid=document.getElementById('gc').value;const c=db.clients.find(x=>x.id==cid);
@@ -3479,14 +3499,8 @@ function openRadarItemModal(id){
   if(!modal)return;
   document.getElementById('ri-title').textContent=r.label||r.niche||'Tendencia';
   document.getElementById('ri-prompt').value=r.prompt||'';
-  const resWrap=document.getElementById('ri-result-wrap');
-  const resBody=document.getElementById('ri-result');
-  if(r.result){
-    if(resBody)resBody.textContent=r.result;
-    if(resWrap)resWrap.style.display='block';
-  } else {
-    if(resWrap)resWrap.style.display='none';
-  }
+  const resField=document.getElementById('ri-result-manual');
+  if(resField)resField.value=r.result||'';
   openM('m-radar-item');
 }
 
@@ -3499,7 +3513,8 @@ function cpRadarPrompt(){
 
 function saveRadarResult(){
   const r=(db.radarHistory||[]).find(x=>x.id===currentRadarId);if(!r)return;
-  const t=document.getElementById('ri-result').value||document.getElementById('ri-result').textContent;
+  const el=document.getElementById('ri-result-manual');
+  const t=el?el.value:'';
   r.result=t;save();renderRadarHistory();renderRadarSel();toast('✓ Resultado guardado',false,2000);
 }
 
@@ -3513,16 +3528,11 @@ async function sendRadarPromptToClaude(){
 
 
 function saveRadarResultManual(){
+  if(!guardWrite())return;
   const r=(db.radarHistory||[]).find(x=>x.id===currentRadarId);if(!r)return;
   const t=document.getElementById('ri-result-manual').value.trim();
   if(!t){toast('Pega el resultado primero',false);return;}
   r.result=t;save();
-  // Mostrar en el área de resultado
-  const resWrap=document.getElementById('ri-result-wrap');
-  const resBody=document.getElementById('ri-result');
-  if(resBody)resBody.textContent=t;
-  if(resWrap)resWrap.style.display='block';
-  document.getElementById('ri-result-manual').value='';
   renderRadarHistory();renderRadarSel();
   toast('✓ Resultado guardado',false,2000);
 }
@@ -3531,10 +3541,8 @@ async function sendRadarToClaude(prompt){
   const apiKey=await getApiKey();
   if(!apiKey){toast('API key no configurada en Firestore',false,3000);return;}
   const btn=document.getElementById('radar-claude-btn');
-  const resWrap=document.getElementById('ri-result-wrap');
-  const resBody=document.getElementById('ri-result');
+  const resField=document.getElementById('ri-result-manual');
   if(btn){btn.disabled=true;btn.innerHTML='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg> Generando...';}
-  if(resWrap)resWrap.style.display='none';
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
@@ -3544,8 +3552,7 @@ async function sendRadarToClaude(prompt){
     if(!res.ok){const err=await res.json();throw new Error(err.error?.message||'Error');}
     const data=await res.json();
     const text=data.content?.[0]?.text||'';
-    if(resBody)resBody.textContent=text;
-    if(resWrap)resWrap.style.display='block';
+    if(resField)resField.value=text;
     if(btn){btn.disabled=false;btn.innerHTML='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg> Enviar a Claude ⚡';}
     // Guardar resultado en historial del radar
     if(currentRadarId){
@@ -3930,6 +3937,7 @@ function gen(){
   if(btnCp)btnCp.style.display='none';
   if(btnSave)btnSave.style.display='none';
   if(btnBrief)btnBrief.style.display='none';
+  const gpr=document.getElementById('gen-paste-result');if(gpr)gpr.value='';
   openM('m-prompt');
   const cid=document.getElementById('gc').value;const c=db.clients.find(x=>x.id==cid);
   const briefing=document.getElementById('briefing').value.trim();
@@ -4290,8 +4298,9 @@ function openIdeaPopup(id){
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
           <span style="font-size:13px">${p.icon||'✨'}</span>
           <span style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--text3)">${p.label||'Prompt'} · ${p.date}</span>
+          ${p.claudeResponse?`<span style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:.08em;color:var(--green);background:var(--green-bg);border:1px solid var(--green-bord);padding:1px 6px;border-radius:8px;margin-left:auto">✓ Resultado</span>`:''}
         </div>
-        <div style="font-size:12px;color:var(--text);line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${p.text.slice(0,140)}${p.text.length>140?'…':''}</div>
+        <div style="font-size:12px;color:var(--text);line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${(p.claudeResponse||p.text).slice(0,140)}${(p.claudeResponse||p.text).length>140?'…':''}</div>
       </div>`).join('');
   } else {
     promptsEl.innerHTML='';
@@ -5649,14 +5658,8 @@ function openBriefItemPopup(item){
     document.getElementById('ri-title').textContent=item.label||'Tendencia';
     const riPrompt=document.getElementById('ri-prompt');
     if(riPrompt)riPrompt.value=item.prompt||'';
-    const resWrap=document.getElementById('ri-result-wrap');
-    const resBody=document.getElementById('ri-result');
-    if(item.result){
-      if(resBody)resBody.textContent=item.result;
-      if(resWrap)resWrap.style.display='block';
-    } else {
-      if(resWrap)resWrap.style.display='none';
-    }
+    const resField=document.getElementById('ri-result-manual');
+    if(resField)resField.value=item.result||'';
     openM('m-radar-item');
   } else {
     // Es una idea del banco (número o parseInt)
